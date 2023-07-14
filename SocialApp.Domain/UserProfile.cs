@@ -20,7 +20,7 @@ public class UserProfile : BaseEntity
     public string IdentityId { get; private set; }
     public IdentityUser IdentityUser { get; private set; }
 
-    public static UserProfile CreateUserProfle(string identityId, string userName, string biography, string avararUrl)
+    public static UserProfile CreateUserProfle(string identityId, string userName, string? biography, string? avararUrl)
     {
         // TODO: Add Validation
         return new UserProfile

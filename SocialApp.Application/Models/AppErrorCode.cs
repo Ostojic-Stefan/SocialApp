@@ -4,5 +4,6 @@ public enum AppErrorCode
 {
     ServerError,
     NotFound,
-    ValidationError
+    ValidationError,
+    UserAlreadyExists
 }

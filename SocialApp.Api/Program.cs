@@ -1,5 +1,3 @@
-using DataAccess;
-using Microsoft.EntityFrameworkCore;
 using SocialApp.Api.Extensions;
 
 namespace SocialApp.Api;
@@ -8,6 +6,8 @@ public class Program
 {
     public static void Main(string[] args)
     {
+        DotNetEnv.Env.Load(".env");
+
         var builder = WebApplication.CreateBuilder(args);
 
         builder.AddServices();
