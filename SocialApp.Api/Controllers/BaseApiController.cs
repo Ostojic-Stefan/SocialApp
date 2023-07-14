@@ -11,6 +11,7 @@ public class BaseApiController : ControllerBase
 {
     protected IActionResult HandleError(Tuple<AppErrorCode, List<string>> error)
     {
+        var env = HttpContext.RequestServices.GetRequiredService<IWebHostEnvironment>();
         return error.Item1 switch
         {
             AppErrorCode.NotFound => NotFound(new ErrorResponse
@@ -28,7 +29,9 @@ public class BaseApiController : ControllerBase
             AppErrorCode.ServerError => StatusCode(500, new ErrorResponse
             {
                 Title = "Internal Server Error",
-                ErrorMessages = error.Item2,
+                ErrorMessages = env.IsDevelopment()
+                    ? error.Item2 
+                    : new string[] { "Something went wrong" },
                 StatusCode = HttpStatusCode.InternalServerError,
             }),
             _ => throw new Exception($"Unsupported {nameof(AppErrorCode)} type")
