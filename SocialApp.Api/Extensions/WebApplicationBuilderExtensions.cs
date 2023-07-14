@@ -1,6 +1,7 @@
 ﻿using DataAccess;
 using EfCoreHelpers;
 using Microsoft.EntityFrameworkCore;
+using SocialApp.Api.Middleware;
 using SocialApp.Application.Posts.Queries;
 
 namespace SocialApp.Api.Extensions;
@@ -11,6 +12,8 @@ public static class WebApplicationBuilderExtensions
     {
         DotNetEnv.Env.Load(".env");
         var connString = DotNetEnv.Env.GetString("CONNECTION_STRING");
+
+        builder.Services.AddTransient<GlobalExceptionMiddleware>();
 
         builder.Services.AddDbContext<DataContext>(opt =>
         {

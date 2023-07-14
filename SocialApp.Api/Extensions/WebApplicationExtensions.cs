@@ -1,4 +1,6 @@
-﻿namespace SocialApp.Api.Extensions;
+﻿using SocialApp.Api.Middleware;
+
+namespace SocialApp.Api.Extensions;
 
 public static class WebApplicationExtensions
 {
@@ -9,6 +11,8 @@ public static class WebApplicationExtensions
             app.UseSwagger();
             app.UseSwaggerUI();
         }
+
+        app.UseMiddleware<GlobalExceptionMiddleware>();
 
         app.UseHttpsRedirection();
 

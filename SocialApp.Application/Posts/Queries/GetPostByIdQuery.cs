@@ -4,6 +4,7 @@ using SocialApp.Domain;
 
 namespace SocialApp.Application.Posts.Queries;
 
-public class GetAllPostsQuery : IRequest<Result<IReadOnlyList<Post>>>
+public class GetPostByIdQuery : IRequest<Result<Post>>
 {
+    public Guid PostId { get; set; }
 }

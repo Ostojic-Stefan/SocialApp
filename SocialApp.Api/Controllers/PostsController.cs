@@ -2,9 +2,9 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using SocialApp.Api.Contracts.Posts.Requests;
+using SocialApp.Api.Filters;
 using SocialApp.Application.Posts.Commands;
 using SocialApp.Application.Posts.Queries;
-using SocialApp.Domain;
 
 namespace SocialApp.Api.Controllers;
 
@@ -22,8 +22,22 @@ public class PostsController : BaseApiController
     [HttpGet]
     public async Task<IActionResult> GetPosts(CancellationToken cancellationToken)
     {
-        IReadOnlyList<Post> posts = await _mediator.Send(new GetAllPostsQuery(), cancellationToken);
-        return Ok(posts);
+        var response = await _mediator.Send(new GetAllPostsQuery(), cancellationToken);
+        if (response.HasError)
+            return HandleError(response.Errors);
+        return Ok(response.Data);
+    }
+
+    [HttpGet]
+    [Route("{postId}")]
+    [ValidateGuids("postId")]
+    public async Task<IActionResult> GetPostById(string postId, CancellationToken cancellationToken)
+    {
+        var query = new GetPostByIdQuery { PostId = Guid.Parse(postId) };
+        var response = await _mediator.Send(query, cancellationToken);
+        if (response.HasError)
+            return HandleError(response.Errors);
+        return Ok(response.Data);
     }
 
     [HttpPost]
@@ -31,7 +45,9 @@ public class PostsController : BaseApiController
     {
         var command = _mapper.Map<CreatePostCommand>(createPost);
         var response = await _mediator.Send(command, cancellationToken);
-        return Ok(response);
+        if (response.HasError)
+            return HandleError(response.Errors);
+        return Ok(response.Data);
     }
 
 }
