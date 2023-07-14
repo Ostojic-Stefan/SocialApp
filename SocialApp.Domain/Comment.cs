@@ -1,4 +1,6 @@
 ﻿using EfCoreHelpers;
+using SocialApp.Domain.Exceptions;
+using SocialApp.Domain.Validators;
 
 namespace SocialApp.Domain;
 
@@ -19,13 +21,20 @@ public class Comment : BaseEntity
 
     public static Comment CreateComment(string contents, Guid userProfileId, Guid postId)
     {
-        // TODO: Add Validation
-
-        return new Comment
+        var newComment = new Comment
         {
             Contents = contents,
             UserProfileId = userProfileId,
             PostId = postId
         };
+
+        var commentValidator = new CommentValidator();
+        var validationResult = commentValidator.Validate(newComment);
+        if (!validationResult.IsValid)
+        {
+            throw new ModelInvalidException("invalid comment parameters",
+                validationResult.Errors.Select(vf => vf.ErrorMessage).ToArray());
+        }
+        return newComment;
     }
 }
