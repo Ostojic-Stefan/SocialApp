@@ -33,10 +33,10 @@ internal class ReadOnlyRepository<T> : IReadOnlyRepository<T> where T : BaseEnti
             .ConfigureAwait(false);
     }
 
-    public async Task<T> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return await Query()
-            .SingleAsync(m => m.Id == id, cancellationToken)
+            .FirstOrDefaultAsync(m => m.Id == id, cancellationToken)
             .ConfigureAwait(false);
     }
 }

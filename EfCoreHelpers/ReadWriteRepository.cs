@@ -37,10 +37,10 @@ internal class ReadWriteRepository<T> : IReadWriteRepository<T> where T : BaseEn
         return Query().Where(m => ids.Contains(m.Id));
     }
 
-    public async Task<T> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return await Query()
-            .SingleAsync(m => m.Id == id, cancellationToken)
+            .FirstOrDefaultAsync(m => m.Id == id, cancellationToken)
             .ConfigureAwait(false);
     }
 
