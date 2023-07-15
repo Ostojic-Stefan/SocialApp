@@ -32,6 +32,12 @@ public class BaseApiController : ControllerBase
                 ErrorMessages = error.Item2,
                 StatusCode = HttpStatusCode.BadRequest,
             }),
+            AppErrorCode.BadCredentials => Unauthorized(new ErrorResponse
+            {
+                Title = "Bad Credentials",
+                ErrorMessages = error.Item2,
+                StatusCode = HttpStatusCode.Unauthorized,
+            }),
             AppErrorCode.ServerError => StatusCode(500, new ErrorResponse
             {
                 Title = "Internal Server Error",

@@ -12,5 +12,6 @@ public class PostMappingProfiles : Profile
 	{
 		CreateMap<CreatePostRequest, CreatePostCommand>();
 		CreateMap<RegisterRequest, RegisterCommand>();
-	}
+		CreateMap<LoginRequest, LoginCommand>();
+    }
 }

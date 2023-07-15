@@ -18,7 +18,8 @@ internal class ReadOnlyRepository<T> : IReadOnlyRepository<T> where T : BaseEnti
 
     public IQueryable<T> QueryById(Guid id)
     {
-        return Query().Where(m => m.Id == id);
+        return Query()
+            .Where(m => m.Id == id);
     }
 
     public IQueryable<T> QueryByIds(IList<Guid> ids)

@@ -29,7 +29,18 @@ public class IdentityController : BaseApiController
         var result = await _mediator.Send(command);
         if (result.HasError)
             return HandleError(result.Errors);
-        return Ok(result.Data);
+        return Ok(new IdentityResponse { AccessToken = result.Data });
+    }
+
+    [HttpPost]
+    [Route("/login")]
+    public async Task<IActionResult> Login(LoginRequest loginRequest)
+    {
+        var command = _mapper.Map<LoginCommand>(loginRequest);
+        var result = await _mediator.Send(command);
+        if (result.HasError)
+            return HandleError(result.Errors);
+        return Ok(new IdentityResponse { AccessToken = result.Data });
     }
 
     [HttpPost]

@@ -3,15 +3,16 @@
 public class Result<T>
 {
     private Tuple<AppErrorCode, List<string>>? _error;
-    public T? Data { get; set; }
+    private T? _data;
+
+    public T Data 
+    {
+        get => _data ?? throw new NullReferenceException($"Use {nameof(HasError)} flag to check if there are any errors");
+        internal set => _data = value;
+    }
     public Tuple<AppErrorCode, List<string>> Errors
     { 
-        get
-        {
-            if (_error is null)
-                throw new NullReferenceException($"Use {nameof(HasError)} flag to check if there are any errors");
-            return _error;
-        }
+        get => _error ?? throw new NullReferenceException($"Use {nameof(HasError)} flag to check if there are any errors");
     }
 
     public bool HasError { get; private set; }
