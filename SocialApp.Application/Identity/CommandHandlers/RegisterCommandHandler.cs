@@ -1,6 +1,7 @@
 ﻿using EfCoreHelpers;
 using Microsoft.AspNetCore.Identity;
 using SocialApp.Application.Identity.Commands;
+using SocialApp.Application.Identity.Responses;
 using SocialApp.Application.Models;
 using SocialApp.Application.Services;
 using SocialApp.Domain;
@@ -11,7 +12,7 @@ using System.Security.Claims;
 namespace SocialApp.Application.Identity.CommandHandlers;
 
 internal class RegisterCommandHandler
-    : DataContextRequestHandler<RegisterCommand, Result<string>>
+    : DataContextRequestHandler<RegisterCommand, Result<IdentityResponse>>
 {
     private readonly UserManager<IdentityUser> _userManager;
     private readonly ITokenService _tokenService;
@@ -26,10 +27,10 @@ internal class RegisterCommandHandler
         _tokenService = tokenService;
     }
 
-    public override async Task<Result<string>> Handle(RegisterCommand request,
+    public override async Task<Result<IdentityResponse>> Handle(RegisterCommand request,
         CancellationToken cancellationToken)
     {
-        var result = new Result<string>();
+        var result = new Result<IdentityResponse>();
         try
         {
             var identity = new IdentityUser
@@ -73,7 +74,7 @@ internal class RegisterCommandHandler
                 new Claim("UserProfileId", userProfile.Id.ToString()),
             });
 
-            result.Data = token;
+            result.Data = new IdentityResponse { AccessToken = token };
         }
         catch (ModelInvalidException ex)
         {

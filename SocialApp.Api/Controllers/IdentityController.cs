@@ -2,8 +2,8 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SocialApp.Api.Contracts.Identity;
 using SocialApp.Api.Extensions;
+using SocialApp.Api.Requests.Identity;
 using SocialApp.Application.Identity.Commands;
 using SocialApp.Application.Identity.Queries;
 
@@ -28,7 +28,7 @@ public class IdentityController : BaseApiController
         var result = await _mediator.Send(command);
         if (result.HasError)
             return HandleError(result.Errors);
-        return Ok(new IdentityResponse { AccessToken = result.Data });
+        return Ok(result.Data);
     }
 
     [HttpPost]
@@ -39,7 +39,7 @@ public class IdentityController : BaseApiController
         var result = await _mediator.Send(command);
         if (result.HasError)
             return HandleError(result.Errors);
-        return Ok(new IdentityResponse { AccessToken = result.Data });
+        return Ok(result.Data);
     }
 
     [HttpGet]

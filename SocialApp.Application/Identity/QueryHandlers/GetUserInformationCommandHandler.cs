@@ -1,27 +1,39 @@
-﻿using EfCoreHelpers;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using EfCoreHelpers;
+using Microsoft.EntityFrameworkCore;
 using SocialApp.Application.Identity.Queries;
+using SocialApp.Application.Identity.Responses;
 using SocialApp.Application.Models;
 using SocialApp.Domain;
 
 namespace SocialApp.Application.Identity.QueryHandlers;
 
 internal class GetUserInformationQueryHandler
-    : DataContextRequestHandler<GetUserInformationQuery, Result<UserProfile>>
+    : DataContextRequestHandler<GetUserInformationQuery, Result<GetUserInformationResponse>>
 {
-    public GetUserInformationQueryHandler(IUnitOfWork unitOfWork)
+    private readonly IMapper _mapper;
+
+    public GetUserInformationQueryHandler(IUnitOfWork unitOfWork, IMapper mapper)
         : base(unitOfWork)
     {
+        _mapper = mapper;
     }
 
-    public override async Task<Result<UserProfile>> Handle(GetUserInformationQuery request,
+    public override async Task<Result<GetUserInformationResponse>> Handle(GetUserInformationQuery request,
         CancellationToken cancellationToken)
     {
-        var result = new Result<UserProfile>();
+        var result = new Result<GetUserInformationResponse>();
         try
         {
             var userProfileRepo = _unitOfWork.CreateReadOnlyRepository<UserProfile>();
+
             var userProfile = await userProfileRepo
-                .GetByIdAsync(request.UserProfileId, cancellationToken);
+                .QueryById(request.UserProfileId)
+                .TagWith($"[{nameof(GetUserInformationQueryHandler)}] - Get user profile information")
+                .ProjectTo<GetUserInformationResponse>(_mapper.ConfigurationProvider)
+                .SingleOrDefaultAsync(cancellationToken);
+
             if (userProfile is null)
             {
                 result.AddError(AppErrorCode.NotFound,

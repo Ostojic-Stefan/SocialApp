@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using SocialApp.Api.Contracts.Identity;
-using SocialApp.Api.Contracts.Posts.Requests;
+using SocialApp.Api.Requests.Identity;
+using SocialApp.Api.Requests.Posts;
 using SocialApp.Application.Identity.Commands;
 using SocialApp.Application.Posts.Commands;
 

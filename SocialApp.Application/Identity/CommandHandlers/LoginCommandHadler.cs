@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SocialApp.Application.Identity.Commands;
+using SocialApp.Application.Identity.Responses;
 using SocialApp.Application.Models;
 using SocialApp.Application.Services;
 using SocialApp.Domain;
@@ -11,7 +12,7 @@ using System.Security.Claims;
 
 namespace SocialApp.Application.Identity.CommandHandlers;
 internal class LoginCommandHadler 
-    : DataContextRequestHandler<LoginCommand, Result<string>>
+    : DataContextRequestHandler<LoginCommand, Result<IdentityResponse>>
 {
     private readonly UserManager<IdentityUser> _userManager;
     private readonly ITokenService _tokenService;
@@ -26,10 +27,10 @@ internal class LoginCommandHadler
         _tokenService = tokenService;
     }
 
-    public override async Task<Result<string>> Handle(LoginCommand request,
+    public override async Task<Result<IdentityResponse>> Handle(LoginCommand request,
         CancellationToken cancellationToken)
     {
-        var result = new Result<string>();
+        var result = new Result<IdentityResponse>();
         try
         {
             var identity = await _userManager.FindByEmailAsync(request.Email);
@@ -55,7 +56,7 @@ internal class LoginCommandHadler
                 new Claim("IdentityId", identity.Id),
                 new Claim("UserProfileId", userProfile.Id.ToString()),
             });
-            result.Data = token;
+            result.Data = new IdentityResponse { AccessToken = token };
         }
         catch (ModelInvalidException ex)
         {

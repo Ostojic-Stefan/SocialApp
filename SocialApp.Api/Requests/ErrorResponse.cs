@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace SocialApp.Api.Contracts;
+namespace SocialApp.Api.Requests;
 
 public class ErrorResponse
 {

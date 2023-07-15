@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using SocialApp.Api.Contracts.Posts.Requests;
 using SocialApp.Api.Filters;
+using SocialApp.Api.Requests.Posts;
 using SocialApp.Application.Posts.Commands;
 using SocialApp.Application.Posts.Queries;
 

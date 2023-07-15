@@ -1,25 +1,36 @@
-﻿using EfCoreHelpers;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using EfCoreHelpers;
+using Microsoft.EntityFrameworkCore;
 using SocialApp.Application.Models;
 using SocialApp.Application.Posts.Queries;
+using SocialApp.Application.Posts.Responses;
 using SocialApp.Domain;
 
 namespace SocialApp.Application.Posts.QueryHandlers;
 
 internal class GetPostByIdQueryHandler
-    : DataContextRequestHandler<GetPostByIdQuery, Result<Post>>
+    : DataContextRequestHandler<GetPostByIdQuery, Result<PostResponse>>
 {
-    public GetPostByIdQueryHandler(IUnitOfWork unitOfWork) 
+    private readonly IMapper _mapper;
+
+    public GetPostByIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) 
         : base(unitOfWork)
     {
+        _mapper = mapper;
     }
 
-    public override async Task<Result<Post>> Handle(GetPostByIdQuery request, CancellationToken cancellationToken)
+    public override async Task<Result<PostResponse>> Handle(GetPostByIdQuery request, CancellationToken cancellationToken)
     {
-        var result = new Result<Post>();
+        var result = new Result<PostResponse>();
         try
         {
             var postRepo = _unitOfWork.CreateReadOnlyRepository<Post>();
-            var post = await postRepo.GetByIdAsync(request.PostId, cancellationToken);
+            var post = await postRepo
+                .QueryById(request.PostId)
+                .TagWith($"[{nameof(GetPostByIdQueryHandler)}] - Get Single Post")
+                .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
+                .SingleOrDefaultAsync(cancellationToken);
             if (post is null)
             {
                 result.AddError(

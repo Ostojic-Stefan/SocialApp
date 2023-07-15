@@ -1,4 +1,4 @@
-﻿namespace SocialApp.Api.Contracts.Posts.Requests;
+﻿namespace SocialApp.Api.Requests.Posts;
 
 public class CreatePostRequest
 {

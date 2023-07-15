@@ -1,4 +1,4 @@
-﻿using SocialApp.Api.Contracts;
+﻿using SocialApp.Api.Requests;
 using System.Net;
 using System.Text.Json;
 

@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SocialApp.Api.Contracts;
+using SocialApp.Api.Requests;
 using SocialApp.Application.Models;
 using System.Net;
 

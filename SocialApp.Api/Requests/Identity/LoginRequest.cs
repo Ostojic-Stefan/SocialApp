@@ -1,4 +1,4 @@
-﻿namespace SocialApp.Api.Contracts.Identity;
+﻿namespace SocialApp.Api.Requests.Identity;
 
 public class LoginRequest
 {
