@@ -1,28 +1,27 @@
 ﻿using AutoMapper;
-using DataAccess;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SocialApp.Api.Contracts.Identity;
+using SocialApp.Api.Extensions;
 using SocialApp.Application.Identity.Commands;
-using SocialApp.Domain;
+using SocialApp.Application.Identity.Queries;
 
 namespace SocialApp.Api.Controllers;
 
 public class IdentityController : BaseApiController
 {
-    private readonly DataContext _ctx;
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
 
-    public IdentityController(DataContext ctx, IMediator mediator, IMapper mapper)
+    public IdentityController(IMediator mediator, IMapper mapper)
     {
-        _ctx = ctx;
         _mediator = mediator;
         _mapper = mapper;
     }
 
     [HttpPost]
-    [Route("/register")]
+    [Route("register")]
     public async Task<IActionResult> Register(RegisterRequest registerRequest)
     {
         var command = _mapper.Map<RegisterCommand>(registerRequest);
@@ -33,7 +32,7 @@ public class IdentityController : BaseApiController
     }
 
     [HttpPost]
-    [Route("/login")]
+    [Route("login")]
     public async Task<IActionResult> Login(LoginRequest loginRequest)
     {
         var command = _mapper.Map<LoginCommand>(loginRequest);
@@ -43,12 +42,16 @@ public class IdentityController : BaseApiController
         return Ok(new IdentityResponse { AccessToken = result.Data });
     }
 
-    [HttpPost]
-    public async Task<IActionResult> AddUser()
+    [HttpGet]
+    [Route("me")]
+    [Authorize]
+    public async Task<IActionResult> Me()
     {
-        var userProfile = UserProfile.CreateUserProfle("test", "test", "test", "tets");
-        _ctx.UserProfiles.Add(userProfile);
-        await _ctx.SaveChangesAsync();
-        return Ok();
+        var userProfileId = HttpContext.GetUserProfileId();
+        var result = await _mediator.Send(
+            new GetUserInformationQuery { UserProfileId = userProfileId });
+        if (result.HasError)
+            return HandleError(result.Errors);
+        return Ok(result.Data);
     }
 }

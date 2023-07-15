@@ -6,7 +6,7 @@ using System.Net;
 namespace SocialApp.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("/api/[controller]")]
 public class BaseApiController : ControllerBase
 {
     protected IActionResult HandleError(Tuple<AppErrorCode, List<string>> error)
