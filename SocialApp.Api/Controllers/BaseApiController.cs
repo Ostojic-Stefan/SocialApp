@@ -26,6 +26,12 @@ public class BaseApiController : ControllerBase
                 ErrorMessages = error.Item2,
                 StatusCode = HttpStatusCode.BadRequest,
             }),
+            AppErrorCode.UserAlreadyExists => BadRequest(new ErrorResponse
+            {
+                Title = "User Already Exists",
+                ErrorMessages = error.Item2,
+                StatusCode = HttpStatusCode.BadRequest,
+            }),
             AppErrorCode.ServerError => StatusCode(500, new ErrorResponse
             {
                 Title = "Internal Server Error",

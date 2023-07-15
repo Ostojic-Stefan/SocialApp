@@ -1,16 +1,12 @@
 ﻿using EfCoreHelpers;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using SocialApp.Application.Identity.Commands;
 using SocialApp.Application.Models;
-using SocialApp.Application.Settings;
+using SocialApp.Application.Services;
 using SocialApp.Domain;
 using SocialApp.Domain.Exceptions;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 
 namespace SocialApp.Application.Identity.CommandHandlers;
 
@@ -18,19 +14,16 @@ internal class RegisterCommandHandler
     : DataContextRequestHandler<RegisterCommand, Result<string>>
 {
     private readonly UserManager<IdentityUser> _userManager;
-    private readonly ILogger<RegisterCommandHandler> _logger;
-    private readonly JwtSettings _jwtSettings;
+    private readonly ITokenService _tokenService;
 
     public RegisterCommandHandler(IUnitOfWork unitOfWork,
         UserManager<IdentityUser> userManager,
-        ILogger<RegisterCommandHandler> logger,
-        IOptions<JwtSettings> jwtOptions
+        ITokenService tokenService
         ) 
         : base(unitOfWork)
     {
         _userManager = userManager;
-        _logger = logger;
-        _jwtSettings = jwtOptions.Value;
+        _tokenService = tokenService;
     }
 
     public override async Task<Result<string>> Handle(RegisterCommand request,
@@ -45,9 +38,7 @@ internal class RegisterCommandHandler
                 Email = request.Email,
             };
 
-            var test = await _userManager.FindByEmailAsync(request.Email);
-
-            if (test is not null)
+            if (await _userManager.FindByEmailAsync(request.Email) is not null)
             {
                 result.AddError(AppErrorCode.UserAlreadyExists,
                     $"User with the email of {request.Email} already exists");
@@ -74,7 +65,7 @@ internal class RegisterCommandHandler
             await _unitOfWork.SaveAsync(cancellationToken);
 
             // generate jwt
-            var claimsIdentity = new ClaimsIdentity(new Claim[]
+            string token = _tokenService.GetToken(new Claim[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, identity.Email),
                 new Claim(JwtRegisteredClaimNames.Email, identity.Email),
@@ -82,22 +73,7 @@ internal class RegisterCommandHandler
                 new Claim("UserProfileId", userProfile.Id.ToString()),
             });
 
-            var descriptor = new SecurityTokenDescriptor
-            {
-                Subject = claimsIdentity,
-                SigningCredentials = new SigningCredentials(
-                    new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SigningKey)),
-                    SecurityAlgorithms.HmacSha512
-                ),
-                Audience = _jwtSettings.Audiences[0],
-                Issuer = _jwtSettings.Issuer,
-                Expires = DateTime.Now.AddHours(2)  
-            };
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-
-            var token = tokenHandler.CreateToken(descriptor);
-            result.Data = tokenHandler.WriteToken(token);
+            result.Data = token;
         }
         catch (ModelInvalidException ex)
         {

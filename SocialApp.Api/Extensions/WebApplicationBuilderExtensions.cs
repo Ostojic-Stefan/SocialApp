@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SocialApp.Api.Middleware;
 using SocialApp.Application.Posts.Queries;
+using SocialApp.Application.Services;
 using SocialApp.Application.Settings;
 using System.Text;
 
@@ -23,6 +24,8 @@ public static class WebApplicationBuilderExtensions
 
         builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetAllPostsQuery).Assembly));
         builder.Services.AddAutoMapper(typeof(Program), typeof(GetAllPostsQuery));
+
+        builder.Services.AddTransient<ITokenService, TokenService>();
 
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
