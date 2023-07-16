@@ -7,18 +7,18 @@ using SocialApp.Domain;
 using SocialApp.Domain.Exceptions;
 
 namespace SocialApp.Application.Posts.CommandHandlers;
-internal class UpdatePostContentsCommandHandler
-    : DataContextRequestHandler<UpdatePostContentsCommand, Result<PostResponse>>
+internal class UpdatePostCommandHandler
+    : DataContextRequestHandler<UpdatePostCommand, Result<PostResponse>>
 {
     private readonly IMapper _mapper;
 
-    public UpdatePostContentsCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
+    public UpdatePostCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
         : base(unitOfWork)
     {
         _mapper = mapper;
     }
 
-    public override async Task<Result<PostResponse>> Handle(UpdatePostContentsCommand request,
+    public override async Task<Result<PostResponse>> Handle(UpdatePostCommand request,
         CancellationToken cancellationToken)
     {
         var result = new Result<PostResponse>();
@@ -45,7 +45,7 @@ internal class UpdatePostContentsCommandHandler
             }
 
             // update post
-            post.UpdateContents(request.Contents);
+            post.Update(request.ImageUrl, request.Contents);
             await _unitOfWork.SaveAsync(cancellationToken);
             result.Data = _mapper.Map<PostResponse>(post);
         }

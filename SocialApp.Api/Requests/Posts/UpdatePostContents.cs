@@ -1,6 +1,7 @@
 ﻿namespace SocialApp.Api.Requests.Posts;
 
-public class UpdatePostContents
+public class UpdatePost
 {
-    public required string Contents { get; set; }
+    public string? Contents { get; set; }
+    public string? ImageUrl { get; set; }
 }

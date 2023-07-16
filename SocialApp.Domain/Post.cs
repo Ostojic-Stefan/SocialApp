@@ -1,7 +1,6 @@
 ﻿using EfCoreHelpers;
 using SocialApp.Domain.Exceptions;
 using SocialApp.Domain.Validators;
-using System.ComponentModel.DataAnnotations;
 
 namespace SocialApp.Domain;
 
@@ -14,7 +13,6 @@ public class Post : BaseEntity
         _comments = new List<Comment>();
     }
 
-    //public Guid Id { get; private set; }
     public string ImageUrl { get; private set; }
     public string Contents { get; private set; }
     public DateTime CreatedAt { get; private set; }
@@ -46,6 +44,15 @@ public class Post : BaseEntity
     public void UpdateImage(string newImageUrl)
     {
         ImageUrl = newImageUrl;
+        Validate(this);
+    }
+
+    public void Update(string? imageUrl, string? contents)
+    {
+        if (contents is not null)
+            Contents = contents;
+        if (imageUrl is not null)
+            ImageUrl = imageUrl;
         Validate(this);
     }
 

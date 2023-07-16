@@ -68,19 +68,21 @@ public class PostsController : BaseApiController
         return Ok(response.Data);
     }
 
-    [HttpPut("postId")]
+    [HttpPut]
+    [Route("{postId}")]
     [Authorize]
     [ValidateGuids("postId")]
-    public async Task<IActionResult> UpdatePostContents(string postId,
-        [FromBody] UpdatePostContents updatePostContents, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdatePost(string postId,
+        [FromBody] UpdatePost updatePost, CancellationToken cancellationToken)
     {
-        var command = new UpdatePostContentsCommand
+        var command = new UpdatePostCommand
         {
-            Contents = updatePostContents.Contents,
+            Contents = updatePost.Contents,
+            ImageUrl = updatePost.ImageUrl,
             PostId = Guid.Parse(postId),
             UserProfileId = HttpContext.GetUserProfileId()
         };
-        var response = await _mediator.Send(command);
+        var response = await _mediator.Send(command, cancellationToken);
         if (response.HasError)
             return HandleError(response.Errors);
         return Ok(response.Data);
