@@ -1,10 +1,13 @@
 ﻿using MediatR;
 using SocialApp.Application.Models;
 using SocialApp.Application.Posts.Responses;
-using SocialApp.Domain;
+using SocialApp.Application.Services;
 
 namespace SocialApp.Application.Posts.Queries;
 
-public class GetAllPostsQuery : IRequest<Result<IReadOnlyList<PostResponse>>>
+public class GetAllPostsQuery 
+    : IRequest<Result<PagedList<PostResponse>>>
 {
+    public required int PageSize { get; set; }
+    public required int PageNumber { get; set; }
 }

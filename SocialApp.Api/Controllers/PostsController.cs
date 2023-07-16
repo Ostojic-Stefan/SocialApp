@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SocialApp.Api.Extensions;
 using SocialApp.Api.Filters;
+using SocialApp.Api.Requests;
 using SocialApp.Api.Requests.Posts;
 using SocialApp.Application.Posts.Commands;
 using SocialApp.Application.Posts.Queries;
@@ -20,9 +23,14 @@ public class PostsController : BaseApiController
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetPosts(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetPosts([FromQuery] PagedRequest pagedRequest, CancellationToken cancellationToken)
     {
-        var response = await _mediator.Send(new GetAllPostsQuery(), cancellationToken);
+        var query = new GetAllPostsQuery
+        {
+            PageNumber = pagedRequest.PageNumber,
+            PageSize = pagedRequest.PageSize
+        };
+        var response = await _mediator.Send(query, cancellationToken);
         if (response.HasError)
             return HandleError(response.Errors);
         return Ok(response.Data);
@@ -41,9 +49,16 @@ public class PostsController : BaseApiController
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> CreatePost(CreatePostRequest createPost, CancellationToken cancellationToken)
     {
-        var command = _mapper.Map<CreatePostCommand>(createPost);
+        var userProfileId = HttpContext.GetUserProfileId();
+        var command = new CreatePostCommand
+        {
+            Contents = createPost.Contents,
+            ImageUrl = createPost.ImageUrl,
+            UserProfileId = userProfileId,
+        };
         var response = await _mediator.Send(command, cancellationToken);
         if (response.HasError)
             return HandleError(response.Errors);
