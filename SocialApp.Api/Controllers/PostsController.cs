@@ -88,4 +88,21 @@ public class PostsController : BaseApiController
         return Ok(response.Data);
     }
 
+    [HttpDelete]
+    [Route("{postId}")]
+    [Authorize]
+    [ValidateGuids("postId")]
+    public async Task<IActionResult> DeletePost(string postId, CancellationToken cancellationToken)
+    {
+        var command = new DeletePostCommand
+        {
+            PostId = Guid.Parse(postId),
+            UserProfileId = HttpContext.GetUserProfileId()
+        };
+        var response = await _mediator.Send(command, cancellationToken);
+        if (response.HasError)
+            return HandleError(response.Errors);
+        return Ok(response.Data);
+    }
+
 }

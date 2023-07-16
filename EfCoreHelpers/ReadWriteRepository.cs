@@ -1,17 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EfCoreHelpers;
-/// <summary>
-/// This class is an implementation of the <see cref="IRepository{T}"/> Guiderface for
-/// working with entities that implement the <see cref="IEntity"/> Guiderface.
-/// </summary>
-/// <typeparam name="T">The type of the entities of this repository.</typeparam>
 internal class ReadWriteRepository<T> : IReadWriteRepository<T> where T : BaseEntity
 {
 
@@ -108,5 +98,10 @@ internal class ReadWriteRepository<T> : IReadWriteRepository<T> where T : BaseEn
         return await Query()
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
+    }
+
+    public void Remove(T entity)
+    {
+        context.Remove(entity);
     }
 }
