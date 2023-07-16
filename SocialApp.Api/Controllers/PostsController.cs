@@ -23,7 +23,8 @@ public class PostsController : BaseApiController
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetPosts([FromQuery] PagedRequest pagedRequest, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetPosts([FromQuery] PagedRequest pagedRequest,
+        CancellationToken cancellationToken)
     {
         var query = new GetAllPostsQuery
         {
@@ -39,7 +40,8 @@ public class PostsController : BaseApiController
     [HttpGet]
     [Route("{postId}")]
     [ValidateGuids("postId")]
-    public async Task<IActionResult> GetPostById(string postId, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetPostById(string postId,
+        CancellationToken cancellationToken)
     {
         var query = new GetPostByIdQuery { PostId = Guid.Parse(postId) };
         var response = await _mediator.Send(query, cancellationToken);
@@ -50,7 +52,8 @@ public class PostsController : BaseApiController
 
     [HttpPost]
     [Authorize]
-    public async Task<IActionResult> CreatePost(CreatePostRequest createPost, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreatePost(CreatePostRequest createPost,
+        CancellationToken cancellationToken)
     {
         var userProfileId = HttpContext.GetUserProfileId();
         var command = new CreatePostCommand
@@ -60,6 +63,24 @@ public class PostsController : BaseApiController
             UserProfileId = userProfileId,
         };
         var response = await _mediator.Send(command, cancellationToken);
+        if (response.HasError)
+            return HandleError(response.Errors);
+        return Ok(response.Data);
+    }
+
+    [HttpPut("postId")]
+    [Authorize]
+    [ValidateGuids("postId")]
+    public async Task<IActionResult> UpdatePostContents(string postId,
+        [FromBody] UpdatePostContents updatePostContents, CancellationToken cancellationToken)
+    {
+        var command = new UpdatePostContentsCommand
+        {
+            Contents = updatePostContents.Contents,
+            PostId = Guid.Parse(postId),
+            UserProfileId = HttpContext.GetUserProfileId()
+        };
+        var response = await _mediator.Send(command);
         if (response.HasError)
             return HandleError(response.Errors);
         return Ok(response.Data);

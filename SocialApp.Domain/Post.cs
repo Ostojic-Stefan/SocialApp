@@ -1,6 +1,7 @@
 ﻿using EfCoreHelpers;
 using SocialApp.Domain.Exceptions;
 using SocialApp.Domain.Validators;
+using System.ComponentModel.DataAnnotations;
 
 namespace SocialApp.Domain;
 
@@ -32,19 +33,30 @@ public class Post : BaseEntity
             Contents = contents,
             UserProfileId = userId
         };
+        Validate(newPost);
+        return newPost;
+    }
 
+    public void UpdateContents(string newContents)
+    {
+        Contents = newContents;
+        Validate(this);
+    }
+
+    public void UpdateImage(string newImageUrl)
+    {
+        ImageUrl = newImageUrl;
+        Validate(this);
+    }
+
+    private static void Validate(Post post)
+    {
         var validator = new PostValidator();
-        var validationResult = validator.Validate(newPost);
+        var validationResult = validator.Validate(post);
         if (!validationResult.IsValid)
         {
             throw new ModelInvalidException("invalid post parameters",
                 validationResult.Errors.Select(vf => vf.ErrorMessage).ToArray());
         }
-        return newPost;
-    }
-
-    public void AddComment(Comment comment)
-    {
-        _comments.Add(comment);
     }
 }
