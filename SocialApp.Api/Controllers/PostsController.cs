@@ -92,7 +92,8 @@ public class PostsController : BaseApiController
     [Route("{postId}")]
     [Authorize]
     [ValidateGuids("postId")]
-    public async Task<IActionResult> DeletePost(string postId, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeletePost(string postId,
+        CancellationToken cancellationToken)
     {
         var command = new DeletePostCommand
         {

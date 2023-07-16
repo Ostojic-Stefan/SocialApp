@@ -23,7 +23,8 @@ public class CommentsController : BaseApiController
 
     [HttpPost]
     [Authorize]
-    public async Task<IActionResult> AddCommentToPost(CreateComment createComment, CancellationToken cancellationToken)
+    public async Task<IActionResult> AddCommentToPost(CreateComment createComment,
+        CancellationToken cancellationToken)
     {
         var userProfileId = HttpContext.GetUserProfileId();
         var command = new CreateCommentCommand
@@ -41,10 +42,11 @@ public class CommentsController : BaseApiController
     [HttpGet]
     [Route("posts/postId")]
     [ValidateGuids("postId")]
-    public async Task<IActionResult> GetAllCommentsFromPost(Guid postId)
+    public async Task<IActionResult> GetAllCommentsFromPost(Guid postId,
+        CancellationToken cancellationToken)
     {
         var query = new GetCommentsFromPostQuery { PostId = postId };
-        var response = await _mediator.Send(query);
+        var response = await _mediator.Send(query, cancellationToken);
         if (response.HasError)
             return HandleError(response.Errors);
         return Ok(response.Data);
@@ -53,10 +55,11 @@ public class CommentsController : BaseApiController
     [HttpGet]
     [Route("commentId")]
     [ValidateGuids("commentId")]
-    public async Task<IActionResult> GetCommentById(Guid commentId)
+    public async Task<IActionResult> GetCommentById(Guid commentId,
+        CancellationToken cancellationToken)
     {
         var query = new GetCommentByIdQuery { CommentId = commentId };
-        var response = await _mediator.Send(query);
+        var response = await _mediator.Send(query, cancellationToken);
         if (response.HasError)
             return HandleError(response.Errors);
         return Ok(response.Data);
