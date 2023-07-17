@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using SocialApp.Api.Middleware;
 using SocialApp.Application.Posts.Queries;
 using SocialApp.Application.Services;
@@ -23,6 +24,7 @@ public static class WebApplicationBuilderExtensions
         builder.AddSettings();
         builder.AddJwtService();
         builder.AddDbServices();
+        builder.AddSwaggerConfiguration();
 
         builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetAllPostsQuery).Assembly));
         builder.Services.AddAutoMapper(typeof(Program), typeof(GetAllPostsQuery));
@@ -31,7 +33,6 @@ public static class WebApplicationBuilderExtensions
 
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
     }
 
     private static void AddDbServices(this WebApplicationBuilder builder)
@@ -88,6 +89,46 @@ public static class WebApplicationBuilderExtensions
                 RequireExpirationTime = false,
                 ValidateLifetime = true
             };
+        });
+    }
+
+    private static void AddSwaggerConfiguration(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddSwaggerGen(opt =>
+        {
+            opt.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Title = "SocialApp",
+                Version = "v1",
+            });
+            opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Name = "JWT Authentication",
+                Description = "Provide a JWT Bearer",
+                In = ParameterLocation.Header,
+                Type = SecuritySchemeType.Http,
+                Scheme = "Bearer",
+                BearerFormat = "JWT",
+                Reference = new OpenApiReference
+                {
+                    Id = JwtBearerDefaults.AuthenticationScheme,
+                    Type = ReferenceType.SecurityScheme
+                }
+            });
+            opt.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type=ReferenceType.SecurityScheme,
+                            Id="Bearer"
+                        }
+                    },
+                    Array.Empty<string>()
+                }
+            });
         });
     }
 }
