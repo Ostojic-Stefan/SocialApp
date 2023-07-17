@@ -12,6 +12,8 @@ public static class WebApplicationExtensions
             app.UseSwaggerUI();
         }
 
+        app.UseStaticFiles();
+
         app.UseMiddleware<GlobalExceptionMiddleware>();
 
         app.UseHttpsRedirection();

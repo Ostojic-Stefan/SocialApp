@@ -16,6 +16,8 @@ public static class WebApplicationBuilderExtensions
 {
     public static void AddServices(this WebApplicationBuilder builder)
     {
+        builder.WebHost.UseWebRoot("wwwroot");
+
         builder.Services.AddTransient<GlobalExceptionMiddleware>();
 
         builder.AddSettings();

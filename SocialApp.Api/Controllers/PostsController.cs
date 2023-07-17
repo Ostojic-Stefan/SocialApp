@@ -15,11 +15,13 @@ public class PostsController : BaseApiController
 {
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
+    private readonly IWebHostEnvironment _environment;
 
-    public PostsController(IMediator mediator, IMapper mapper)
+    public PostsController(IMediator mediator, IMapper mapper, IWebHostEnvironment environment)
 	{
         _mediator = mediator;
         _mapper = mapper;
+        _environment = environment;
     }
 
     [HttpGet]
@@ -104,6 +106,26 @@ public class PostsController : BaseApiController
         if (response.HasError)
             return HandleError(response.Errors);
         return Ok(response.Data);
+    }
+
+    [HttpPost]
+    [Route("upload/{postId}")]
+    [Authorize]
+    [ValidateGuids("postId")]
+    public async Task<IActionResult> UploadPostImage(string postId, IFormFile img)
+    {
+        var command = new UploadImageCommand
+        {
+            PostId = Guid.Parse(postId),
+            UserProfileId = HttpContext.GetUserProfileId(),
+            ImageStream = img.OpenReadStream(),
+            DirPath = $"{_environment.WebRootPath}\\Posts",
+            ImageName = $"{img.FileName}"
+        };
+        var response = await _mediator.Send(command);
+        if (response.HasError)
+            return HandleError(response.Errors);
+        return NoContent();
     }
 
 }

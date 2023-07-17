@@ -35,6 +35,12 @@ public class Post : BaseEntity
         return newPost;
     }
 
+    public void UpdateImageUrl(string imageUrl)
+    {
+        ImageUrl = imageUrl;
+        Validate(this);
+    }
+
     public void UpdateContents(string newContents)
     {
         Contents = newContents;
