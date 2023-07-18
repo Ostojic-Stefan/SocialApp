@@ -109,14 +109,12 @@ public class PostsController : BaseApiController
     }
 
     [HttpPost]
-    [Route("upload/{postId}")]
+    [Route("upload")]
     [Authorize]
-    [ValidateGuids("postId")]
-    public async Task<IActionResult> UploadPostImage(string postId, IFormFile img)
+    public async Task<IActionResult> UploadPostImage(IFormFile img)
     {
         var command = new UploadImageCommand
         {
-            PostId = Guid.Parse(postId),
             UserProfileId = HttpContext.GetUserProfileId(),
             ImageStream = img.OpenReadStream(),
             DirPath = $"{_environment.WebRootPath}\\Posts",
@@ -125,7 +123,7 @@ public class PostsController : BaseApiController
         var response = await _mediator.Send(command);
         if (response.HasError)
             return HandleError(response.Errors);
-        return NoContent();
+        return Ok(response.Data);
     }
 
 }

@@ -1,5 +1,13 @@
+import CreatePostForm from "../features/posts/CreatePostForm";
+import PostList from "../features/posts/PostList";
+
 function Home() {
-  return <div>Home</div>;
+  return (
+    <>
+      <CreatePostForm />
+      <PostList />
+    </>
+  );
 }
 
 export default Home;

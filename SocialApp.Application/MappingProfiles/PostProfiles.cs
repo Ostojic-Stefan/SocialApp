@@ -8,5 +8,6 @@ internal class PostProfiles : Profile
 	public PostProfiles()
 	{
 		CreateMap<Post, PostResponse>();
+			//.ForMember(dest => dest.UserInfo, opt => opt.MapFrom(src => src.UserProfile));			
 	}
 }

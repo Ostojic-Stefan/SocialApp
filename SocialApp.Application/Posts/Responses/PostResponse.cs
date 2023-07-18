@@ -8,4 +8,5 @@ public class PostResponse
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
     public Guid UserProfileId { get; set; }
+    public required UserInfo UserInfo { get; set; }
 }

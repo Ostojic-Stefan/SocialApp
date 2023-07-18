@@ -12,6 +12,15 @@ public static class WebApplicationExtensions
             app.UseSwaggerUI();
         }
 
+        app.UseCors(
+            options => options.AllowAnyHeader()
+            .AllowAnyMethod()
+            .SetIsOriginAllowed(origin => true)
+            .AllowCredentials()
+            .WithOrigins("http://localhost:5173/")
+        );
+
+
         app.UseStaticFiles();
 
         app.UseMiddleware<GlobalExceptionMiddleware>();

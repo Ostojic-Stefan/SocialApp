@@ -1,0 +1,25 @@
+.createPost {
+  width: 70%;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #292524;
+  padding: 10px 20px;
+  border-radius: 10px;
+}
+
+.createPostInput {
+  background-color: #1d1b1a;
+  width: 100%;
+  border: 1px solid #5b5b5b;
+  border-radius: 5px;
+  height: 100%;
+  padding: 10px;
+  color: inherit;
+}
+
+.createPostImg {
+  width: 40px;
+  border-radius: 9999px;
+}

@@ -8,44 +8,45 @@ using SocialApp.Domain;
 namespace SocialApp.Application.Posts.CommandHandlers;
 
 internal class UploadImageCommandHandler
-    : DataContextRequestHandler<UploadImageCommand, Result<bool>>
+    : DataContextRequestHandler<UploadImageCommand, Result<string>>
 {
     public UploadImageCommandHandler(IUnitOfWork unitOfWork) 
         : base(unitOfWork)
     {
     }
 
-    public override async Task<Result<bool>> Handle(UploadImageCommand request,
+    public override async Task<Result<string>> Handle(UploadImageCommand request,
         CancellationToken cancellationToken)
     {
-        var result = new Result<bool>();
+        var result = new Result<string>();
         try
         {
-            var postRepo = _unitOfWork.CreateReadWriteRepository<Post>();
-            var post = await postRepo.GetByIdAsync(request.PostId, cancellationToken);
-            if (post is null)
-            {
-                result.AddError(
-                    AppErrorCode.NotFound,
-                    $"Post with id of {request.PostId} does not exist");
-                return result;
-            }
-            if (post.UserProfileId != request.UserProfileId)
-            {
-                result.AddError(
-                       AppErrorCode.UnAuthorized,
-                       "Only the creator of the post can update it");
-                return result;
-            }
+            //var postRepo = _unitOfWork.CreateReadWriteRepository<Post>();
+            //var post = await postRepo.GetByIdAsync(request.PostId, cancellationToken);
+            //if (post is null)
+            //{
+            //    result.AddError(
+            //        AppErrorCode.NotFound,
+            //        $"Post with id of {request.PostId} does not exist");
+            //    return result;
+            //}
+            //if (post.UserProfileId != request.UserProfileId)
+            //{
+            //    result.AddError(
+            //           AppErrorCode.UnAuthorized,
+            //           "Only the creator of the post can update it");
+            //    return result;
+            //}
             var directoryService = new DirectoryService(request.DirPath);
             var imageService = new ImageService(directoryService,
                 new LoggerFactory().CreateLogger<ImageService>());
 
             var savePath = await imageService.SaveImageAsync(request.ImageName, request.ImageStream);
 
-            post.UpdateImageUrl(savePath.Split("\\wwwroot\\")[1].Replace("\\", "/"));
+            //post.UpdateImageUrl(savePath.Split("\\wwwroot\\")[1].Replace("\\", "/"));
 
-            await _unitOfWork.SaveAsync(cancellationToken);
+            //await _unitOfWork.SaveAsync(cancellationToken);
+            result.Data = savePath.Split("\\wwwroot\\")[1].Replace("\\", "/");
         }
         catch (Exception ex)
         {
