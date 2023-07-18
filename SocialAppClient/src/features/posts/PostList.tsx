@@ -1,21 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import PostItem from "./PostItem";
-import axios from "axios";
-import { GetAllPostsResponse, Post } from "./types";
+import { getPosts } from "./postSlice";
+import { useAppDispatch, useAppSelector } from "../../store";
 
 function PostList() {
-  const [posts, setPosts] = useState<Post[]>([]);
+  const dispatch = useAppDispatch();
+  const { posts, isLoading } = useAppSelector((store) => store.post);
 
   useEffect(() => {
-    axios
-      .get<GetAllPostsResponse>("https://localhost:7113/api/Posts")
-      .then((response) => {
-        setPosts(response.data.items);
-      })
-      .catch((err) => console.log(err));
-  }, []);
+    dispatch(getPosts());
+  }, [dispatch]);
 
-  if (!posts.length) return <div>Loading...</div>;
+  if (isLoading) return <div>Loading...</div>;
 
   return (
     <>
