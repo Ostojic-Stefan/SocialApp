@@ -13,6 +13,8 @@ function PostList() {
 
   if (isLoading) return <div>Loading...</div>;
 
+  console.log(posts);
+
   return (
     <>
       {posts.map((post) => (
