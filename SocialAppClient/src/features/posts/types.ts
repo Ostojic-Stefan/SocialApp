@@ -21,3 +21,8 @@ export interface GetAllPostsResponse {
 	totalCount: number;
 	totalPages: number;
 }
+
+export interface UploadPost {
+	contents: string;
+	imageUrl: string;
+}

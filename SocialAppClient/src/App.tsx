@@ -5,6 +5,7 @@ import UserProfile from "./pages/UserProfile";
 import AppLayout from "./ui/Layout/AppLayout";
 import { Provider } from "react-redux";
 import store from "./store";
+import Login from "./pages/Login";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Route element={<AppLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/profile" element={<UserProfile />} />
+            <Route path="/login" element={<Login />} />
           </Route>
         </Routes>
       </Provider>

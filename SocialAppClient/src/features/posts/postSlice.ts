@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { GetAllPostsResponse, Post } from "./types";
-import axios from "axios";
+import { Post } from "./types";
+import { apiHandler } from "../../api/apiHandler";
 
 interface StateType {
     posts: Post[],
@@ -15,14 +15,25 @@ const initialState: StateType = {
 export const getPosts = createAsyncThunk<Post[]>(
     "post/getAll", async function (_arg, { rejectWithValue }) {
       try {
-        const response = await axios.get<GetAllPostsResponse>("https://localhost:7113/api/Posts");
-        console.log(response.data);
-        return response.data.items;
+        const response = await apiHandler.post.getAll();
+        return response.items;
       } catch (error: any) {
         return rejectWithValue(error.message);
       }
     }
 );
+
+export const uploadPost = createAsyncThunk<void, {formData: FormData, contents: string}>(
+  'post/upload', async function({formData, contents}, { rejectWithValue }) {
+    try {
+      const imageUrl = await apiHandler.post.uploadImage(formData);
+      await apiHandler.post.uploadPost({ imageUrl, contents});
+    } catch (error: any) {
+      console.log(error);
+      rejectWithValue(error);
+    }
+  }
+)
 
 const postSlice = createSlice({
     name: 'post',

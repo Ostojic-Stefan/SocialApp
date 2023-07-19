@@ -1,17 +1,41 @@
+import { ChangeEvent, FormEvent, useState } from "react";
 import styles from "./CreatePostForm.module.css";
+import { useAppDispatch } from "../../store";
+import { uploadPost } from "./postSlice";
 
 function CreatePostForm() {
+  const dispatch = useAppDispatch();
+
+  const [file, setFile] = useState<File>();
+  const [contents, setContents] = useState<string>("");
+
+  function handleFileChange(ev: ChangeEvent<HTMLInputElement>): void {
+    if (ev.target.files) {
+      setFile(ev.target.files[0]);
+    }
+  }
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("img", file);
+    dispatch(uploadPost({ formData, contents }));
+  }
+
   return (
-    <div className={styles.createPost}>
+    <form onSubmit={handleSubmit} className={styles.createPost}>
       <img src="./images/meme.jpg" className={styles.createPostImg} />
       <input
         type="text"
         placeholder="Create Post"
+        value={contents}
+        onChange={(e) => setContents(e.target.value)}
         className={styles.createPostInput}
       ></input>
-      <input type="file" />
+      <input type="file" onChange={handleFileChange} />
       <button className={styles.btn}>Submit</button>
-    </div>
+    </form>
   );
 }
 
