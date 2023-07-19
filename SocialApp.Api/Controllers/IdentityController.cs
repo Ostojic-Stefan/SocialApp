@@ -2,10 +2,12 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using SocialApp.Api.Extensions;
 using SocialApp.Api.Requests.Identity;
 using SocialApp.Application.Identity.Commands;
 using SocialApp.Application.Identity.Queries;
+using SocialApp.Application.Settings;
 
 namespace SocialApp.Api.Controllers;
 
@@ -13,11 +15,13 @@ public class IdentityController : BaseApiController
 {
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
+    private readonly JwtSettings _jwtSettings;
 
-    public IdentityController(IMediator mediator, IMapper mapper)
+    public IdentityController(IMediator mediator, IMapper mapper, IOptions<JwtSettings> jwtOptions)
     {
         _mediator = mediator;
         _mapper = mapper;
+        _jwtSettings = jwtOptions.Value;
     }
 
     [HttpPost]
@@ -28,7 +32,13 @@ public class IdentityController : BaseApiController
         var result = await _mediator.Send(command);
         if (result.HasError)
             return HandleError(result.Errors);
-        return Ok(result.Data);
+        var token = result.Data.AccessToken;
+        Response.Cookies.Append(_jwtSettings.CookieName, token, new CookieOptions
+        {
+            HttpOnly = true,
+            SameSite = SameSiteMode.Strict
+        });
+        return Ok();
     }
 
     [HttpPost]
@@ -39,7 +49,13 @@ public class IdentityController : BaseApiController
         var result = await _mediator.Send(command);
         if (result.HasError)
             return HandleError(result.Errors);
-        return Ok(result.Data);
+        var token = result.Data.AccessToken;
+        Response.Cookies.Append(_jwtSettings.CookieName, token, new CookieOptions
+        { 
+            HttpOnly = true,
+            SameSite = SameSiteMode.Strict
+        });
+        return Ok();
     }
 
     [HttpGet]

@@ -3,6 +3,7 @@ using EfCoreHelpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SocialApp.Api.Middleware;
@@ -74,6 +75,16 @@ public static class WebApplicationBuilderExtensions
         {
             var jwtSection = builder.Configuration.GetSection("JwtSettings");
             var jwtSettings = jwtSection.Get<JwtSettings>();
+
+            cfg.Events = new JwtBearerEvents
+            {
+                OnMessageReceived = (ctx) =>
+                {
+                    if (ctx.Request.Cookies.ContainsKey(jwtSettings.CookieName))
+                        ctx.Token = ctx.Request.Cookies[jwtSettings.CookieName];
+                    return Task.CompletedTask;
+                }
+            };
 
             cfg.SaveToken = true;
             cfg.Audience = jwtSettings.Audiences[0];

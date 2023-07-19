@@ -2,6 +2,7 @@
   "JwtSettings": {
     "SigningKey": "bAjT3GROESBiR3ZcAerspH31efkrjeVf",
     "Issuer": "SocialApp",
-    "Audiences": [ "SocialAppClient" ]
+    "Audiences": [ "SocialAppClient" ],
+    "CookieName": "AccessToken"
   }
 }
