@@ -29,6 +29,7 @@ internal class GetAllPostsQueryHandler
             var repo = _unitOfWork.CreateReadOnlyRepository<Post>();
             var postsQuery = repo
                 .Query()
+                .OrderByDescending(x => x.CreatedAt)
                 .ProjectTo<PostResponse>(_mapper.ConfigurationProvider);
             var postPager = new Pager<PostResponse>(request.PageSize, request.PageNumber);
             var paginatedList = await postPager.ToPagedList(postsQuery, cancellationToken);

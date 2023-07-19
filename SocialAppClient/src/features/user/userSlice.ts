@@ -38,14 +38,15 @@ const userSlice = createSlice({
     reducers: {
       logout(state, _action) {
         state.userInfo = undefined;
-        localStorage.removeItem('accessToken');
+        // localStorage.removeItem('accessToken');
       }
     },
     extraReducers(builder) {
       builder.addCase(login.pending, (_state, _action) => {
       })
       builder.addCase(login.fulfilled, (_state, action) => {
-        localStorage.setItem('accessToken', action.payload);
+        console.log(action);
+        // localStorage.setItem('accessToken', action.payload);
       })
       builder.addCase(login.rejected, (_state, action) => {
       })

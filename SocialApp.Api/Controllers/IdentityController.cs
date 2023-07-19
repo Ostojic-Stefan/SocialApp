@@ -53,7 +53,8 @@ public class IdentityController : BaseApiController
         Response.Cookies.Append(_jwtSettings.CookieName, token, new CookieOptions
         { 
             HttpOnly = true,
-            SameSite = SameSiteMode.Strict
+            SameSite = SameSiteMode.Strict,
+            Secure = true
         });
         return Ok();
     }

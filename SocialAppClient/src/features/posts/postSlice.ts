@@ -24,13 +24,14 @@ export const getPosts = createAsyncThunk<Post[]>(
 );
 
 export const uploadPost = createAsyncThunk<void, {formData: FormData, contents: string}>(
-  'post/upload', async function({formData, contents}, { rejectWithValue }) {
+  'post/upload', async function({formData, contents}, thunkAPI) {
     try {
       const imageUrl = await apiHandler.post.uploadImage(formData);
-      await apiHandler.post.uploadPost({ imageUrl, contents});
+      const response = await apiHandler.post.uploadPost({ imageUrl, contents});
+      thunkAPI.dispatch(addPost(response));
     } catch (error: any) {
       console.log(error);
-      rejectWithValue(error);
+      thunkAPI.rejectWithValue(error);
     }
   }
 )
@@ -38,7 +39,11 @@ export const uploadPost = createAsyncThunk<void, {formData: FormData, contents: 
 const postSlice = createSlice({
     name: 'post',
     initialState,
-    reducers: {},
+    reducers: {
+      addPost(state, action) {
+        state.posts.unshift(action.payload);
+      }
+    },
     extraReducers(builder) {
       builder.addCase(getPosts.pending, (state, _action) => {
         state.isLoading = true;
@@ -53,5 +58,7 @@ const postSlice = createSlice({
       })
     }
 });
+
+export const { addPost } = postSlice.actions;
 
 export default postSlice.reducer;

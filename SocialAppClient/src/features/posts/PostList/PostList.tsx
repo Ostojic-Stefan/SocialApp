@@ -1,7 +1,7 @@
 import { useEffect } from "react";
-import PostItem from "./PostItem";
-import { getPosts } from "./postSlice";
-import { useAppDispatch, useAppSelector } from "../../store";
+import { getPosts } from "../postSlice";
+import { useAppDispatch, useAppSelector } from "../../../store";
+import PostItem from "../PostItem/PostItem";
 
 function PostList() {
   const dispatch = useAppDispatch();

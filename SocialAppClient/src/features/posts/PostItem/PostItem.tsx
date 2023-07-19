@@ -16,7 +16,7 @@ function PostItem({ post }: Props) {
     <div className={styles.post}>
       <div className={styles.userInfo}>
         <img
-          src={`https://localhost:7113/${post.userInfo.avatarUrl}`}
+          src={`${post.userInfo.avatarUrl}`}
           className={styles.userInfoImg}
         />
         <div className={styles.container}>
@@ -28,10 +28,7 @@ function PostItem({ post }: Props) {
       </div>
       <span>{post.contents}</span>
       <div className={styles.image}>
-        <img
-          src={`https://localhost:7113/${post.imageUrl}`}
-          className={styles.postImage}
-        />
+        <img src={`${post.imageUrl}`} className={styles.postImage} />
       </div>
       <div className={styles.likes}>
         <span>1K</span>

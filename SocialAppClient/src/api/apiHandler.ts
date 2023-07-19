@@ -1,8 +1,8 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { GetAllPostsResponse, UploadPost } from "../features/posts/types";
+import { GetAllPostsResponse, Post, UploadPost } from "../features/posts/types";
 import { UserInfomation, UserLoginRequest, UserLoginResponse } from "../features/user/types";
 
-axios.defaults.baseURL = 'https://localhost:7113/api';
+axios.defaults.baseURL = '/api';
 
 axios.defaults.withCredentials = true;
 
@@ -54,7 +54,8 @@ const post = {
         "Content-Type": "multipart/form-data",
       },
     }).then(responseBody<string>),
-  uploadPost: (data: UploadPost) => axios.post('posts', data).then(responseBody<void>)
+  uploadPost: (data: UploadPost) => axios.post('posts', data)
+    .then(responseBody<Post>)
 }
 
 export const apiHandler = {
