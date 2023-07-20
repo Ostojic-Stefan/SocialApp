@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { GetAllPostsResponse, Post, UploadPost } from "../features/posts/types";
-import { UserInfomation, UserLoginRequest, UserLoginResponse } from "../features/user/types";
+import { CommentResponse, UserInfomation, UserLoginRequest, UserLoginResponse, UserRegisterRequest } from "../features/user/types";
 
 axios.defaults.baseURL = '/api';
 
@@ -44,7 +44,9 @@ const responseBody = <TResponse>(res: AxiosResponse<TResponse>) => res.data;
 const user = {
   getInformation: () => axios.get('identity/me').then(responseBody<UserInfomation>),
   login: (loginRequest: UserLoginRequest) => axios.post('identity/login', loginRequest)
-      .then(responseBody<UserLoginResponse>)
+      .then(responseBody<UserLoginResponse>),
+  register: (registerRequest: UserRegisterRequest) => axios.post('identity/register', registerRequest)
+    .then(responseBody<void>)
 }
 
 const post = {
@@ -58,7 +60,13 @@ const post = {
     .then(responseBody<Post>)
 }
 
+const comment = {
+  getCommentsOnAPost: (postId: string) => axios.get(`comments/posts/postId?postId=${postId}`)
+    .then(responseBody<CommentResponse>)
+}
+
 export const apiHandler = {
     post,
-    user
+    user,
+    comment
 }

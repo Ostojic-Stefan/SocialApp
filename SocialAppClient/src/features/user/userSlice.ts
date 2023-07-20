@@ -1,7 +1,9 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { UserInfomation } from "./types";
+import { UserInfomation, UserRegisterRequest } from "./types";
 import { apiHandler } from "../../api/apiHandler";
 
+
+// TODO: fix this
 export const login = createAsyncThunk<string, {email: string, password: string}>(
     "user/login", async function (data, { rejectWithValue }) {
       try {
@@ -19,7 +21,18 @@ export const getUserInformation = createAsyncThunk<UserInfomation>(
       const response = await apiHandler.user.getInformation();
       return response;
     } catch (error: any) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const register = createAsyncThunk<void, UserRegisterRequest>(
+  "user/register", async function(data, { rejectWithValue }) {
+    try {
+      await apiHandler.user.register(data);
+      console.log('successfuly registered!');
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
     }
   }
 );
@@ -38,7 +51,6 @@ const userSlice = createSlice({
     reducers: {
       logout(state, _action) {
         state.userInfo = undefined;
-        // localStorage.removeItem('accessToken');
       }
     },
     extraReducers(builder) {
@@ -46,7 +58,6 @@ const userSlice = createSlice({
       })
       builder.addCase(login.fulfilled, (_state, action) => {
         console.log(action);
-        // localStorage.setItem('accessToken', action.payload);
       })
       builder.addCase(login.rejected, (_state, action) => {
       })
@@ -55,6 +66,9 @@ const userSlice = createSlice({
       });
       builder.addCase(getUserInformation.rejected, (state, action) => {
       });
+      builder.addCase(register.rejected, (_state, _action) => {
+        console.log('Failed to register!', _action.payload);
+      })
     }
 });
 

@@ -6,6 +6,7 @@ import AppLayout from "./ui/Layout/AppLayout";
 import { Provider } from "react-redux";
 import store from "./store";
 import Login from "./pages/Login";
+import Register from "./features/user/Register";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/profile" element={<UserProfile />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
           </Route>
         </Routes>
       </Provider>

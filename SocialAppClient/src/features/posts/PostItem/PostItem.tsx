@@ -1,7 +1,9 @@
 import styles from "./PostItem.module.css";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
-import { Post } from "./types";
+import { Post } from "../types";
+import { useState } from "react";
+import CommentBox from "../CommentBox/CommentBox";
 
 TimeAgo.addLocale(en);
 
@@ -10,7 +12,12 @@ interface Props {
 }
 
 function PostItem({ post }: Props) {
+  const [openCommentBox, setOpenCommentBox] = useState<boolean>(false);
   const timeAgo = new TimeAgo("en-US");
+
+  function handleOpenCommentBox(): void {
+    setOpenCommentBox((curr) => !curr);
+  }
 
   return (
     <div className={styles.post}>
@@ -35,7 +42,10 @@ function PostItem({ post }: Props) {
       </div>
       <div className={styles.actions}>
         <div className={styles.btnAction}>Like</div>
-        <div className={styles.btnAction}>Comment</div>
+        <div className={styles.btnAction} onClick={handleOpenCommentBox}>
+          Comment
+        </div>
+        {openCommentBox && <CommentBox postId={post.id} />}
       </div>
     </div>
   );
