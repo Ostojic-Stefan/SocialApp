@@ -31,4 +31,9 @@ public class UserProfile : BaseEntity
             AvatarUrl = avararUrl
         };
     }
+
+    public void UpdateUserProfile(string newAvatarUrl)
+    {
+        AvatarUrl = newAvatarUrl;
+    }
 }
