@@ -98,12 +98,12 @@ public class IdentityController : BaseApiController
     [HttpPost]
     [Route("setImage")]
     [Authorize]
-    public async Task<IActionResult> AddProfileImage([FromBody] string imgUrl)
+    public async Task<IActionResult> AddProfileImage(SetProfileImageRequest avatarUrl)
     {
         var command = new AddProfileImageCommand
         {
             UserProfileId = HttpContext.GetUserProfileId(),
-            ImageUrl = imgUrl
+            ImageUrl = avatarUrl.AvatarUrl
         };
         var response = await _mediator.Send(command);
         if (response.HasError)
