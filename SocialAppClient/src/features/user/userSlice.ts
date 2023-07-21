@@ -1,16 +1,16 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { UserInfomation, UserRegisterRequest } from "./types";
 import { apiHandler } from "../../api/apiHandler";
+import { failureToast, successToast } from "../../utils/toastDefinitions";
 
 
 // TODO: fix this
-export const login = createAsyncThunk<string, {email: string, password: string}>(
+export const login = createAsyncThunk<void, {email: string, password: string}>(
     "user/login", async function (data, { rejectWithValue }) {
       try {
-        const response = await apiHandler.user.login(data)
-        return response.accessToken;
+        await apiHandler.user.login(data)
       } catch (error: any) {
-        return rejectWithValue(error.response.data);
+        return rejectWithValue(error);
       }
     }
 );
@@ -21,18 +21,43 @@ export const getUserInformation = createAsyncThunk<UserInfomation>(
       const response = await apiHandler.user.getInformation();
       return response;
     } catch (error: any) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error);
     }
   }
 );
 
+export const uploadProfileImage = createAsyncThunk<string, FormData>(
+  "user/uploadProfileImage", async function(data, { rejectWithValue }) {
+    try {
+      const imageUrl = await apiHandler.user.uploadProfileImage(data);
+      return imageUrl;
+    } catch (error: any) {
+      return rejectWithValue(error);
+    }
+  }
+);
+
+export const setUserProfileImage = createAsyncThunk<boolean, string>(
+  'user/setUserProfileImage', async function(data, { rejectWithValue }) {
+    try {
+      const response = await apiHandler.user.setUserProfileImage(data);
+      return response;
+    } catch (error: any) {
+      return rejectWithValue(error);
+    }
+  }
+)
+
 export const register = createAsyncThunk<void, UserRegisterRequest>(
-  "user/register", async function(data, { rejectWithValue }) {
+  "user/register", async function(data, { rejectWithValue, dispatch }) {
     try {
       await apiHandler.user.register(data);
-      console.log('successfuly registered!');
+      if (data.imageData) {
+        const avatarUrl = (await dispatch(uploadProfileImage(data.imageData))).payload as string;
+        await dispatch(setUserProfileImage(avatarUrl));
+      }
     } catch (error: any) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error);
     }
   }
 );
@@ -54,20 +79,30 @@ const userSlice = createSlice({
       }
     },
     extraReducers(builder) {
-      builder.addCase(login.pending, (_state, _action) => {
-      })
-      builder.addCase(login.fulfilled, (_state, action) => {
-        console.log(action);
-      })
-      builder.addCase(login.rejected, (_state, action) => {
-      })
       builder.addCase(getUserInformation.fulfilled, (state, action) => {
         state.userInfo = action.payload;
       });
-      builder.addCase(getUserInformation.rejected, (state, action) => {
+
+      builder.addCase(register.fulfilled, (_state, _action) => {
+        successToast('Successfuly Registered')
       });
-      builder.addCase(register.rejected, (_state, _action) => {
-        console.log('Failed to register!', _action.payload);
+
+      builder.addCase(register.rejected, (_state, action) => {
+        // @ts-ignore
+        action.payload.messages.forEach((m: string) => {
+          failureToast(m);
+        });
+      });
+
+      builder.addCase(login.fulfilled, (_state, _action) => {
+        successToast('Successfuly Logged In')
+      })
+
+      builder.addCase(login.rejected, (_state, action) => {
+        // @ts-ignore
+        action.payload.messages.forEach((m: string) => {
+          failureToast(m);
+        });
       })
     }
 });

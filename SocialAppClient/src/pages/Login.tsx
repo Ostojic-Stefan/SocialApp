@@ -1,16 +1,20 @@
 import { FormEvent, useState } from "react";
 import { useAppDispatch } from "../store";
 import { login } from "../features/user/userSlice";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    dispatch(login({ email, password }));
+    dispatch(login({ email, password }))
+      .unwrap()
+      .then(() => navigate("/"));
   }
 
   return (

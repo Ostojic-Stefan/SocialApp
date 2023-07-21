@@ -12,7 +12,7 @@ export interface UserRegisterRequest {
     email: string;
     password: string;
     biography?: string;
-    avatarUrl?: string;
+    imageData?: FormData;
 }
 
 export interface UserInfomation {

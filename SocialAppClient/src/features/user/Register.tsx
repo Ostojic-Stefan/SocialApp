@@ -1,9 +1,11 @@
 import { ChangeEvent, FormEvent, useState } from "react";
 import { useAppDispatch } from "../../store";
 import { register } from "./userSlice";
+import { useNavigate } from "react-router-dom";
 
 function Register() {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -11,15 +13,33 @@ function Register() {
   const [biography, setBiography] = useState("");
   const [avatar, setAvatar] = useState<File>();
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>): void {
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    let imageData;
+    if (avatar) {
+      imageData = new FormData();
+      imageData.append("img", avatar);
+    }
+
     dispatch(
-      register({ email, password, username, avatarUrl: undefined, biography })
-    );
+      register({
+        email,
+        password,
+        username,
+        imageData,
+        biography,
+      })
+    )
+      .unwrap()
+      .then(() => {
+        navigate("/");
+      });
   }
 
   function handleFileChange(event: ChangeEvent<HTMLInputElement>): void {
-    throw new Error("Function not implemented.");
+    if (event.target.files) {
+      setAvatar(event.target.files[0]);
+    }
   }
 
   return (

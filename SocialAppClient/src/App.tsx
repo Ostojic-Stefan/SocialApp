@@ -7,11 +7,25 @@ import { Provider } from "react-redux";
 import store from "./store";
 import Login from "./pages/Login";
 import Register from "./features/user/Register";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
     <BrowserRouter>
       <Provider store={store}>
+        <ToastContainer
+          position="bottom-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
         <Routes>
           <Route element={<AppLayout />}>
             <Route path="/" element={<Home />} />

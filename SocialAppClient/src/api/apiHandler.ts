@@ -6,37 +6,20 @@ axios.defaults.baseURL = '/api';
 
 axios.defaults.withCredentials = true;
 
-axios.interceptors.request.use((config) => {
-  const token = localStorage.getItem("accessToken");
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
+interface CustomError {
+  messages: string[];
+  code: number;
+}
 
 axios.interceptors.response.use(null, (error: AxiosError) => {
-  console.log("INTERCEPTOR:", error);
-  if (!error.response?.status && !error.response?.data) return;
-  const { status, data }: { status: number; data: any } = error.response;
-  switch (status) {
-    case 400:
-      if (data.errors) {
-        const modelStateErrors: string[] = [];
-        for (const key in data.errors) {
-          if (data.errors[key]) {
-            modelStateErrors.push(data.errors[key]);
-          }
-        }
-        throw modelStateErrors.flat();
-      }
-      break;
-    case 401:
-      break;
-    case 403:
-      break;
-    case 500:
-      break;
-    default:
-      break;
+  console.log('Axios Interceptor Error => ', error)
+  const errorResponse: CustomError = {
+  // @ts-ignore
+    messages: error.response.data.errorMessages,
+  // @ts-ignore
+    code: error.response.data.statusCode
   }
+  throw errorResponse;
 });
 
 const responseBody = <TResponse>(res: AxiosResponse<TResponse>) => res.data;
@@ -44,9 +27,16 @@ const responseBody = <TResponse>(res: AxiosResponse<TResponse>) => res.data;
 const user = {
   getInformation: () => axios.get('identity/me').then(responseBody<UserInfomation>),
   login: (loginRequest: UserLoginRequest) => axios.post('identity/login', loginRequest)
-      .then(responseBody<UserLoginResponse>),
+    .then(responseBody<void>),
   register: (registerRequest: UserRegisterRequest) => axios.post('identity/register', registerRequest)
-    .then(responseBody<void>)
+    .then(responseBody<void>),
+  uploadProfileImage: (data: FormData) => axios.post<string>('identity/uploadImage', data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  }).then(responseBody<string>),
+  setUserProfileImage: (avatarUrl: string) => axios.post<boolean>('identity/setImage', { avatarUrl })
+    .then(responseBody<boolean>)
 }
 
 const post = {
