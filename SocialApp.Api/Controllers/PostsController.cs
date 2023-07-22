@@ -111,14 +111,14 @@ public class PostsController : BaseApiController
     [HttpPost]
     [Route("upload")]
     [Authorize]
-    public async Task<IActionResult> UploadPostImage(IFormFile img)
+    public async Task<IActionResult> UploadPostImage(UploadPostImageRequest uploadPostImage)
     {
         var command = new UploadImageCommand
         {
             UserProfileId = HttpContext.GetUserProfileId(),
-            ImageStream = img.OpenReadStream(),
+            ImageStream = uploadPostImage.Img.OpenReadStream(),
             DirPath = $"{_environment.WebRootPath}\\Posts",
-            ImageName = $"{img.FileName}"
+            ImageName = $"{uploadPostImage.Img.FileName}"
         };
         var response = await _mediator.Send(command);
         if (response.HasError)

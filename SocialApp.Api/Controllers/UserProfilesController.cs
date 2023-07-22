@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SocialApp.Api.Extensions;
 using SocialApp.Api.Requests.Identity;
+using SocialApp.Api.Requests.UserProfiles;
 using SocialApp.Application.UserProfiles.Commands;
 
 namespace SocialApp.Api.Controllers;
@@ -21,14 +22,14 @@ public class UserProfilesController : BaseApiController
     [HttpPost]
     [Route("uploadImage")]
     [Authorize]
-    public async Task<IActionResult> UploadProfileImage(IFormFile img)
+    public async Task<IActionResult> UploadProfileImage(UploadUserProfileImageRequest uploadUserProfileImage)
     {
         var command = new UploadProfileImageCommand
         {
             UserProfileId = HttpContext.GetUserProfileId(),
-            ImageStream = img.OpenReadStream(),
+            ImageStream = uploadUserProfileImage.Img.OpenReadStream(),
             DirPath = $"{_environment.WebRootPath}\\User",
-            ImageName = $"{img.FileName}"
+            ImageName = $"{uploadUserProfileImage.Img.FileName}"
         };
         var response = await _mediator.Send(command);
         if (response.HasError)
