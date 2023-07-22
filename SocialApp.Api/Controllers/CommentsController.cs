@@ -23,6 +23,7 @@ public class CommentsController : BaseApiController
 
     [HttpPost]
     [Authorize]
+    [ValidateModel]
     public async Task<IActionResult> AddCommentToPost(CreateComment createComment,
         CancellationToken cancellationToken)
     {

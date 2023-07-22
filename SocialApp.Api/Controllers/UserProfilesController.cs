@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SocialApp.Api.Extensions;
+using SocialApp.Api.Filters;
 using SocialApp.Api.Requests.Identity;
 using SocialApp.Api.Requests.UserProfiles;
 using SocialApp.Application.UserProfiles.Commands;
@@ -22,7 +23,8 @@ public class UserProfilesController : BaseApiController
     [HttpPost]
     [Route("uploadImage")]
     [Authorize]
-    public async Task<IActionResult> UploadProfileImage(UploadUserProfileImageRequest uploadUserProfileImage)
+    [ValidateModel]
+    public async Task<IActionResult> UploadProfileImage([FromForm] UploadUserProfileImageRequest uploadUserProfileImage)
     {
         var command = new UploadProfileImageCommand
         {

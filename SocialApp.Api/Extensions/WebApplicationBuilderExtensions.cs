@@ -2,10 +2,12 @@
 using EfCoreHelpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using SocialApp.Api.Filters;
 using SocialApp.Api.Middleware;
 using SocialApp.Application.Posts.Queries;
 using SocialApp.Application.Services;
@@ -31,6 +33,10 @@ public static class WebApplicationBuilderExtensions
         builder.Services.AddAutoMapper(typeof(Program), typeof(GetAllPostsQuery));
 
         builder.Services.AddTransient<ITokenService, TokenService>();
+
+        builder.Services.Configure<ApiBehaviorOptions>(options
+            => options.SuppressModelStateInvalidFilter = true);
+        builder.Services.AddScoped<ValidateModelAttribute>();
 
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();

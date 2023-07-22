@@ -6,14 +6,6 @@ public static class WebApplicationExtensions
 {
     public static void AddPipelineComponents(this WebApplication app)
     {
-        //app.UseCors(
-        //    options => options.AllowAnyHeader()
-        //    .AllowAnyMethod()
-        //    .SetIsOriginAllowed(origin => true)
-        //    .AllowCredentials()
-        //    .WithOrigins("http://localhost:5173/")
-        //);
-
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();

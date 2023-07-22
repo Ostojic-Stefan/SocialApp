@@ -18,7 +18,7 @@ public class PostsController : BaseApiController
     private readonly IWebHostEnvironment _environment;
 
     public PostsController(IMediator mediator, IMapper mapper, IWebHostEnvironment environment)
-	{
+    {
         _mediator = mediator;
         _mapper = mapper;
         _environment = environment;
@@ -54,6 +54,7 @@ public class PostsController : BaseApiController
 
     [HttpPost]
     [Authorize]
+    [ValidateModel]
     public async Task<IActionResult> CreatePost(CreatePostRequest createPost,
         CancellationToken cancellationToken)
     {
@@ -74,6 +75,7 @@ public class PostsController : BaseApiController
     [Route("{postId}")]
     [Authorize]
     [ValidateGuids("postId")]
+    [ValidateModel]
     public async Task<IActionResult> UpdatePost(string postId,
         [FromBody] UpdatePost updatePost, CancellationToken cancellationToken)
     {
@@ -111,7 +113,8 @@ public class PostsController : BaseApiController
     [HttpPost]
     [Route("upload")]
     [Authorize]
-    public async Task<IActionResult> UploadPostImage(UploadPostImageRequest uploadPostImage)
+    [ValidateModel]
+    public async Task<IActionResult> UploadPostImage([FromForm] UploadPostImageRequest uploadPostImage)
     {
         var command = new UploadImageCommand
         {

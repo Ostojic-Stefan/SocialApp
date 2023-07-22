@@ -4,10 +4,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using SocialApp.Api.Extensions;
+using SocialApp.Api.Filters;
 using SocialApp.Api.Requests.Identity;
 using SocialApp.Application.Identity.Commands;
 using SocialApp.Application.Identity.Queries;
-using SocialApp.Application.Posts.Commands;
 using SocialApp.Application.Settings;
 
 namespace SocialApp.Api.Controllers;
@@ -28,6 +28,7 @@ public class IdentityController : BaseApiController
 
     [HttpPost]
     [Route("register")]
+    [ValidateModel]
     public async Task<IActionResult> Register(RegisterRequest registerRequest)
     {
         var command = _mapper.Map<RegisterCommand>(registerRequest);
@@ -45,6 +46,7 @@ public class IdentityController : BaseApiController
 
     [HttpPost]
     [Route("login")]
+    [ValidateModel]
     public async Task<IActionResult> Login(LoginRequest loginRequest)
     {
         var command = _mapper.Map<LoginCommand>(loginRequest);
