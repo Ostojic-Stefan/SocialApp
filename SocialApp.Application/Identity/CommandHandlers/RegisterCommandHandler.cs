@@ -39,10 +39,19 @@ internal class RegisterCommandHandler
                 Email = request.Email,
             };
 
-            if (await _userManager.FindByEmailAsync(request.Email) is not null)
+            var results = await Task.WhenAll(
+                _userManager.FindByEmailAsync(request.Email),
+                _userManager.FindByNameAsync(request.Username)
+            );
+
+            if (results.Any(user => user is not null))
             {
-                result.AddError(AppErrorCode.UserAlreadyExists,
-                    $"User with the email of {request.Email} already exists");
+                var errors = new List<string>(2);
+                if (results[0] is not null)
+                    errors.Add($"User with the email of {request.Email} already exists");
+                if (results[1] is not null)
+                    errors.Add($"User with the username of {request.Username} already exists");
+                result.AddError(AppErrorCode.UserAlreadyExists, errors.ToArray());
                 return result;
             }
 
@@ -51,7 +60,7 @@ internal class RegisterCommandHandler
 
             if (!identityResult.Succeeded)
             {
-                result.AddError(AppErrorCode.ServerError,
+                result.AddError(AppErrorCode.BadCredentials,
                     identityResult.Errors.Select(err => err.Description).ToArray());
                 return result;
             }
