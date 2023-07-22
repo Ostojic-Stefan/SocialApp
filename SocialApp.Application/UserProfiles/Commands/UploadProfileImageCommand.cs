@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using SocialApp.Application.Models;
 
-namespace SocialApp.Application.Identity.Commands;
+namespace SocialApp.Application.UserProfiles.Commands;
 
 public class UploadProfileImageCommand : IRequest<Result<string>>
 {

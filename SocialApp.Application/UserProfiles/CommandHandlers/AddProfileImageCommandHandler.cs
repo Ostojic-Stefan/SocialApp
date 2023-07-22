@@ -1,16 +1,16 @@
 ﻿using EfCoreHelpers;
 using Microsoft.EntityFrameworkCore;
-using SocialApp.Application.Identity.Commands;
 using SocialApp.Application.Models;
+using SocialApp.Application.UserProfiles.Commands;
 using SocialApp.Domain;
 
-namespace SocialApp.Application.Posts.CommandHandlers;
+namespace SocialApp.Application.UserProfiles.CommandHandlers;
 
 
 internal class AddProfileImageCommandHandler
     : DataContextRequestHandler<AddProfileImageCommand, Result<bool>>
 {
-    public AddProfileImageCommandHandler(IUnitOfWork unitOfWork) 
+    public AddProfileImageCommandHandler(IUnitOfWork unitOfWork)
         : base(unitOfWork)
     {
     }

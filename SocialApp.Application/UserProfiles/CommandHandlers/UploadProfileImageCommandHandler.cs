@@ -1,10 +1,10 @@
 ﻿using EfCoreHelpers;
 using Microsoft.Extensions.Logging;
-using SocialApp.Application.Identity.Commands;
 using SocialApp.Application.Models;
 using SocialApp.Application.Services;
+using SocialApp.Application.UserProfiles.Commands;
 
-namespace SocialApp.Application.Identity.CommandHandlers;
+namespace SocialApp.Application.UserProfiles.CommandHandlers;
 internal class UploadProfileImageCommandHandler
     : DataContextRequestHandler<UploadProfileImageCommand, Result<string>>
 {
