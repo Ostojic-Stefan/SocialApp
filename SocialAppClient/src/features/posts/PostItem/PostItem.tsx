@@ -3,7 +3,7 @@ import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
 import { Post } from "../types";
 import { useState } from "react";
-import CommentBox from "../CommentBox/CommentBox";
+import CommentBox from "../../comments/CommentBox/CommentBox";
 
 TimeAgo.addLocale(en);
 

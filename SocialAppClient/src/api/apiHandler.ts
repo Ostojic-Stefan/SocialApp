@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { GetAllPostsResponse, Post, UploadPost } from "../features/posts/types";
-import { CommentResponse, UserInfomation, UserLoginRequest, UserLoginResponse, UserRegisterRequest } from "../features/user/types";
+import { UserInfomation, UserLoginRequest, UserRegisterRequest } from "../features/user/types";
+import { AddCommentRequest, AddCommentResponse, CommentResponse, CommentsFromPostResponse } from "../features/comments/types";
 
 axios.defaults.baseURL = '/api';
 
@@ -30,12 +31,12 @@ const user = {
     .then(responseBody<void>),
   register: (registerRequest: UserRegisterRequest) => axios.post('identity/register', registerRequest)
     .then(responseBody<void>),
-  uploadProfileImage: (data: FormData) => axios.post<string>('identity/uploadImage', data, {
+  uploadProfileImage: (data: FormData) => axios.post<string>('userprofiles/uploadImage', data, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
   }).then(responseBody<string>),
-  setUserProfileImage: (avatarUrl: string) => axios.post<boolean>('identity/setImage', { avatarUrl })
+  setUserProfileImage: (avatarUrl: string) => axios.post<boolean>('userprofiles/setImage', { avatarUrl })
     .then(responseBody<boolean>)
 }
 
@@ -51,8 +52,10 @@ const post = {
 }
 
 const comment = {
-  getCommentsOnAPost: (postId: string) => axios.get(`comments/posts/postId?postId=${postId}`)
-    .then(responseBody<CommentResponse>)
+  getCommentsOnAPost: (postId: string) => axios.get<CommentsFromPostResponse>(`comments/posts/postId?postId=${postId}`)
+    .then(responseBody<CommentsFromPostResponse>),
+  addCommentToAPost: (data: AddCommentRequest) => axios.post<AddCommentResponse>('comments', data)
+    .then(responseBody<AddCommentResponse>)
 }
 
 export const apiHandler = {

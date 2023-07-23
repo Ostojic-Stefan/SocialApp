@@ -20,12 +20,3 @@ export interface UserInfomation {
     biography: string;
     avatarUrl: string;
 }
-
-export interface CommentResponse {
-    id: string;
-    contents: string;
-    postId: string;
-    userProfileId: string;
-    createdAt: Date;
-    updatedAt: Date;
-}
