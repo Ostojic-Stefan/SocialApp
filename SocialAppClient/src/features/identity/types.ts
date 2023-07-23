@@ -15,7 +15,7 @@ export interface UserRegisterRequest {
     imageData?: FormData;
 }
 
-export interface UserInfomation {
+export interface LoggedInUserInfomation {
     username: string;
     biography: string;
     avatarUrl: string;

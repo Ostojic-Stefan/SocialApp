@@ -1,7 +1,7 @@
 import { FormEvent, useState } from "react";
 import { useAppDispatch } from "../store";
-import { login } from "../features/user/userSlice";
 import { useNavigate } from "react-router-dom";
+import { login } from "../features/identity/identitySlice";
 
 function Login() {
   const dispatch = useAppDispatch();

@@ -1,7 +1,7 @@
 import { ChangeEvent, FormEvent, useState } from "react";
 import { useAppDispatch } from "../../store";
-import { register } from "./userSlice";
 import { useNavigate } from "react-router-dom";
+import { register } from "./identitySlice";
 
 function Register() {
   const dispatch = useAppDispatch();

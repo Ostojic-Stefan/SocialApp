@@ -5,9 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 using SocialApp.Api.Extensions;
 using SocialApp.Api.Filters;
 using SocialApp.Api.Requests;
+using SocialApp.Api.Requests.Comments;
 using SocialApp.Api.Requests.Posts;
 using SocialApp.Application.Posts.Commands;
 using SocialApp.Application.Posts.Queries;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace SocialApp.Api.Controllers;
 
@@ -124,6 +126,21 @@ public class PostsController : BaseApiController
             ImageName = $"{uploadPostImage.Img.FileName}"
         };
         var response = await _mediator.Send(command);
+        if (response.HasError)
+            return HandleError(response.Errors);
+        return Ok(response.Data);
+    }
+
+    [HttpGet]
+    [Route("user/{username}")]
+    [ValidateModel]
+    public async Task<IActionResult> GetPostsForUser(string username)
+    {
+        var query = new GetPostsForUserQuery
+        {
+            Username = username
+        };
+        var response = await _mediator.Send(query);
         if (response.HasError)
             return HandleError(response.Errors);
         return Ok(response.Data);

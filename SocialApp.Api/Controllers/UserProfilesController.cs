@@ -6,6 +6,7 @@ using SocialApp.Api.Filters;
 using SocialApp.Api.Requests.Identity;
 using SocialApp.Api.Requests.UserProfiles;
 using SocialApp.Application.UserProfiles.Commands;
+using SocialApp.Application.UserProfiles.Queries;
 
 namespace SocialApp.Api.Controllers;
 
@@ -50,6 +51,20 @@ public class UserProfilesController : BaseApiController
             ImageUrl = avatarUrl.AvatarUrl
         };
         var response = await _mediator.Send(command);
+        if (response.HasError)
+            return HandleError(response.Errors);
+        return Ok(response.Data);
+    }
+
+    [HttpGet]
+    [Route("getInformation/{username}")]
+    public async Task<IActionResult> GetUserInfomation(string username)
+    {
+        var query = new GetUserInformationByUsernameQuery
+        {
+            Username = username
+        };
+        var response = await _mediator.Send(query);
         if (response.HasError)
             return HandleError(response.Errors);
         return Ok(response.Data);

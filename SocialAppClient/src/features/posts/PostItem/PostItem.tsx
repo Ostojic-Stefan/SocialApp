@@ -4,6 +4,7 @@ import en from "javascript-time-ago/locale/en";
 import { Post } from "../types";
 import { useState } from "react";
 import CommentBox from "../../comments/CommentBox/CommentBox";
+import { NavLink } from "react-router-dom";
 
 TimeAgo.addLocale(en);
 
@@ -27,7 +28,9 @@ function PostItem({ post }: Props) {
           className={styles.userInfoImg}
         />
         <div className={styles.container}>
-          <span>{post.userInfo.username}</span>
+          <NavLink to={`profile/${post.userInfo.username}`}>
+            {post.userInfo.username}
+          </NavLink>
           <span className={styles.createdAgo}>
             {timeAgo.format(new Date(post.createdAt).getTime())}
           </span>
