@@ -3,6 +3,7 @@ using System;
 using DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace SocialApp.DataAccess.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230724173548_Add-Friends")]
+    partial class AddFriends
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -253,30 +256,6 @@ namespace SocialApp.DataAccess.Migrations
                     b.ToTable("Comments");
                 });
 
-            modelBuilder.Entity("SocialApp.Domain.FriendRequests", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("UserProdileIdFrom")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("UserProdileIdTo")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserProdileIdFrom");
-
-                    b.HasIndex("UserProdileIdTo");
-
-                    b.ToTable("FriendRequests");
-                });
-
             modelBuilder.Entity("SocialApp.Domain.Post", b =>
                 {
                     b.Property<Guid>("Id")
@@ -462,25 +441,6 @@ namespace SocialApp.DataAccess.Migrations
                     b.Navigation("UserProfile");
                 });
 
-            modelBuilder.Entity("SocialApp.Domain.FriendRequests", b =>
-                {
-                    b.HasOne("SocialApp.Domain.UserProfile", "UserProfileFrom")
-                        .WithMany("FriendRequestsFrom")
-                        .HasForeignKey("UserProdileIdFrom")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SocialApp.Domain.UserProfile", "UserProfileTo")
-                        .WithMany("FriendRequestsTo")
-                        .HasForeignKey("UserProdileIdTo")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("UserProfileFrom");
-
-                    b.Navigation("UserProfileTo");
-                });
-
             modelBuilder.Entity("SocialApp.Domain.Post", b =>
                 {
                     b.HasOne("SocialApp.Domain.UserProfile", "UserProfile")
@@ -544,10 +504,6 @@ namespace SocialApp.DataAccess.Migrations
 
             modelBuilder.Entity("SocialApp.Domain.UserProfile", b =>
                 {
-                    b.Navigation("FriendRequestsFrom");
-
-                    b.Navigation("FriendRequestsTo");
-
                     b.Navigation("Likes");
                 });
 #pragma warning restore 612, 618
