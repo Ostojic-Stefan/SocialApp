@@ -1,5 +1,4 @@
 ﻿using EfCoreHelpers;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SocialApp.Domain;
 

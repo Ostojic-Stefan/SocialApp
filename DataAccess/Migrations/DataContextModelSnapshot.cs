@@ -465,13 +465,13 @@ namespace SocialApp.DataAccess.Migrations
             modelBuilder.Entity("SocialApp.Domain.FriendRequests", b =>
                 {
                     b.HasOne("SocialApp.Domain.UserProfile", "UserProfileFrom")
-                        .WithMany("FriendRequestsFrom")
+                        .WithMany()
                         .HasForeignKey("UserProdileIdFrom")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("SocialApp.Domain.UserProfile", "UserProfileTo")
-                        .WithMany("FriendRequestsTo")
+                        .WithMany("FriendRequests")
                         .HasForeignKey("UserProdileIdTo")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -544,9 +544,7 @@ namespace SocialApp.DataAccess.Migrations
 
             modelBuilder.Entity("SocialApp.Domain.UserProfile", b =>
                 {
-                    b.Navigation("FriendRequestsFrom");
-
-                    b.Navigation("FriendRequestsTo");
+                    b.Navigation("FriendRequests");
 
                     b.Navigation("Likes");
                 });

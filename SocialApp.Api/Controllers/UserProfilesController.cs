@@ -95,13 +95,11 @@ public class UserProfilesController : BaseApiController
     {
         var userProfileId = HttpContext.GetUserProfileId();
         var repo = unitOfWork.CreateReadWriteRepository<UserProfile>();
-        //var user = await repo.GetByIdAsync(Guid.Parse(userId), cancellationToken);
         var loggedInUser = await repo
             .Query()
-            .Include(u => u.FriendRequestsTo)
-            .ThenInclude(x => x.UserProfileFrom)
+            .Include(u => u.FriendRequests)
+            .ThenInclude(fr => fr.UserProfileFrom)
             .FirstAsync(u => u.Id == userProfileId, cancellationToken);
-
         loggedInUser.AcceptFriendRequest(Guid.Parse(userId));
         await unitOfWork.SaveAsync(cancellationToken);
         return Ok();
