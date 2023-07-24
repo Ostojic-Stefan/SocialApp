@@ -5,7 +5,7 @@ public enum AppErrorCode
     ServerError,
     NotFound,
     ValidationError,
-    UserAlreadyExists,
     BadCredentials,
-    UnAuthorized
+    UnAuthorized,
+    DuplicateEntry
 }

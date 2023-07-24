@@ -51,7 +51,7 @@ internal class RegisterCommandHandler
                     errors.Add($"User with the email of {request.Email} already exists");
                 if (results[1] is not null)
                     errors.Add($"User with the username of {request.Username} already exists");
-                result.AddError(AppErrorCode.UserAlreadyExists, errors.ToArray());
+                result.AddError(AppErrorCode.DuplicateEntry, errors.ToArray());
                 return result;
             }
 

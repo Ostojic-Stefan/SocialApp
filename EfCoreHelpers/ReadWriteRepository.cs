@@ -60,26 +60,27 @@ internal class ReadWriteRepository<T> : IReadWriteRepository<T> where T : BaseEn
         await Task.WhenAll(updatedEntities).ConfigureAwait(false);
     }
 
-    public async Task RemoveAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<T> RemoveAsync(Guid id, CancellationToken cancellationToken)
     {
         var entity = await GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
         context.Set<T>().Remove(entity);
+        return entity;
     }
 
-    public async Task RemoveAsync(IEnumerable<Guid> entityIds, CancellationToken cancellationToken)
+    public async Task<IEnumerable<T>> RemoveAsync(IEnumerable<Guid> entityIds, CancellationToken cancellationToken)
     {
-        List<Task> entitiesToRemove = new();
+        List<Task<T>> entitiesToRemove = new();
         foreach (Guid entityId in entityIds)
             entitiesToRemove.Add(RemoveAsync(entityId, cancellationToken));
-        await Task.WhenAll(entitiesToRemove).ConfigureAwait(false);
+        return await Task.WhenAll(entitiesToRemove).ConfigureAwait(false);
     }
 
-    public async Task RemoveAsync(IEnumerable<T> entities, CancellationToken cancellationToken)
+    public async Task<IEnumerable<T>> RemoveAsync(IEnumerable<T> entities, CancellationToken cancellationToken)
     {
-        List<Task> entitiesToRemove = new();
+        List<Task<T>> entitiesToRemove = new();
         foreach (T entity in entities)
             entitiesToRemove.Add(RemoveAsync(entity.Id, cancellationToken));
-        await Task.WhenAll(entitiesToRemove).ConfigureAwait(false);
+        return await Task.WhenAll(entitiesToRemove).ConfigureAwait(false);
     }
 
     public async Task RemoveAsync(Expression<Func<T, bool>> entitySelection, CancellationToken cancellationToken)

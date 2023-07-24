@@ -26,9 +26,9 @@ public class BaseApiController : ControllerBase
                 ErrorMessages = error.Item2,
                 StatusCode = HttpStatusCode.BadRequest,
             }),
-            AppErrorCode.UserAlreadyExists => BadRequest(new ErrorResponse
+            AppErrorCode.DuplicateEntry => BadRequest(new ErrorResponse
             {
-                Title = "User Already Exists",
+                Title = "Duplicate Entry",
                 ErrorMessages = error.Item2,
                 StatusCode = HttpStatusCode.BadRequest,
             }),
