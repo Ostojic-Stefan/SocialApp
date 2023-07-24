@@ -7,10 +7,12 @@ namespace SocialApp.Domain;
 public class Post : BaseEntity
 {
     private readonly ICollection<Comment> _comments;
+    private readonly ICollection<PostLike> _likes;
 
     private Post() 
     {
         _comments = new List<Comment>();
+        _likes = new List<PostLike>();
     }
 
     public string ImageUrl { get; private set; }
@@ -22,6 +24,7 @@ public class Post : BaseEntity
     public Guid UserProfileId { get; private set; }
     public UserProfile UserProfile { get; private set; }
     public IEnumerable<Comment>? Comments => _comments;
+    public IEnumerable<PostLike>? Likes => _likes;
 
     public static Post CreatePost(string imageUrl, string contents, Guid userId)
     {
