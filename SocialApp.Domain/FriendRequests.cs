@@ -9,12 +9,12 @@ public enum FriendRequestStatus
     Denied
 }
 
-public class FriendRequests : BaseEntity
+public class FriendRequest
 {
-    public Guid UserProdileIdFrom { get; set; }
-    public Guid UserProdileIdTo { get; set; }
+    public Guid SenderUserId { get; set; }
+    public Guid ReceiverUserId { get; set; }
     public FriendRequestStatus Status { get; set; }
 
-    public UserProfile UserProfileFrom { get; set; }
-    public UserProfile UserProfileTo { get; set; }
+    public UserProfile? SenderUser { get; set; }
+    public UserProfile? ReceiverUser { get; set; }
 }

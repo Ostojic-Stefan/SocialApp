@@ -78,30 +78,34 @@ public class UserProfilesController : BaseApiController
     [HttpPost]
     [Route("sendFriendRequest/{userId}")]
     [Authorize]
+    [ValidateGuids("userId")]
     public async Task<IActionResult> SendFriendRequest(string userId, CancellationToken cancellationToken)
     {
-        var userProfileId = HttpContext.GetUserProfileId();
-        var repo = unitOfWork.CreateReadWriteRepository<UserProfile>();
-        var user = await repo.GetByIdAsync(Guid.Parse(userId), cancellationToken);
-        user.SendFriendRequest(userProfileId);
-        await unitOfWork.SaveAsync(cancellationToken);
+        var command = new SendFriendRequestCommand
+        {
+            CurrentUser = HttpContext.GetUserProfileId(),
+            RecieverUser = Guid.Parse(userId)
+        };
+        var response = await _mediator.Send(command, cancellationToken);
+        if (response.HasError)
+            return HandleError(response.Errors);
         return Ok();
     }
 
     [HttpPost]
     [Route("acceptFriendRequest/{userId}")]
     [Authorize]
+    [ValidateGuids("userId")]
     public async Task<IActionResult> AcceptFriendRequest(string userId, CancellationToken cancellationToken)
     {
-        var userProfileId = HttpContext.GetUserProfileId();
-        var repo = unitOfWork.CreateReadWriteRepository<UserProfile>();
-        var loggedInUser = await repo
-            .Query()
-            .Include(u => u.FriendRequests)
-            .ThenInclude(fr => fr.UserProfileFrom)
-            .FirstAsync(u => u.Id == userProfileId, cancellationToken);
-        loggedInUser.AcceptFriendRequest(Guid.Parse(userId));
-        await unitOfWork.SaveAsync(cancellationToken);
+        var command = new AcceptFriendRequestCommand
+        {
+            CurrentUser = HttpContext.GetUserProfileId(),
+            OtherUser = Guid.Parse(userId)
+        };
+        var response = await _mediator.Send(command, cancellationToken);
+        if (response.HasError)
+            return HandleError(response.Errors);
         return Ok();
     }
 }

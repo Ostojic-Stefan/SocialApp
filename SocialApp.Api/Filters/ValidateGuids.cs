@@ -25,6 +25,7 @@ public class ValidateGuids : ActionFilterAttribute
                 continue;
             }
 
+            // TODO: return ErrorResponse object
             if (!Guid.TryParse(guid!.ToString(), out var _))
                 context.Result = new ObjectResult("Invalid Guid");
         }

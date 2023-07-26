@@ -253,26 +253,20 @@ namespace SocialApp.DataAccess.Migrations
                     b.ToTable("Comments");
                 });
 
-            modelBuilder.Entity("SocialApp.Domain.FriendRequests", b =>
+            modelBuilder.Entity("SocialApp.Domain.FriendRequest", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<Guid>("SenderUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ReceiverUserId")
                         .HasColumnType("uuid");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<Guid>("UserProdileIdFrom")
-                        .HasColumnType("uuid");
+                    b.HasKey("SenderUserId", "ReceiverUserId");
 
-                    b.Property<Guid>("UserProdileIdTo")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserProdileIdFrom");
-
-                    b.HasIndex("UserProdileIdTo");
+                    b.HasIndex("ReceiverUserId");
 
                     b.ToTable("FriendRequests");
                 });
@@ -462,23 +456,23 @@ namespace SocialApp.DataAccess.Migrations
                     b.Navigation("UserProfile");
                 });
 
-            modelBuilder.Entity("SocialApp.Domain.FriendRequests", b =>
+            modelBuilder.Entity("SocialApp.Domain.FriendRequest", b =>
                 {
-                    b.HasOne("SocialApp.Domain.UserProfile", "UserProfileFrom")
-                        .WithMany()
-                        .HasForeignKey("UserProdileIdFrom")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("SocialApp.Domain.UserProfile", "ReceiverUser")
+                        .WithMany("ReceivedFriendRequests")
+                        .HasForeignKey("ReceiverUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("SocialApp.Domain.UserProfile", "UserProfileTo")
-                        .WithMany("FriendRequests")
-                        .HasForeignKey("UserProdileIdTo")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("SocialApp.Domain.UserProfile", "SenderUser")
+                        .WithMany("SentFriendRequests")
+                        .HasForeignKey("SenderUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("UserProfileFrom");
+                    b.Navigation("ReceiverUser");
 
-                    b.Navigation("UserProfileTo");
+                    b.Navigation("SenderUser");
                 });
 
             modelBuilder.Entity("SocialApp.Domain.Post", b =>
@@ -544,9 +538,11 @@ namespace SocialApp.DataAccess.Migrations
 
             modelBuilder.Entity("SocialApp.Domain.UserProfile", b =>
                 {
-                    b.Navigation("FriendRequests");
-
                     b.Navigation("Likes");
+
+                    b.Navigation("ReceivedFriendRequests");
+
+                    b.Navigation("SentFriendRequests");
                 });
 #pragma warning restore 612, 618
         }

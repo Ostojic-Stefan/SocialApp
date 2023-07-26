@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace SocialApp.DataAccess.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230724173548_Add-Friends")]
-    partial class AddFriends
+    [Migration("20230726161214_Friends-And-FriendRequests")]
+    partial class FriendsAndFriendRequests
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -256,6 +256,24 @@ namespace SocialApp.DataAccess.Migrations
                     b.ToTable("Comments");
                 });
 
+            modelBuilder.Entity("SocialApp.Domain.FriendRequest", b =>
+                {
+                    b.Property<Guid>("SenderUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ReceiverUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.HasKey("SenderUserId", "ReceiverUserId");
+
+                    b.HasIndex("ReceiverUserId");
+
+                    b.ToTable("FriendRequests");
+                });
+
             modelBuilder.Entity("SocialApp.Domain.Post", b =>
                 {
                     b.Property<Guid>("Id")
@@ -441,6 +459,25 @@ namespace SocialApp.DataAccess.Migrations
                     b.Navigation("UserProfile");
                 });
 
+            modelBuilder.Entity("SocialApp.Domain.FriendRequest", b =>
+                {
+                    b.HasOne("SocialApp.Domain.UserProfile", "ReceiverUser")
+                        .WithMany("ReceivedFriendRequests")
+                        .HasForeignKey("ReceiverUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SocialApp.Domain.UserProfile", "SenderUser")
+                        .WithMany("SentFriendRequests")
+                        .HasForeignKey("SenderUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ReceiverUser");
+
+                    b.Navigation("SenderUser");
+                });
+
             modelBuilder.Entity("SocialApp.Domain.Post", b =>
                 {
                     b.HasOne("SocialApp.Domain.UserProfile", "UserProfile")
@@ -505,6 +542,10 @@ namespace SocialApp.DataAccess.Migrations
             modelBuilder.Entity("SocialApp.Domain.UserProfile", b =>
                 {
                     b.Navigation("Likes");
+
+                    b.Navigation("ReceivedFriendRequests");
+
+                    b.Navigation("SentFriendRequests");
                 });
 #pragma warning restore 612, 618
         }

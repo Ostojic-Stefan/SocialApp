@@ -6,11 +6,36 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SocialApp.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class AddFriends : Migration
+    public partial class FriendsAndFriendRequests : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "FriendRequests",
+                columns: table => new
+                {
+                    SenderUserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ReceiverUserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FriendRequests", x => new { x.SenderUserId, x.ReceiverUserId });
+                    table.ForeignKey(
+                        name: "FK_FriendRequests_UserProfiles_ReceiverUserId",
+                        column: x => x.ReceiverUserId,
+                        principalTable: "UserProfiles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_FriendRequests_UserProfiles_SenderUserId",
+                        column: x => x.SenderUserId,
+                        principalTable: "UserProfiles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Friends",
                 columns: table => new
@@ -36,6 +61,11 @@ namespace SocialApp.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_FriendRequests_ReceiverUserId",
+                table: "FriendRequests",
+                column: "ReceiverUserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Friends_User2",
                 table: "Friends",
                 column: "User2");
@@ -44,6 +74,9 @@ namespace SocialApp.DataAccess.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "FriendRequests");
+
             migrationBuilder.DropTable(
                 name: "Friends");
         }
