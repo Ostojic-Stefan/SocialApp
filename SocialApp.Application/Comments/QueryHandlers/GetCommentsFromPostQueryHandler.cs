@@ -26,23 +26,33 @@ internal class GetCommentsFromPostQueryHandler
         try
         {
             var postRepo = _unitOfWork.CreateReadOnlyRepository<Post>();
-            if (await postRepo.GetByIdAsync(request.PostId, cancellationToken) is null)
+
+            Guid foundPost = await postRepo
+                .QueryById(request.PostId)
+                .Select(p => p.UserProfileId)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (foundPost == Guid.Empty)
             {
                 result.AddError(AppErrorCode.NotFound, $"post with id of {request.PostId} does not exist");
                 return result;
             }
-            var commentRepo = _unitOfWork.CreateReadOnlyRepository<Comment>();
+            var commentRepo = _unitOfWork.CreateReadWriteRepository<Comment>();
             var comments = await commentRepo
                 .Query()
                 .Where(c => c.PostId == request.PostId)
-                .ProjectTo<CommentResponse>(_mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
+
+            if (foundPost == request.CurrentUserId)
+                comments.ForEach(comment => comment.SetCommentAsSeen());
 
             result.Data = new CommentsOnAPostResponse
             {
                 PostId = request.PostId,
-                Comments = comments
+                Comments = _mapper.Map<IReadOnlyList<CommentResponse>>(comments)
             };
+
+            await _unitOfWork.SaveAsync(cancellationToken);
         }
         catch (Exception ex)
         {

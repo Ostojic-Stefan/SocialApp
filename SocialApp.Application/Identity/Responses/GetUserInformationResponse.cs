@@ -12,8 +12,8 @@ public class FriendRequestResponse
 
 public class Notifications
 {
-    public IReadOnlyList<CommentOnPost>? CommentsOnPost { get; set; }
-    public IReadOnlyList<LikeOnPost>? LikesOnPost { get; set; }
+    public IEnumerable<CommentOnPost>? CommentsOnPost { get; set; }
+    public IEnumerable<LikeOnPost>? LikesOnPost { get; set; }
 }
 
 public class CommentOnPost

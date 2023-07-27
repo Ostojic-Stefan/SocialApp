@@ -6,5 +6,6 @@ namespace SocialApp.Application.Comments.Query;
 
 public class GetCommentsFromPostQuery : IRequest<Result<CommentsOnAPostResponse>>
 {
+    public required Guid CurrentUserId { get; set; }
     public required Guid PostId { get; set; }
 }

@@ -10,6 +10,8 @@ public class PostLike : BaseEntity
     public Post Post { get; set; }
     public LikeReaction LikeReaction { get; set; }
 
+    public bool SeenByPostOwner { get; set; } = false;
+
     public static PostLike Create(Guid postId, Guid userProfileId, LikeReaction likeReaction)
     {
         // TODO: Validation
@@ -19,5 +21,10 @@ public class PostLike : BaseEntity
             UserProfileId = userProfileId,
             LikeReaction = likeReaction
         };
+    }
+
+    public void SetLikeAsSeen()
+    {
+        SeenByPostOwner = true;
     }
 }

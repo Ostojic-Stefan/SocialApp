@@ -6,5 +6,6 @@ namespace SocialApp.Application.Likes.Queries;
 
 public class GetLikesForAPostQuery : IRequest<Result<IReadOnlyList<GetLikesForAPostResponse>>>
 {
+    public required Guid CurrentUser { get; set; }
     public required Guid PostId { get; set; }
 }

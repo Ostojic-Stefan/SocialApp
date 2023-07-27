@@ -6,6 +6,7 @@ using SocialApp.Application.Identity.Queries;
 using SocialApp.Application.Identity.Responses;
 using SocialApp.Application.Models;
 using SocialApp.Domain;
+using System.Linq;
 
 namespace SocialApp.Application.Identity.QueryHandlers;
 
@@ -29,45 +30,32 @@ internal class GetUserInformationQueryHandler
             var userProfileRepo = _unitOfWork.CreateReadOnlyRepository<UserProfile>();
             var postRepo = _unitOfWork.CreateReadOnlyRepository<Post>();
 
-            // add filter for already accepted or denied friend requsts.
-            // add DateWhenSent for the request entity
             var userFriendRequestsResponse = await userProfileRepo
                 .QueryById(request.UserProfileId)
-                .SelectMany(u => u.ReceivedFriendRequests.Select(fr => new FriendRequestResponse
-                {
-                    RequesterId = fr.SenderUserId,
-                    RequesterUsername = fr.SenderUser.Username,
-                    RequesterAvatarUrl = fr.SenderUser.AvatarUrl,
-                })).ToListAsync(cancellationToken);
+                .SelectMany(u => u.ReceivedFriendRequests)
+                .Where(fr => fr.Status == FriendRequestStatus.Pending)
+                .ProjectTo<FriendRequestResponse>(_mapper.ConfigurationProvider)
+                .ToListAsync(cancellationToken);
 
-            // add filter for unread comments.
             var commentsOnUsersPosts = await postRepo
                 .Query()
                 .Where(p => p.UserProfileId == request.UserProfileId)
-                .SelectMany(p => p.Comments.Select(c => new CommentOnPost
-                {
-                    CommenterUsername = c.UserProfile.Username,
-                    CommenterAvatarUrl = c.UserProfile.AvatarUrl,
-                    CommentId = c.Id,
-                    ContentsReduced = c.Contents,
-                })).ToListAsync(cancellationToken);
+                .SelectMany(p => p.Comments)
+                .Where(c => !c.SeenByPostOwner)
+                .ProjectTo<CommentOnPost>(_mapper.ConfigurationProvider)
+                .ToListAsync(cancellationToken);
 
-            // add filter for unread likes.
             var likesOnUsersPosts = await postRepo
                 .Query()
                 .Where(p => p.UserProfileId == request.UserProfileId)
-                .SelectMany(p => p.Likes.Select(l => new LikeOnPost
-                {
-                    LikerUsername = l.UserProfile.Username,
-                    LikerAvatarUrl = l.UserProfile.AvatarUrl,
-                    LikeId = l.Id,
-                    LikeReaction = l.LikeReaction
-                })).ToListAsync(cancellationToken);
+                .SelectMany(p => p.Likes)
+                .Where(l => !l.SeenByPostOwner)
+                .ProjectTo<LikeOnPost>(_mapper.ConfigurationProvider)
+                .ToListAsync(cancellationToken);
 
 
             var userProfile = await userProfileRepo
                 .QueryById(request.UserProfileId)
-                .TagWith($"[{nameof(GetUserInformationQueryHandler)}] - Get user profile information")
                 .ProjectTo<UserInformation>(_mapper.ConfigurationProvider)
                 .SingleOrDefaultAsync(cancellationToken);
 

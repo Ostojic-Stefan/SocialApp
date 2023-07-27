@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SocialApp.Api.Extensions;
 using SocialApp.Api.Filters;
@@ -38,11 +39,13 @@ public class LikesController : BaseApiController
     [HttpGet]
     [Route("posts/{postId}")]
     [ValidateGuids("postId")]
+    [Authorize]
     public async Task<IActionResult> GetAllLikesForAPost(string postId, CancellationToken cancellationToken)
     {
         var query = new GetLikesForAPostQuery
         {
-            PostId = Guid.Parse(postId)
+            PostId = Guid.Parse(postId),
+            CurrentUser = HttpContext.GetUserProfileId()
         };
         var response = await _mediator.Send(query, cancellationToken);
         if (response.HasError)

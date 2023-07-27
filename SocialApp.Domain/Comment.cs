@@ -12,6 +12,7 @@ public class Comment : BaseEntity
     public string Contents { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime UpdatedAt { get; private set; }
+    public bool SeenByPostOwner { get; private set; } = false;
 
     // Relationships
     public Guid UserProfileId { get; private set; }
@@ -36,5 +37,10 @@ public class Comment : BaseEntity
                 validationResult.Errors.Select(vf => vf.ErrorMessage).ToArray());
         }
         return newComment;
+    }
+
+    public void SetCommentAsSeen()
+    {
+        SeenByPostOwner = true;
     }
 }

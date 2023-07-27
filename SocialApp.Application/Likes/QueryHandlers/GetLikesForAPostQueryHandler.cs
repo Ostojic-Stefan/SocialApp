@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using EfCoreHelpers;
 using Microsoft.EntityFrameworkCore;
 using SocialApp.Application.Likes.Queries;
@@ -27,13 +26,24 @@ internal class GetLikesForAPostQueryHandler
         var result = new Result<IReadOnlyList<GetLikesForAPostResponse>>();
         try
         {
-            var postLikeRepo = _unitOfWork.CreateReadOnlyRepository<PostLike>();
-            var postLikes = await postLikeRepo
-                .Query()
-                .Where(pl => pl.PostId == request.PostId)
-                .ProjectTo<GetLikesForAPostResponse>(_mapper.ConfigurationProvider)
-                .ToListAsync(cancellationToken);
-            result.Data = postLikes;
+            var postRepo = _unitOfWork.CreateReadWriteRepository<Post>();
+
+            var post = await postRepo
+                .QueryById(request.PostId)
+                .Include(p => p.Likes)
+                .ThenInclude(p => p.UserProfile)
+                .FirstAsync(cancellationToken);
+
+
+            if (post.UserProfileId == request.CurrentUser)
+            {
+                foreach (var like in post.Likes)
+                    like.SetLikeAsSeen();
+            }
+
+            result.Data = _mapper.Map<IReadOnlyList<GetLikesForAPostResponse>>(post.Likes);
+
+            await _unitOfWork.SaveAsync(cancellationToken);
         }
         catch (Exception ex)
         {

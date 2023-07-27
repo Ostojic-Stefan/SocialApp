@@ -43,10 +43,11 @@ public class CommentsController : BaseApiController
     [HttpGet]
     [Route("posts/postId")]
     [ValidateGuids("postId")]
+    [Authorize]
     public async Task<IActionResult> GetAllCommentsFromPost(Guid postId,
         CancellationToken cancellationToken)
     {
-        var query = new GetCommentsFromPostQuery { PostId = postId };
+        var query = new GetCommentsFromPostQuery { PostId = postId, CurrentUserId = HttpContext.GetUserProfileId() };
         var response = await _mediator.Send(query, cancellationToken);
         if (response.HasError)
             return HandleError(response.Errors);
