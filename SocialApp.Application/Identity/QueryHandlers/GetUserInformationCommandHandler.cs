@@ -27,20 +27,62 @@ internal class GetUserInformationQueryHandler
         try
         {
             var userProfileRepo = _unitOfWork.CreateReadOnlyRepository<UserProfile>();
+            var postRepo = _unitOfWork.CreateReadOnlyRepository<Post>();
+
+            // add filter for already accepted or denied friend requsts.
+            // add DateWhenSent for the request entity
+            var userFriendRequestsResponse = await userProfileRepo
+                .QueryById(request.UserProfileId)
+                .SelectMany(u => u.ReceivedFriendRequests.Select(fr => new FriendRequestResponse
+                {
+                    RequesterId = fr.SenderUserId,
+                    RequesterUsername = fr.SenderUser.Username,
+                    RequesterAvatarUrl = fr.SenderUser.AvatarUrl,
+                })).ToListAsync(cancellationToken);
+
+            // add filter for unread comments.
+            var commentsOnUsersPosts = await postRepo
+                .Query()
+                .Where(p => p.UserProfileId == request.UserProfileId)
+                .SelectMany(p => p.Comments.Select(c => new CommentOnPost
+                {
+                    CommenterUsername = c.UserProfile.Username,
+                    CommenterAvatarUrl = c.UserProfile.AvatarUrl,
+                    CommentId = c.Id,
+                    ContentsReduced = c.Contents,
+                })).ToListAsync(cancellationToken);
+
+            // add filter for unread likes.
+            var likesOnUsersPosts = await postRepo
+                .Query()
+                .Where(p => p.UserProfileId == request.UserProfileId)
+                .SelectMany(p => p.Likes.Select(l => new LikeOnPost
+                {
+                    LikerUsername = l.UserProfile.Username,
+                    LikerAvatarUrl = l.UserProfile.AvatarUrl,
+                    LikeId = l.Id,
+                    LikeReaction = l.LikeReaction
+                })).ToListAsync(cancellationToken);
+
 
             var userProfile = await userProfileRepo
                 .QueryById(request.UserProfileId)
                 .TagWith($"[{nameof(GetUserInformationQueryHandler)}] - Get user profile information")
-                .ProjectTo<GetUserInformationResponse>(_mapper.ConfigurationProvider)
+                .ProjectTo<UserInformation>(_mapper.ConfigurationProvider)
                 .SingleOrDefaultAsync(cancellationToken);
 
-            if (userProfile is null)
+            var final = new GetUserInformationResponse
             {
-                result.AddError(AppErrorCode.NotFound,
-                    $"User with the id of {request.UserProfileId} does not exist");
-                return result;
-            }
-            result.Data = userProfile;
+                FriendRequests = userFriendRequestsResponse,
+                UserInformation = userProfile,
+                Notifications = new Notifications
+                {
+                    CommentsOnPost = commentsOnUsersPosts,
+                    LikesOnPost = likesOnUsersPosts
+                }
+            };
+
+            result.Data = final;
         }
         catch (Exception ex)
         {

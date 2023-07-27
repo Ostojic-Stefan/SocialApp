@@ -1,10 +1,50 @@
-﻿namespace SocialApp.Application.Identity.Responses;
+﻿using SocialApp.Domain;
 
-public class GetUserInformationResponse
+namespace SocialApp.Application.Identity.Responses;
+
+public class FriendRequestResponse
 {
-    public DateTime CreatedAt { get; set; }
-    public DateTime UpdatedAt { get; set; }
+    public required Guid RequesterId { get; set; }
+    public string? RequesterAvatarUrl { get; set; }
+    public required string RequesterUsername { get; set; }
+    public DateTime RequestTimeSent { get; set; }
+}
+
+public class Notifications
+{
+    public IReadOnlyList<CommentOnPost>? CommentsOnPost { get; set; }
+    public IReadOnlyList<LikeOnPost>? LikesOnPost { get; set; }
+}
+
+public class CommentOnPost
+{
+    public required Guid CommentId { get; set; }
+    public string? CommenterAvatarUrl { get; set; }
+    public required string CommenterUsername { get; set; }
+    public required string ContentsReduced { get; set; }
+}
+
+public class LikeOnPost
+{
+    public required Guid LikeId { get; set; }
+    public string? LikerAvatarUrl { get; set; }
+    public required string LikerUsername { get; set; }
+    public required LikeReaction LikeReaction { get; set; }
+}
+
+public class UserInformation
+{
+    public required Guid UserId { get; set; }
+    public required DateTime CreatedAt { get; set; }
+    public required DateTime UpdatedAt { get; set; }
     public required string Username { get; set; }
     public string? Biography { get; set; }
     public string? AvatarUrl { get; set; }
+}
+
+public class GetUserInformationResponse
+{
+    public UserInformation? UserInformation { get; set; }
+    public Notifications? Notifications { get; set; }
+    public IReadOnlyList<FriendRequestResponse>? FriendRequests { get; set; }
 }
