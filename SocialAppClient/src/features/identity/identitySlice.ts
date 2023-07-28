@@ -5,7 +5,7 @@ import { LoggedInUserInfomation, UserRegisterRequest } from "./types";
 import { setUserProfileImage, uploadProfileImage } from "../userProfile/userProfileSlice";
 
 interface StateType {
-    userInfo?: LoggedInUserInfomation,
+  userInfo?: LoggedInUserInfomation,
 }
 
 const initialState: StateType = {
@@ -35,7 +35,7 @@ export const register = createAsyncThunk<void, UserRegisterRequest>(
         return rejectWithValue(error);
       }
     }
-  );
+);
 
 export const getUserInformation = createAsyncThunk<LoggedInUserInfomation>(
     'user/getInfo', async function (_data, { rejectWithValue }) {
@@ -46,7 +46,7 @@ export const getUserInformation = createAsyncThunk<LoggedInUserInfomation>(
         return rejectWithValue(error);
       }
     }
-  );
+);
   
 
 const identitySlice = createSlice({

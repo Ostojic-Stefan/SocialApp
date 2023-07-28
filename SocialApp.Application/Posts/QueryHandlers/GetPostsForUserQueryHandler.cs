@@ -10,7 +10,7 @@ using SocialApp.Domain;
 namespace SocialApp.Application.Posts.QueryHandlers;
 
 internal class GetPostsForUserQueryHandler :
-    DataContextRequestHandler<GetPostsForUserQuery, Result<IReadOnlyList<PostsForUserResponse>>>
+    DataContextRequestHandler<GetPostsForUserQuery, Result<IReadOnlyList<PostResponse>>>
 {
     private readonly IMapper _mapper;
 
@@ -20,17 +20,17 @@ internal class GetPostsForUserQueryHandler :
         _mapper = mapper;
     }
 
-    public override async Task<Result<IReadOnlyList<PostsForUserResponse>>> Handle(GetPostsForUserQuery request,
+    public override async Task<Result<IReadOnlyList<PostResponse>>> Handle(GetPostsForUserQuery request,
         CancellationToken cancellationToken)
     {
-        var result = new Result<IReadOnlyList<PostsForUserResponse>>();
+        var result = new Result<IReadOnlyList<PostResponse>>();
         try
         {
             var postRepo = _unitOfWork.CreateReadOnlyRepository<Post>();
             var posts = await postRepo
                 .Query()
                 .Where(p => p.UserProfile.Username == request.Username)
-                .ProjectTo<PostsForUserResponse>(_mapper.ConfigurationProvider)
+                .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
             if (posts is null)
             {

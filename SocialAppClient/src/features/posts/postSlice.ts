@@ -60,7 +60,6 @@ const postSlice = createSlice({
         state.isLoading = false;
       })
       builder.addCase(getPosts.rejected, (state, action) => {
-        console.log(action.payload);
         state.isLoading = false;
       });
 

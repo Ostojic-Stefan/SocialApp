@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using EfCoreHelpers;
+using Microsoft.EntityFrameworkCore;
 using SocialApp.Application.Models;
 using SocialApp.Application.Posts.Queries;
 using SocialApp.Application.Posts.Responses;
@@ -27,10 +28,12 @@ internal class GetAllPostsQueryHandler
         try
         {
             var repo = _unitOfWork.CreateReadOnlyRepository<Post>();
+
             var postsQuery = repo
                 .Query()
                 .OrderByDescending(x => x.CreatedAt)
                 .ProjectTo<PostResponse>(_mapper.ConfigurationProvider);
+
             var postPager = new Pager<PostResponse>(request.PageSize, request.PageNumber);
             var paginatedList = await postPager.ToPagedList(postsQuery, cancellationToken);
             result.Data = paginatedList;

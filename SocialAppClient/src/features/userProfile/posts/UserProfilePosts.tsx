@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../../store";
 import { useParams } from "react-router-dom";
 import { getPostsForUser } from "../userProfileSlice";
+import PostItem from "../../posts/PostItem/PostItem";
 
 function UserProfilePosts() {
   const dispatch = useAppDispatch();
@@ -17,7 +18,8 @@ function UserProfilePosts() {
   return (
     <ul>
       {userPosts.map((post) => (
-        <li key={post.id}>{post.contents}</li>
+        <PostItem key={post.id} post={post} />
+        // <li key={post.id}>{post.contents}</li>
       ))}
     </ul>
   );

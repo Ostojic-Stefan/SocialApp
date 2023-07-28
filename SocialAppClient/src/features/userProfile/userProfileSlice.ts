@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { PostsForUserResponse, UserProfileInformation } from "./types";
 import { apiHandler } from "../../api/apiHandler";
 import { failureToast } from "../../utils/toastDefinitions";
+import { Post } from "../posts/types";
 
 export const uploadProfileImage = createAsyncThunk<string, FormData>(
   "user/uploadProfileImage", async function(data, { rejectWithValue }) {
@@ -25,7 +26,7 @@ export const setUserProfileImage = createAsyncThunk<boolean, string>(
   }
 )
 
-export const getPostsForUser = createAsyncThunk<PostsForUserResponse[], {username: string}>(
+export const getPostsForUser = createAsyncThunk<Post[], {username: string}>(
   'user/getPostsForUser', async function(data, { rejectWithValue }) {
     try {
       const posts = await apiHandler.post.getPostsForUser(data.username);
@@ -49,7 +50,7 @@ export const getUserProfileInformation = createAsyncThunk<UserProfileInformation
 
 interface StateType {
     userInfo?: UserProfileInformation,
-    posts: PostsForUserResponse[]
+    posts: Post[]
 }
 
 const initialState: StateType = {

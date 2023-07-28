@@ -19,6 +19,7 @@ public class Notifications
 public class CommentOnPost
 {
     public required Guid CommentId { get; set; }
+    public required Guid PostId { get; set; }
     public string? CommenterAvatarUrl { get; set; }
     public required string CommenterUsername { get; set; }
     public required string ContentsReduced { get; set; }
@@ -27,6 +28,7 @@ public class CommentOnPost
 public class LikeOnPost
 {
     public required Guid LikeId { get; set; }
+    public required Guid PostId { get; set; }
     public string? LikerAvatarUrl { get; set; }
     public required string LikerUsername { get; set; }
     public required LikeReaction LikeReaction { get; set; }

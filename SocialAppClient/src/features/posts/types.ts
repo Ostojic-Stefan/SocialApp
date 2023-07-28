@@ -1,6 +1,6 @@
 export interface UserInfo {
+	userProfileId: string;
 	username: string;
-	biography: string;
 	avatarUrl: string;
 }
   
@@ -10,8 +10,8 @@ export interface Post {
 	contents: string;
 	createdAt: Date;
 	updatedAt: Date;
-	userProfileId: string;
 	userInfo: UserInfo;
+	numLikes: number;
 }
 
 export interface GetAllPostsResponse {

@@ -27,7 +27,7 @@ axios.interceptors.response.use(null, (error: AxiosError) => {
 const responseBody = <TResponse>(res: AxiosResponse<TResponse>) => res.data;
 
 const identity = {
-  getLoggedInUserInformation: () => axios.get('identity/me')
+  getLoggedInUserInformation: () => axios.get<LoggedInUserInfomation>('identity/me')
     .then(responseBody<LoggedInUserInfomation>),
 
   login: (loginRequest: UserLoginRequest) => axios.post('identity/login', loginRequest)
@@ -64,8 +64,11 @@ const post = {
   uploadPost: (data: UploadPost) => axios.post('posts', data)
     .then(responseBody<Post>),
 
-  getPostsForUser: (username: string) => axios.get<PostsForUserResponse[]>(`posts/user/${username}`)
-    .then(responseBody<PostsForUserResponse[]>)
+  // getPostsForUser: (username: string) => axios.get<PostsForUserResponse[]>(`posts/user/${username}`)
+  //   .then(responseBody<PostsForUserResponse[]>)
+
+    getPostsForUser: (username: string) => axios.get<Post[]>(`posts/user/${username}`)
+    .then(responseBody<Post[]>)
 }
 
 const comment = {

@@ -3,7 +3,9 @@ import styles from "./AppLayout.module.css";
 import { useAppSelector } from "../../store";
 
 function AppLayout() {
-  const userInfo = useAppSelector((store) => store.identity.userInfo);
+  const userInfo = useAppSelector(
+    (store) => store.identity.userInfo?.userInformation
+  );
 
   return (
     <div className={styles.layout}>

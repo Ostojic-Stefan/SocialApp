@@ -16,6 +16,10 @@ function PostItem({ post }: Props) {
   const [openCommentBox, setOpenCommentBox] = useState<boolean>(false);
   const timeAgo = new TimeAgo("en-US");
 
+  function formatLike(likeNum: number): string {
+    return `${likeNum} ${likeNum === 1 ? "like" : "likes"}`;
+  }
+
   function handleOpenCommentBox(): void {
     setOpenCommentBox((curr) => !curr);
   }
@@ -38,10 +42,13 @@ function PostItem({ post }: Props) {
       </div>
       <span>{post.contents}</span>
       <div className={styles.image}>
-        <img src={`${post.imageUrl}`} className={styles.postImage} />
+        <img
+          src={`http://localhost:5167/${post.imageUrl}`}
+          className={styles.postImage}
+        />
       </div>
       <div className={styles.likes}>
-        <span>1K</span>
+        <span>{formatLike(post.numLikes)}</span>
       </div>
       <div className={styles.actions}>
         <div className={styles.btnAction}>Like</div>

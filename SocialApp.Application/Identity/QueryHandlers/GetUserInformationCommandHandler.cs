@@ -6,7 +6,6 @@ using SocialApp.Application.Identity.Queries;
 using SocialApp.Application.Identity.Responses;
 using SocialApp.Application.Models;
 using SocialApp.Domain;
-using System.Linq;
 
 namespace SocialApp.Application.Identity.QueryHandlers;
 

@@ -13,16 +13,19 @@ internal class MappingProfiles : Profile
 	public MappingProfiles()
 	{
 		CreateMap<Comment, CommentResponse>();
-        CreateMap<UserProfile, UserInfo>();
+        CreateMap<UserProfile, UserInfo>()
+            .ForMember(dest => dest.UserProfileId, opt => opt.MapFrom(src => src.Id));
         CreateMap<Post, PostResponse>()
-            .ForMember(dest => dest.UserInfo, opt => opt.MapFrom(src => src.UserProfile));
+            .ForMember(dest => dest.UserInfo, opt => opt.MapFrom(src => src.UserProfile))
+            .ForMember(dest => dest.NumLikes, opt => opt.MapFrom(src => src.Likes.Count()));
+
         CreateMap<Post, PostsForUserResponse>();
         CreateMap<UserProfile, UserInformationResponse>()
             .ForMember(uip => uip.UserProfileId, opt => opt.MapFrom(src => src.Id));
 
         CreateMap<UserProfile, LikeUserInfo>();
 
-        CreateMap<PostLike, PostLikeResponse>();
+        //CreateMap<PostLike, PostLikeResponse>();
         CreateMap<PostLike, GetLikesForAPostResponse>()
             .ForMember(x => x.UserInformation, opt => opt.MapFrom(src => src.UserProfile));
 

@@ -45,8 +45,6 @@ const commentsSlice = createSlice({
     },
     extraReducers(builder) {
         builder.addCase(getCommentsByPostId.fulfilled, (state, action) => {
-            console.log(action);
-            
             const postId = action.payload.postId;
             const foundData = state.data.find(d => d.postId === postId)
             if (foundData) {
