@@ -28,7 +28,10 @@ function CreatePostForm() {
 
   return (
     <form onSubmit={handleSubmit} className={styles.createPost}>
-      <img src={avatarUrl} className={styles.createPostImg} />
+      <img
+        src={`http://localhost:5167/${avatarUrl}`}
+        className={styles.createPostImg}
+      />
       <input
         type="text"
         placeholder="Create Post"

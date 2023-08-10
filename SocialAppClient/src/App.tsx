@@ -1,10 +1,10 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
-import Home from "./pages/Home";
+import Home from "./features/home/Home";
 import UserProfile from "./features/userProfile/UserProfile";
 import AppLayout from "./ui/Layout/AppLayout";
 import { useAppDispatch } from "./store";
-import Login from "./pages/Login";
+import Login from "./features/identity/Login";
 import Register from "./features/identity/Register";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";

@@ -1,6 +1,10 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { failureToast } from "../../utils/toastDefinitions";
-import { GetUserProfileInformationRequest, SetProfileImageRequest, UserProfileInformation, userService } from "../../api/userService";
+import {
+  GetUserProfileInformationRequest,
+  SetProfileImageRequest, UserProfileInformation,
+  userService
+} from "../../api/userService";
 import { ApiError } from "../../api/models";
 import { GetPostsForUserRequest, Post, postService } from "../../api/postService";
 

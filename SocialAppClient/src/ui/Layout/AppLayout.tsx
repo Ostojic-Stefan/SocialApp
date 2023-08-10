@@ -1,6 +1,7 @@
 import { NavLink, Outlet } from "react-router-dom";
 import styles from "./AppLayout.module.css";
 import { useAppSelector } from "../../store";
+import Header from "../components/Header";
 
 function AppLayout() {
   const userInfo = useAppSelector(
@@ -9,12 +10,7 @@ function AppLayout() {
 
   return (
     <div className={styles.layout}>
-      <header className={styles.navbar}>
-        <div className={styles.flexContainer}>
-          <input type="text" placeholder="Search People" />
-        </div>
-      </header>
-
+      <Header />
       <aside className={styles.profile}>
         <NavLink to="/" className={styles.btn}>
           Home
