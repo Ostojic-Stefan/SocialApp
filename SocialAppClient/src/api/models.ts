@@ -1,11 +1,9 @@
-export class ApiError extends Error {
+export class ApiError {
     constructor(
         public statusCode: number,
         public title: string,
         public errorMessages: string[]
-    ) {
-        super();
-    }
+    ) { }
 }
 
 export type Result<TVal, TError> = {

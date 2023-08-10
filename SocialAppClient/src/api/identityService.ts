@@ -60,23 +60,23 @@ export type LoggedInUserInfomation = {
 
 interface IIdentityService {
     login: (request: UserLoginRequest) => Promise<Result<void, ApiError>>;
-    register: (request: UserRegisterRequest) =>Promise<Result<void, ApiError>>;
-    getCurrentUserInfo: () =>  Promise<Result<LoggedInUserInfomation, ApiError>>;
+    register: (request: UserRegisterRequest) => Promise<Result<void, ApiError>>;
+    getCurrentUserInfo: () => Promise<Result<LoggedInUserInfomation, ApiError>>;
 }
 
 export const identityService: IIdentityService = {
     login: async function (request: UserLoginRequest): Promise<Result<void, ApiError>> {
-        return await executeApiCall(async function() {
+        return await executeApiCall(async function () {
             await axiosInstance.post('identity/login', request);
         });
     },
     register: async function (request: UserRegisterRequest): Promise<Result<void, ApiError>> {
-        return await executeApiCall(async function() {
+        return await executeApiCall(async function () {
             await axiosInstance.post('identity/register', request);
         });
     },
     getCurrentUserInfo: async function (): Promise<Result<LoggedInUserInfomation, ApiError>> {
-        return await executeApiCall(async function() {
+        return await executeApiCall(async function () {
             const response = await axiosInstance.get<LoggedInUserInfomation>('identity/me');
             return response.data;
         })

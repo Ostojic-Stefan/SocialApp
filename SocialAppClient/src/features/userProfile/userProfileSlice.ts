@@ -1,56 +1,53 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { PostsForUserResponse, UserProfileInformation } from "./types";
-import { apiHandler } from "../../api/apiConfig";
 import { failureToast } from "../../utils/toastDefinitions";
-import { Post } from "../posts/types";
+import { GetUserProfileInformationRequest, SetProfileImageRequest, UserProfileInformation, userService } from "../../api/userService";
+import { ApiError } from "../../api/models";
+import { GetPostsForUserRequest, Post, postService } from "../../api/postService";
 
-export const uploadProfileImage = createAsyncThunk<string, FormData>(
-  "user/uploadProfileImage", async function(data, { rejectWithValue }) {
-    try {
-      const imageUrl = await apiHandler.user.uploadProfileImage(data);
-      return imageUrl;
-    } catch (error: any) {
-      return rejectWithValue(error);
+export const uploadProfileImage = createAsyncThunk<string, FormData, { rejectValue: ApiError }>(
+  "user/uploadProfileImage", async function (data, { rejectWithValue }) {
+    const result = await userService.uploadProfileImage(data);
+    if (result.hasError) {
+      return rejectWithValue(result.error);
     }
+    return result.value;
   }
 );
 
-export const setUserProfileImage = createAsyncThunk<boolean, string>(
-  'user/setUserProfileImage', async function(data, { rejectWithValue }) {
-    try {
-      const response = await apiHandler.user.setUserProfileImage(data);
-      return response;
-    } catch (error: any) {
-      return rejectWithValue(error);
+export const setUserProfileImage = createAsyncThunk<boolean, SetProfileImageRequest, { rejectValue: ApiError }>(
+  'user/setUserProfileImage', async function (data, { rejectWithValue }) {
+    const result = await userService.setProfileImage(data);
+    if (result.hasError) {
+      return rejectWithValue(result.error);
     }
+    return result.value;
   }
 )
 
-export const getPostsForUser = createAsyncThunk<Post[], {username: string}>(
-  'user/getPostsForUser', async function(data, { rejectWithValue }) {
-    try {
-      const posts = await apiHandler.post.getPostsForUser(data.username);
-      return posts;
-    } catch (error: any) {
-      return rejectWithValue(error);
+export const getPostsForUser = createAsyncThunk<Post[], GetPostsForUserRequest, { rejectValue: ApiError }>(
+  'user/getPostsForUser', async function (data, { rejectWithValue }) {
+    const result = await postService.getPostsForUser(data);
+    if (result.hasError) {
+      return rejectWithValue(result.error);
     }
+    return result.value;
   }
 );
 
-export const getUserProfileInformation = createAsyncThunk<UserProfileInformation, string>(
-  'user/getUserProfileInformation', async function(data, { rejectWithValue }) {
-    try {
-      const info = await apiHandler.user.getUserProfileInformation(data);
-      return info;
-    } catch (error: any) {
-      return rejectWithValue(error);
+export const getUserProfileInformation = createAsyncThunk<UserProfileInformation,
+  GetUserProfileInformationRequest, { rejectValue: ApiError }>(
+    'user/getUserProfileInformation', async function (data, { rejectWithValue }) {
+      const result = await userService.getUserProfileInformation(data);
+      if (result.hasError) {
+        return rejectWithValue(result.error);
+      }
+      return result.value;
     }
-  }
-);
+  );
 
 interface StateType {
-    userInfo?: UserProfileInformation,
-    posts: Post[]
+  userInfo?: UserProfileInformation,
+  posts: Post[]
 }
 
 const initialState: StateType = {
@@ -59,37 +56,39 @@ const initialState: StateType = {
 }
 
 const userProfile = createSlice({
-    name: 'user',
-    initialState,
-    reducers: {
-      clearState(state, _action) {
-        state.posts = [];
-        state.userInfo = undefined;
-      }
-    },
-    extraReducers(builder) {
-      builder.addCase(getPostsForUser.fulfilled, (state, action) => {
-        state.posts = action.payload;
-      });
-
-      builder.addCase(getPostsForUser.rejected, (_state, action) => {
-         // @ts-ignore
-         action.payload.messages.forEach((m: string) => {
-          failureToast(m);
-        });
-      });
-
-      builder.addCase(getUserProfileInformation.fulfilled, (state, action) => {
-        state.userInfo = action.payload;
-      });
-
-      builder.addCase(getUserProfileInformation.rejected, (_state, action) => {
-        // @ts-ignore
-        action.payload.messages.forEach((m: string) => {
-          failureToast(m);
-        });
-      });
+  name: 'user',
+  initialState,
+  reducers: {
+    clearState(state, _action) {
+      state.posts = [];
+      state.userInfo = undefined;
     }
+  },
+  extraReducers(builder) {
+    builder.addCase(getPostsForUser.fulfilled, (state, action) => {
+      state.posts = action.payload;
+    });
+
+    builder.addCase(getPostsForUser.rejected, (_state, action) => {
+      if (action.payload) {
+        action.payload.errorMessages.forEach((m: string) => {
+          failureToast(m);
+        });
+      }
+    });
+
+    builder.addCase(getUserProfileInformation.fulfilled, (state, action) => {
+      state.userInfo = action.payload;
+    });
+
+    builder.addCase(getUserProfileInformation.rejected, (_state, action) => {
+      if (action.payload) {
+        action.payload.errorMessages.forEach((m: string) => {
+          failureToast(m);
+        });
+      }
+    });
+  }
 });
 
 export const { clearState } = userProfile.actions;

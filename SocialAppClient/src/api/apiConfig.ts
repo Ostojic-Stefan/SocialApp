@@ -19,11 +19,11 @@ axiosInstance.interceptors.response.use(null, (error: AxiosError) => {
 
 export async function executeApiCall<TResult>(func: () => Promise<TResult>): Promise<Result<TResult, ApiError>> {
   try {
-      return { hasError: false, value: await func() }
+    return { hasError: false, value: await func() }
   } catch (error) {
-      if (error instanceof ApiError) {
-          return { hasError: true, error };
-      }
-      return { hasError: true, error: new ApiError(500, "Unknown Error", []) }
+    if (error instanceof ApiError) {
+      return { hasError: true, error };
+    }
+    return { hasError: true, error: new ApiError(500, "Unknown Error", []) }
   }
 }

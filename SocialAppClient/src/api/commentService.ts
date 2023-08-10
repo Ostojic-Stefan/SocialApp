@@ -40,14 +40,14 @@ interface ICommentService {
 
 export const commentService: ICommentService = {
     getCommentsOnAPost: async function (request: GetCommentOnAPostRequest): Promise<Result<CommentsFromPostResponse, ApiError>> {
-        return await executeApiCall(async function() {
+        return await executeApiCall(async function () {
             const response = await axiosInstance
                 .get<CommentsFromPostResponse>(`comments/posts/postId?postId=${request.postId}`);
             return response.data;
         })
     },
     addCommentToAPost: async function (request: AddCommentRequest): Promise<Result<AddCommentResponse, ApiError>> {
-        return await executeApiCall(async function() {
+        return await executeApiCall(async function () {
             const response = await axiosInstance.post<AddCommentResponse>('comments', request);
             return response.data;
         });

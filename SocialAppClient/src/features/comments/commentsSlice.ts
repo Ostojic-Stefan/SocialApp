@@ -12,7 +12,7 @@ const initialState: StateType = {
 }
 
 export const getCommentsByPostId = createAsyncThunk<CommentsFromPostResponse, string, { rejectValue: ApiError }>(
-    'comment/getCommentsById', async function(postId, { rejectWithValue }) {
+    'comment/getCommentsById', async function (postId, { rejectWithValue }) {
         const response = await commentService.getCommentsOnAPost({ postId });
         if (response.hasError) {
             return rejectWithValue(response.error);
@@ -22,7 +22,7 @@ export const getCommentsByPostId = createAsyncThunk<CommentsFromPostResponse, st
 )
 
 export const addCommentToAPost = createAsyncThunk<AddCommentResponse, AddCommentRequest, { rejectValue: ApiError }>(
-    'comment/addCommentToAPost', async function(data, { dispatch, rejectWithValue }) {
+    'comment/addCommentToAPost', async function (data, { dispatch, rejectWithValue }) {
         const response = await commentService.addCommentToAPost(data);
         if (response.hasError) {
             return rejectWithValue(response.error);
@@ -38,7 +38,7 @@ const commentsSlice = createSlice({
     reducers: {
         addComment(state, action) {
             state.data.find(d => d.postId === action.payload.postId)
-            ?.comments.push(action.payload.comment);
+                ?.comments.push(action.payload.comment);
         }
     },
     extraReducers(builder) {
@@ -48,7 +48,7 @@ const commentsSlice = createSlice({
             if (foundData) {
                 foundData.comments = action.payload.comments;
             } else {
-                state.data.push({ postId: postId, comments: action.payload.comments})
+                state.data.push({ postId: postId, comments: action.payload.comments })
             }
         });
 

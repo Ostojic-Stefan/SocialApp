@@ -1,12 +1,12 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { Post } from "./types";
-import { apiHandler } from "../../api/apiConfig";
 import { failureToast, successToast } from "../../utils/toastDefinitions";
+import { GetAllPostsResponse, Post, postService } from "../../api/postService";
+import { ApiError } from "../../api/models";
 
 interface StateType {
-    posts: Post[],
-    userPosts: {username: string, posts: Post[]}
-    isLoading: boolean;
+  posts: Post[],
+  userPosts: { username: string, posts: Post[] }
+  isLoading: boolean;
 }
 
 const initialState: StateType = {
@@ -18,62 +18,65 @@ const initialState: StateType = {
   }
 }
 
-export const getPosts = createAsyncThunk<Post[]>(
-    "post/getAll", async function(_arg, { rejectWithValue }) {
-      try {
-        const response = await apiHandler.post.getAll();
-        return response.items;
-      } catch (error: any) {
-        return rejectWithValue(error.message);
-      }
+export const getPosts = createAsyncThunk<GetAllPostsResponse, void, { rejectValue: ApiError }>(
+  "post/getAll", async function (_arg, { rejectWithValue }) {
+    const response = await postService.getAllPosts();
+    if (response.hasError) {
+      return rejectWithValue(response.error);
     }
-);
-
-export const uploadPost = createAsyncThunk<void, {formData: FormData, contents: string}>(
-  'post/upload', async function({formData, contents}, { dispatch, rejectWithValue }) {
-    try {
-      const imageUrl = await apiHandler.post.uploadImage(formData);
-      const response = await apiHandler.post.uploadPost({ imageUrl, contents});
-      dispatch(addPost(response));
-    } catch (error: any) {
-      return rejectWithValue(error);
-    }
+    return response.value;
   }
 );
 
-
+export const uploadPost = createAsyncThunk<void, { formData: FormData, contents: string }, { rejectValue: ApiError }>(
+  'post/upload', async function ({ formData, contents }, { dispatch, rejectWithValue }) {
+    const imgResult = await postService.uploadPostImage(formData);
+    if (imgResult.hasError) {
+      return rejectWithValue(imgResult.error);
+    }
+    const postResult = await postService.uploadPost({ contents, imageUrl: imgResult.value });
+    if (postResult.hasError) {
+      return rejectWithValue(postResult.error);
+    }
+    // TODO: refactor
+    dispatch(addPost(postResult.value));
+  }
+);
 
 const postSlice = createSlice({
-    name: 'post',
-    initialState,
-    reducers: {
-      addPost(state, action) {
-        state.posts.unshift(action.payload);
-      }
-    },
-    extraReducers(builder) {
-      builder.addCase(getPosts.pending, (state, _action) => {
-        state.isLoading = true;
-      })
-      builder.addCase(getPosts.fulfilled, (state, action) => {
-        state.posts = action.payload;
-        state.isLoading = false;
-      })
-      builder.addCase(getPosts.rejected, (state, action) => {
-        state.isLoading = false;
-      });
+  name: 'post',
+  initialState,
+  reducers: {
+    addPost(state, action) {
+      state.posts.unshift(action.payload);
+    }
+  },
+  extraReducers(builder) {
+    builder.addCase(getPosts.pending, (state, _action) => {
+      state.isLoading = true;
+    })
+    builder.addCase(getPosts.fulfilled, (state, action) => {
+      state.posts = action.payload.items;
+      state.isLoading = false;
+    })
+    builder.addCase(getPosts.rejected, (state, _action) => {
+      state.isLoading = false;
+    });
 
-      builder.addCase(uploadPost.fulfilled, (_state, _action) => {
-        successToast("Successfully created a post!")
-      });
+    builder.addCase(uploadPost.fulfilled, (_state, _action) => {
+      successToast("Successfully created a post!")
+    });
 
-      builder.addCase(uploadPost.rejected, (_state, action) => {
-         // @ts-ignore
-         action.payload.messages.forEach((m: string) => {
+    builder.addCase(uploadPost.rejected, (_state, action) => {
+      if (action.payload) {
+        action.payload.errorMessages.forEach((m: string) => {
           failureToast(m);
         });
-      });
-    }
+      } else {
+        failureToast("Failed to create a post");
+      }
+    });
+  }
 });
 
 export const { addPost } = postSlice.actions;

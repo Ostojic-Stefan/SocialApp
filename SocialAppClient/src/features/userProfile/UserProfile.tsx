@@ -11,11 +11,10 @@ function UserProfile() {
 
   useEffect(() => {
     if (username) {
-      dispatch(getUserProfileInformation(username));
+      dispatch(getUserProfileInformation({ username }));
     }
 
     return () => {
-      console.log("Unmountig");
       dispatch(clearState(null));
     };
   }, []);
