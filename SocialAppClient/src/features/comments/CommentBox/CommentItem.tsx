@@ -1,4 +1,4 @@
-import { CommentResponse } from "../../user/types";
+import { CommentResponse } from "../../../api/commentService";
 
 interface Props {
   comment: CommentResponse;

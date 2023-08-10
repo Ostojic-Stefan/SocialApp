@@ -1,8 +1,8 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { apiHandler } from "../../api/apiHandler";
 import { failureToast, successToast } from "../../utils/toastDefinitions";
-import { LoggedInUserInfomation, UserRegisterRequest } from "./types";
 import { setUserProfileImage, uploadProfileImage } from "../userProfile/userProfileSlice";
+import { LoggedInUserInfomation, UserLoginRequest, UserRegisterRequest, identityService } from "../../api/identityService";
+import { ApiError } from "../../api/models";
 
 interface StateType {
   userInfo?: LoggedInUserInfomation,
@@ -12,39 +12,36 @@ const initialState: StateType = {
   userInfo: undefined
 }
 
-// TODO: fix this
-export const login = createAsyncThunk<void, {email: string, password: string}>(
+export const login = createAsyncThunk<void, UserLoginRequest, { rejectValue: ApiError }>(
     "user/login", async function (data, { rejectWithValue }) {
-      try {
-        await apiHandler.identity.login(data)
-      } catch (error: any) {
-        return rejectWithValue(error);
+      const response = await identityService.login(data);
+      if (response.hasError) {
+        return rejectWithValue(response.error);
       }
+      return response.value;
     }
 );
 
-export const register = createAsyncThunk<void, UserRegisterRequest>(
+export const register = createAsyncThunk<void, UserRegisterRequest, { rejectValue: ApiError }>(
     "user/register", async function(data, { rejectWithValue, dispatch }) {
-      try {
-        await apiHandler.identity.register(data);
-        if (data.imageData) {
-          const avatarUrl = (await dispatch(uploadProfileImage(data.imageData))).payload as string;
-          await dispatch(setUserProfileImage(avatarUrl));
-        }
-      } catch (error: any) {
-        return rejectWithValue(error);
+      const response = await identityService.register(data);
+      if (response.hasError) {
+        return rejectWithValue(response.error);
+      }
+      if (data.imageData) {
+        const avatarUrl = (await dispatch(uploadProfileImage(data.imageData))).payload as string;
+        await dispatch(setUserProfileImage(avatarUrl));
       }
     }
 );
 
-export const getUserInformation = createAsyncThunk<LoggedInUserInfomation>(
+export const getUserInformation = createAsyncThunk<LoggedInUserInfomation, void, { rejectValue: ApiError }>(
     'user/getInfo', async function (_data, { rejectWithValue }) {
-      try {
-        const response = await apiHandler.identity.getLoggedInUserInformation();
-        return response;
-      } catch (error: any) {
-        return rejectWithValue(error);
+      const response = await identityService.getCurrentUserInfo();
+      if (response.hasError) {
+        return rejectWithValue(response.error);
       }
+      return response.value;
     }
 );
   
@@ -58,15 +55,26 @@ const identitySlice = createSlice({
         state.userInfo = action.payload;
       });
 
+      builder.addCase(getUserInformation.rejected, (_state, action) => {
+        if (action.payload) {
+          action.payload?.errorMessages.forEach((m: string) => {
+              failureToast(m);
+          });
+        }
+      });
+
       builder.addCase(register.fulfilled, (_state, _action) => {
         successToast('Successfuly Registered')
       });
 
       builder.addCase(register.rejected, (_state, action) => {
-        // @ts-ignore
-        action.payload.messages.forEach((m: string) => {
-          failureToast(m);
-        });
+        if (action.payload) {
+          action.payload?.errorMessages.forEach((m: string) => {
+              failureToast(m);
+          });
+        } else {
+            failureToast("Failed to register");
+        }
       });
 
       builder.addCase(login.fulfilled, (_state, _action) => {
@@ -74,10 +82,13 @@ const identitySlice = createSlice({
       });
 
       builder.addCase(login.rejected, (_state, action) => {
-        // @ts-ignore
-        action.payload.messages.forEach((m: string) => {
-          failureToast(m);
-        });
+        if (action.payload) {
+          action.payload?.errorMessages.forEach((m: string) => {
+              failureToast(m);
+          });
+        } else {
+            failureToast("Failed to login");
+        }
       });
     }
 });

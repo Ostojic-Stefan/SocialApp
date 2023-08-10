@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { Post } from "./types";
-import { apiHandler } from "../../api/apiHandler";
+import { apiHandler } from "../../api/apiConfig";
 import { failureToast, successToast } from "../../utils/toastDefinitions";
 
 interface StateType {

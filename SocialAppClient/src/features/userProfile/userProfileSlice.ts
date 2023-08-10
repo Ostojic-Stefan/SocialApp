@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { PostsForUserResponse, UserProfileInformation } from "./types";
-import { apiHandler } from "../../api/apiHandler";
+import { apiHandler } from "../../api/apiConfig";
 import { failureToast } from "../../utils/toastDefinitions";
 import { Post } from "../posts/types";
 
