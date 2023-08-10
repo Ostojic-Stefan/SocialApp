@@ -4,7 +4,7 @@ import CreatePostForm from "../posts/CreatePostForm/CreatePostForm";
 function Home() {
   return (
     <>
-      <CreatePostForm />
+      {/* <CreatePostForm /> */}
       <PostList />
     </>
   );

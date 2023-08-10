@@ -1,12 +1,12 @@
 .createPost {
-  width: 70%;
   display: flex;
-  gap: 10px;
-  align-items: center;
-  justify-content: space-between;
-  background-color: #292524;
-  padding: 10px 20px;
-  border-radius: 10px;
+  flex-direction: column;
+  gap: 30px;
+  font-family: sans-serif;
+}
+
+input[type="file"] {
+  display: none;
 }
 
 .createPostInput {
@@ -22,4 +22,43 @@
 .createPostImg {
   width: 40px;
   border-radius: 9999px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.inputContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  border: 2px solid #333;
+  background-color: #1d1b1a;
+  color: #999;
+  height: 200px;
+}
+
+.inputContainer p {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+}
+
+.btn {
+  border: none;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  background-color: #363534;
+  padding: 5px 10px;
+  color: #ddd;
+  font-weight: bold;
+  cursor: pointer;
 }

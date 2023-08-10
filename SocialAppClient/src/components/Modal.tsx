@@ -22,6 +22,8 @@ interface ModalStyles {
   backgroundColor: string;
   padding: string;
   zIndex: number;
+  width: string;
+  borderRadius: string;
 }
 
 interface OverlayStyles {
@@ -42,6 +44,8 @@ const modalStyles: ModalStyles = {
   backgroundColor: "#272523e0",
   padding: "50px",
   zIndex: 9999,
+  width: "40%",
+  borderRadius: "5px",
 };
 
 const overlayStyles: OverlayStyles = {
@@ -111,7 +115,7 @@ function Content({ children }: ModalContentProps) {
     <>
       <div style={overlayStyles} />
       <div ref={ref} style={modalStyles}>
-        <button onClick={() => setOpen(false)}>Close Modal</button>
+        {/* <button onClick={() => setOpen(false)}>Close Modal</button> */}
         {children}
       </div>
     </>,

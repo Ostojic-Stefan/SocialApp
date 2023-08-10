@@ -1,22 +1,19 @@
 import { ChangeEvent, FormEvent, useState } from "react";
 import styles from "./CreatePostForm.module.css";
-import { useAppDispatch, useAppSelector } from "../../../store";
+import { useAppDispatch } from "../../../store";
 import { uploadPost } from "../postSlice";
+import FileDropArea from "../../../components/FileDropArea";
 
 function CreatePostForm() {
   const dispatch = useAppDispatch();
-  const avatarUrl = useAppSelector((store) => store.user.userInfo?.avatarUrl);
-
-  const [file, setFile] = useState<File>();
   const [contents, setContents] = useState<string>("");
+  const [file, setFile] = useState<File>();
+  const [imagePreview, setImagePreview] = useState("");
 
-  function handleFileChange(ev: ChangeEvent<HTMLInputElement>): void {
-    if (ev.target.files) {
-      setFile(ev.target.files[0]);
-    }
-  }
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    console.log({ contents, file });
+
     if (!file) return;
 
     const formData = new FormData();
@@ -26,21 +23,57 @@ function CreatePostForm() {
     setContents("");
   }
 
+  function displayImage(file: File) {
+    const reader = new FileReader();
+    reader.onload = function (event) {
+      setImagePreview(event.target!.result as string);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function onFileChange(files: FileList): void {
+    setFile(files[0]);
+    displayImage(files[0]);
+  }
+
+  function handleFileChange(event: ChangeEvent<HTMLInputElement>): void {
+    if (event.target.files) {
+      setFile(event.target.files[0]);
+      displayImage(event.target.files[0]);
+    }
+  }
+
   return (
     <form onSubmit={handleSubmit} className={styles.createPost}>
-      <img
-        src={`http://localhost:5167/${avatarUrl}`}
-        className={styles.createPostImg}
-      />
+      <FileDropArea onFileChange={onFileChange}>
+        {!file ? (
+          <>
+            <p>Drag and Drop Image Or</p>
+            <label className={styles.btn}>
+              Upload
+              <input type="file" onChange={handleFileChange} />
+            </label>
+          </>
+        ) : (
+          `FileName: ${file.name}`
+        )}
+        <img width={150} src={imagePreview} />
+      </FileDropArea>
       <input
         type="text"
-        placeholder="Create Post"
+        placeholder="Enter text Here"
         value={contents}
         onChange={(e) => setContents(e.target.value)}
         className={styles.createPostInput}
-      ></input>
-      <input type="file" onChange={handleFileChange} />
-      <button className={styles.btn}>Submit</button>
+      />
+      <div className={styles.buttonContainer}>
+        <button className={styles.btn} onClick={() => {}}>
+          Cancel
+        </button>
+        <button type="submit" className={styles.btn}>
+          Submit
+        </button>
+      </div>
     </form>
   );
 }
