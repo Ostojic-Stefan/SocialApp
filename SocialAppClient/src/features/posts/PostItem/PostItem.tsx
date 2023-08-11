@@ -5,6 +5,9 @@ import { useState } from "react";
 import CommentBox from "../../comments/CommentBox/CommentBox";
 import { NavLink } from "react-router-dom";
 import { Post } from "../../../api/postService";
+import { useAppDispatch } from "../../../store";
+import { likePost } from "../postSlice";
+import { LikeReaction } from "../../../api/likeService";
 
 TimeAgo.addLocale(en);
 
@@ -13,6 +16,7 @@ interface Props {
 }
 
 function PostItem({ post }: Props) {
+  const dispatch = useAppDispatch();
   const [openCommentBox, setOpenCommentBox] = useState<boolean>(false);
   const timeAgo = new TimeAgo("en-US");
 
@@ -22,6 +26,10 @@ function PostItem({ post }: Props) {
 
   function handleOpenCommentBox(): void {
     setOpenCommentBox((curr) => !curr);
+  }
+
+  function handleLikePost(): void {
+    dispatch(likePost({ postId: post.id, reaction: LikeReaction.Like }));
   }
 
   return (
@@ -51,9 +59,11 @@ function PostItem({ post }: Props) {
         <span>{formatLike(post.numLikes)}</span>
       </div>
       <div className={styles.actions}>
-        <div className={styles.btnAction}>Like</div>
+        <div className={styles.btnAction} onClick={handleLikePost}>
+          Like
+        </div>
         <div className={styles.btnAction} onClick={handleOpenCommentBox}>
-          Comment
+          Comments ({post.numComments})
         </div>
         {openCommentBox && <CommentBox postId={post.id} />}
       </div>

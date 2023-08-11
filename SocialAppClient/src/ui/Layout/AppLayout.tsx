@@ -12,14 +12,26 @@ function AppLayout() {
     <div className={styles.layout}>
       <Header />
       <aside className={styles.profile}>
-        <NavLink to="/" className={styles.btn}>
-          Home
-        </NavLink>
-        <NavLink to={`/profile/${userInfo?.username}`} className={styles.btn}>
-          Profile
-        </NavLink>
-        <div className={styles.btn}>Messages</div>
-        <div className={styles.btn}>Notifications</div>
+        {userInfo ? (
+          <>
+            <NavLink to="/" className={styles.btn}>
+              Home
+            </NavLink>
+            <NavLink
+              to={`/profile/${userInfo?.username}`}
+              className={styles.btn}
+            >
+              Profile
+            </NavLink>
+            <div className={styles.btn}>Messages</div>
+            <div className={styles.btn}>Notifications</div>
+          </>
+        ) : (
+          <>
+            <NavLink to="/login">Login</NavLink>
+            <NavLink to="/register">Register</NavLink>
+          </>
+        )}
       </aside>
 
       <main className={styles.content}>

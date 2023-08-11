@@ -1,7 +1,7 @@
 import { FormEvent, useState } from "react";
 import { useAppDispatch } from "../../store";
 import { useNavigate } from "react-router-dom";
-import { login } from "./identitySlice";
+import { getUserInformation, login } from "./identitySlice";
 
 function Login() {
   const dispatch = useAppDispatch();
@@ -10,11 +10,11 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  function handleSubmit(e: FormEvent) {
-    e.preventDefault();
-    dispatch(login({ email, password }))
-      .unwrap()
-      .then(() => navigate("/"));
+  async function handleSubmit(event: FormEvent): Promise<void> {
+    event.preventDefault();
+    await dispatch(login({ email, password })).unwrap();
+    await dispatch(getUserInformation());
+    navigate("/");
   }
 
   return (

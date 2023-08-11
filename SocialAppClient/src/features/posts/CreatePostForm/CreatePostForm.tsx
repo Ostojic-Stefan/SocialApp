@@ -55,9 +55,8 @@ function CreatePostForm() {
             </label>
           </>
         ) : (
-          `FileName: ${file.name}`
+          <img width={150} src={imagePreview} />
         )}
-        <img width={150} src={imagePreview} />
       </FileDropArea>
       <input
         type="text"

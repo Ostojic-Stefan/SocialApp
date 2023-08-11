@@ -1,7 +1,7 @@
 import { ChangeEvent, FormEvent, useState } from "react";
 import { useAppDispatch } from "../../store";
 import { useNavigate } from "react-router-dom";
-import { register } from "./identitySlice";
+import { getUserInformation, register } from "./identitySlice";
 
 function Register() {
   const dispatch = useAppDispatch();
@@ -13,27 +13,20 @@ function Register() {
   const [biography, setBiography] = useState("");
   const [avatar, setAvatar] = useState<File>();
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>): Promise<void> {
     e.preventDefault();
     let imageData;
     if (avatar) {
       imageData = new FormData();
       imageData.append("img", avatar);
     }
-
-    dispatch(
-      register({
-        email,
-        password,
-        username,
-        imageData,
-        biography,
-      })
-    )
-      .unwrap()
-      .then(() => {
-        navigate("/");
-      });
+    try {
+      await dispatch(
+        register({ email, password, username, imageData, biography })
+      ).unwrap();
+      await dispatch(getUserInformation());
+      navigate("/");
+    } catch (error) {}
   }
 
   function handleFileChange(event: ChangeEvent<HTMLInputElement>): void {

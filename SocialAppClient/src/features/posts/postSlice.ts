@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { failureToast, successToast } from "../../utils/toastDefinitions";
 import { GetAllPostsResponse, Post, postService } from "../../api/postService";
 import { ApiError } from "../../api/models";
+import { AddLikeToPostRequest, AddLikeToPostResponse, DeleteLikeRequest, GetAllLikesForPostRequest, GetLikesForAPostResponse, likeService } from "../../api/likeService";
 
 interface StateType {
   posts: Post[],
@@ -43,12 +44,54 @@ export const uploadPost = createAsyncThunk<void, { formData: FormData, contents:
   }
 );
 
+export const likePost = createAsyncThunk<AddLikeToPostResponse, AddLikeToPostRequest, { rejectValue: ApiError }>(
+  "post/likePost", async function (data, { rejectWithValue }) {
+    const response = await likeService.addLikeToPost(data);
+    if (response.hasError) {
+      return rejectWithValue(response.error);
+    }
+    return response.value;
+  }
+);
+
+export const getLikesForPost = createAsyncThunk<GetLikesForAPostResponse, GetAllLikesForPostRequest, { rejectValue: ApiError }>(
+  "post/getLikesForPost", async function (data, { rejectWithValue }) {
+    const response = await likeService.getAllLikesForPost(data);
+    if (response.hasError) {
+      return rejectWithValue(response.error);
+    }
+    return response.value;
+  }
+);
+
+export const deleteLike = createAsyncThunk<void, DeleteLikeRequest, { rejectValue: ApiError }>(
+  "post/deleteLike", async function (data, { rejectWithValue }) {
+    const response = await likeService.deleteLike(data);
+    if (response.hasError) {
+      return rejectWithValue(response.error);
+    }
+    return response.value;
+  }
+);
+
 const postSlice = createSlice({
   name: 'post',
   initialState,
   reducers: {
     addPost(state, action) {
       state.posts.unshift(action.payload);
+    },
+    increaseCommentCount(state, action) {
+      const post = state.posts.find(p => p.id === action.payload.postId);
+      if (post) {
+        post.numComments += 1;
+      }
+    },
+    incrementLikeCount(state, action) {
+      const post = state.posts.find(p => p.id === action.payload.postId);
+      if (post) {
+        post.numLikes += 1;
+      }
     }
   },
   extraReducers(builder) {
@@ -76,9 +119,20 @@ const postSlice = createSlice({
         failureToast("Failed to create a post");
       }
     });
+
+    builder.addCase(likePost.fulfilled, (state, action) => {
+      successToast("Successfully liked post");
+    });
+    builder.addCase(likePost.rejected, (state, action) => {
+      if (action.payload) {
+        action.payload.errorMessages.forEach((m: string) => {
+          failureToast(m);
+        });
+      }
+    });
   }
 });
 
-export const { addPost } = postSlice.actions;
+export const { addPost, increaseCommentCount, incrementLikeCount } = postSlice.actions;
 
 export default postSlice.reducer;

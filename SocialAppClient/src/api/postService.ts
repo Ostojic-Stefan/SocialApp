@@ -19,6 +19,7 @@ export type Post = {
     updatedAt: Date;
     userInfo: UserInfo;
     numLikes: number;
+    numComments: number;
 }
 
 export type GetAllPostsResponse = {
