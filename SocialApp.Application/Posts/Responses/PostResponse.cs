@@ -1,7 +1,4 @@
-﻿using SocialApp.Application.Likes.Responses;
-using SocialApp.Domain;
-
-namespace SocialApp.Application.Posts.Responses;
+﻿namespace SocialApp.Application.Posts.Responses;
 
 public class PostResponse
 {
@@ -12,5 +9,5 @@ public class PostResponse
     public DateTime UpdatedAt { get; set; }
     public required UserInfo UserInfo { get; set; }
     public required int NumLikes { get; set; }
-    //public required IReadOnlyList<GetLikesForAPostResponse> PostLikes { get; set; }
+    public required int NumComments { get; set; }
 }

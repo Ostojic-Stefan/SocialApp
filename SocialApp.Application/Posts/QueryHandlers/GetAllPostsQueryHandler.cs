@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using EfCoreHelpers;
-using Microsoft.EntityFrameworkCore;
 using SocialApp.Application.Models;
 using SocialApp.Application.Posts.Queries;
 using SocialApp.Application.Posts.Responses;

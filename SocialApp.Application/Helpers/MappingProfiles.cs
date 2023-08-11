@@ -17,7 +17,8 @@ internal class MappingProfiles : Profile
             .ForMember(dest => dest.UserProfileId, opt => opt.MapFrom(src => src.Id));
         CreateMap<Post, PostResponse>()
             .ForMember(dest => dest.UserInfo, opt => opt.MapFrom(src => src.UserProfile))
-            .ForMember(dest => dest.NumLikes, opt => opt.MapFrom(src => src.Likes.Count()));
+            .ForMember(dest => dest.NumLikes, opt => opt.MapFrom(src => src.Likes.Count()))
+            .ForMember(dest => dest.NumComments, opt => opt.MapFrom(src => src.Comments.Count()));
 
         CreateMap<Post, PostsForUserResponse>();
         CreateMap<UserProfile, UserInformationResponse>()
@@ -49,6 +50,9 @@ internal class MappingProfiles : Profile
             .ForMember(x => x.LikerAvatarUrl, opt => opt.MapFrom(src => src.UserProfile.AvatarUrl))
             .ForMember(x => x.LikeId, opt => opt.MapFrom(src => src.Id))
             .ForMember(x => x.LikeReaction, opt => opt.MapFrom(src => src.LikeReaction));
+
+        CreateMap<PostLike, PostLikeResponse>()
+            .ForMember(x => x.UserInformation, opt => opt.MapFrom(src => src.UserProfile));
     }
 
 }
