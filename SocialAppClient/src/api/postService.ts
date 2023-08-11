@@ -11,7 +11,7 @@ export type UserInfo = {
     avatarUrl: string;
 }
 
-export type Post = {
+export type PostResponse = {
     id: string;
     imageUrl: string;
     contents: string;
@@ -23,7 +23,7 @@ export type Post = {
 }
 
 export type GetAllPostsResponse = {
-    items: Post[];
+    items: PostResponse[];
     pageNumber: number;
     pageSize: number;
     totalCount: number;
@@ -39,8 +39,8 @@ export type UploadPostRequest = {
 interface IPostService {
     getAllPosts: () => Promise<Result<GetAllPostsResponse, ApiError>>;
     uploadPostImage: (request: FormData) => Promise<Result<string, ApiError>>;
-    uploadPost: (request: UploadPostRequest) => Promise<Result<Post, ApiError>>;
-    getPostsForUser: (request: GetPostsForUserRequest) => Promise<Result<Post[], ApiError>>;
+    uploadPost: (request: UploadPostRequest) => Promise<Result<PostResponse, ApiError>>;
+    getPostsForUser: (request: GetPostsForUserRequest) => Promise<Result<PostResponse[], ApiError>>;
 }
 
 export const postService: IPostService = {
@@ -60,15 +60,15 @@ export const postService: IPostService = {
             return response.data;
         });
     },
-    uploadPost: async function (request: UploadPostRequest): Promise<Result<Post, ApiError>> {
+    uploadPost: async function (request: UploadPostRequest): Promise<Result<PostResponse, ApiError>> {
         return await executeApiCall(async function () {
-            const response = await axiosInstance.post<Post>('posts', request);
+            const response = await axiosInstance.post<PostResponse>('posts', request);
             return response.data;
         });
     },
-    getPostsForUser: async function (request: GetPostsForUserRequest): Promise<Result<Post[], ApiError>> {
+    getPostsForUser: async function (request: GetPostsForUserRequest): Promise<Result<PostResponse[], ApiError>> {
         return await executeApiCall(async function () {
-            const response = await axiosInstance.get<Post[]>(`posts/user/${request.username}`);
+            const response = await axiosInstance.get<PostResponse[]>(`posts/user/${request.username}`);
             return response.data;
         });
     }

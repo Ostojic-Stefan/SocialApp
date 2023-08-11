@@ -4,15 +4,16 @@ import en from "javascript-time-ago/locale/en";
 import { useState } from "react";
 import CommentBox from "../../comments/CommentBox/CommentBox";
 import { NavLink } from "react-router-dom";
-import { Post } from "../../../api/postService";
+import { PostResponse } from "../../../api/postService";
 import { useAppDispatch } from "../../../store";
 import { likePost } from "../postSlice";
 import { LikeReaction } from "../../../api/likeService";
+import LikeButton from "../LikeButton/LikeButton";
 
 TimeAgo.addLocale(en);
 
 interface Props {
-  post: Post;
+  post: PostResponse;
 }
 
 function PostItem({ post }: Props) {
@@ -59,9 +60,10 @@ function PostItem({ post }: Props) {
         <span>{formatLike(post.numLikes)}</span>
       </div>
       <div className={styles.actions}>
-        <div className={styles.btnAction} onClick={handleLikePost}>
+        <LikeButton />
+        {/* <div className={styles.btnAction} onClick={handleLikePost}>
           Like
-        </div>
+        </div> */}
         <div className={styles.btnAction} onClick={handleOpenCommentBox}>
           Comments ({post.numComments})
         </div>

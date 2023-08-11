@@ -1,12 +1,12 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { failureToast, successToast } from "../../utils/toastDefinitions";
-import { GetAllPostsResponse, Post, postService } from "../../api/postService";
+import { GetAllPostsResponse, PostResponse, postService } from "../../api/postService";
 import { ApiError } from "../../api/models";
-import { AddLikeToPostRequest, AddLikeToPostResponse, DeleteLikeRequest, GetAllLikesForPostRequest, GetLikesForAPostResponse, likeService } from "../../api/likeService";
+import { AddLikeToPostRequest, DeleteLikeRequest, GetAllLikesForPostRequest, GetLikesForAPostResponse, likeService } from "../../api/likeService";
 
 interface StateType {
-  posts: Post[],
-  userPosts: { username: string, posts: Post[] }
+  posts: PostResponse[],
+  userPosts: { username: string, posts: PostResponse[] }
   isLoading: boolean;
 }
 
@@ -44,7 +44,7 @@ export const uploadPost = createAsyncThunk<void, { formData: FormData, contents:
   }
 );
 
-export const likePost = createAsyncThunk<AddLikeToPostResponse, AddLikeToPostRequest, { rejectValue: ApiError }>(
+export const likePost = createAsyncThunk<PostResponse, AddLikeToPostRequest, { rejectValue: ApiError }>(
   "post/likePost", async function (data, { rejectWithValue }) {
     const response = await likeService.addLikeToPost(data);
     if (response.hasError) {
@@ -86,22 +86,18 @@ const postSlice = createSlice({
       if (post) {
         post.numComments += 1;
       }
-    },
-    incrementLikeCount(state, action) {
-      const post = state.posts.find(p => p.id === action.payload.postId);
-      if (post) {
-        post.numLikes += 1;
-      }
     }
   },
   extraReducers(builder) {
     builder.addCase(getPosts.pending, (state, _action) => {
       state.isLoading = true;
-    })
+    });
+
     builder.addCase(getPosts.fulfilled, (state, action) => {
       state.posts = action.payload.items;
       state.isLoading = false;
-    })
+    });
+
     builder.addCase(getPosts.rejected, (state, _action) => {
       state.isLoading = false;
     });
@@ -121,8 +117,13 @@ const postSlice = createSlice({
     });
 
     builder.addCase(likePost.fulfilled, (state, action) => {
-      successToast("Successfully liked post");
+      const idx = state.posts.findIndex(p => p.id === action.payload.id);
+      if (idx !== -1) {
+        state.posts[idx] = action.payload;
+        successToast("Successfully liked post");
+      }
     });
+
     builder.addCase(likePost.rejected, (state, action) => {
       if (action.payload) {
         action.payload.errorMessages.forEach((m: string) => {
@@ -133,6 +134,6 @@ const postSlice = createSlice({
   }
 });
 
-export const { addPost, increaseCommentCount, incrementLikeCount } = postSlice.actions;
+export const { addPost, increaseCommentCount } = postSlice.actions;
 
 export default postSlice.reducer;

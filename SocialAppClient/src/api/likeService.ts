@@ -1,6 +1,6 @@
 import { axiosInstance, executeApiCall } from "./apiConfig";
 import { ApiError, Result } from "./models";
-import { UserInfo } from "./postService";
+import { PostResponse, UserInfo } from "./postService";
 
 export enum LikeReaction {
     Like, Heart, Happy, Sad, TearsOfJoy
@@ -11,11 +11,11 @@ export type AddLikeToPostRequest = {
     reaction: LikeReaction;
 }
 
-export type AddLikeToPostResponse = {
-    likeReaction: LikeReaction;
-    userProfileId: string;
-    userInformation: UserInfo
-}
+// export type AddLikeToPostResponse = {
+//     likeReaction: LikeReaction;
+//     userProfileId: string;
+//     userInformation: UserInfo
+// }
 
 export type GetAllLikesForPostRequest = {
     postId: string;
@@ -39,16 +39,16 @@ export type DeleteLikeRequest = {
 }
 
 interface ILikeService {
-    addLikeToPost: (request: AddLikeToPostRequest) => Promise<Result<AddLikeToPostResponse, ApiError>>;
+    addLikeToPost: (request: AddLikeToPostRequest) => Promise<Result<PostResponse, ApiError>>;
     getAllLikesForPost: (request: GetAllLikesForPostRequest) => Promise<Result<GetLikesForAPostResponse, ApiError>>;
     deleteLike: (request: DeleteLikeRequest) => Promise<Result<void, ApiError>>;
 }
 
 export const likeService: ILikeService = {
-    addLikeToPost: async function (request: AddLikeToPostRequest): Promise<Result<AddLikeToPostResponse, ApiError>> {
+    addLikeToPost: async function (request: AddLikeToPostRequest): Promise<Result<PostResponse, ApiError>> {
         return await executeApiCall(async function () {
             const response = await axiosInstance
-                .post<AddLikeToPostResponse>(`likes/posts/${request.postId}`, { likeReaction: request.reaction });
+                .post<PostResponse>(`likes/posts/${request.postId}`, { likeReaction: request.reaction });
             return response.data;
         });
     },

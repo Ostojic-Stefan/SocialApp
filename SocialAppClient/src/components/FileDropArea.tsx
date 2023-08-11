@@ -1,14 +1,4 @@
-import { ChangeEvent, ReactNode, useEffect, useRef, useState } from "react";
-
-const btn = {
-  margin: "5px",
-  borderRadius: "5px",
-  backgroundColor: "#363534",
-  padding: "5px 10px",
-  color: "#ddd",
-  fontWeight: "bold",
-  cursor: "pointer",
-};
+import { ReactNode, useEffect, useRef, useState } from "react";
 
 interface Props {
   onFileChange: (file: FileList) => void;
