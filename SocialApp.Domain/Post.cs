@@ -38,6 +38,11 @@ public class Post : BaseEntity
         return newPost;
     }
 
+    public void AddLike(PostLike postLike)
+    {
+        _likes.Add(postLike);
+    }
+
     public void UpdateImageUrl(string imageUrl)
     {
         ImageUrl = imageUrl;

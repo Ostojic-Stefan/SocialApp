@@ -6,6 +6,7 @@ using SocialApp.Api.Filters;
 using SocialApp.Api.Requests.Likes;
 using SocialApp.Application.Likes.Commands;
 using SocialApp.Application.Likes.Queries;
+using SocialApp.Application.Posts.Commands;
 
 namespace SocialApp.Api.Controllers;
 
@@ -24,7 +25,7 @@ public class LikesController : BaseApiController
     public async Task<IActionResult> AddLikeToPost(string postId,
         AddLikeRequest addLikeRequest, CancellationToken cancellationToken)
     {
-        var command = new AddLikeToPostCommand
+        var command = new LikePostCommand
         {
             LikeReaction = addLikeRequest.LikeReaction,
             PostId = Guid.Parse(postId),
