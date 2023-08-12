@@ -2,14 +2,12 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using SocialApp.Api.Extensions;
 using SocialApp.Api.Filters;
 using SocialApp.Api.Requests.Identity;
 using SocialApp.Api.Requests.UserProfiles;
 using SocialApp.Application.UserProfiles.Commands;
 using SocialApp.Application.UserProfiles.Queries;
-using SocialApp.Domain;
 
 namespace SocialApp.Api.Controllers;
 
@@ -17,13 +15,11 @@ public class UserProfilesController : BaseApiController
 {
     private readonly IMediator _mediator;
     private readonly IWebHostEnvironment _environment;
-    private readonly IUnitOfWork unitOfWork;
 
-    public UserProfilesController(IMediator mediator, IWebHostEnvironment env, IUnitOfWork unitOfWork)
+    public UserProfilesController(IMediator mediator, IWebHostEnvironment env)
     {
         _mediator = mediator;
         _environment = env;
-        this.unitOfWork = unitOfWork;
     }
 
     [HttpPost]
@@ -107,5 +103,20 @@ public class UserProfilesController : BaseApiController
         if (response.HasError)
             return HandleError(response.Errors);
         return Ok();
+    }
+
+    [Route("friends")]
+    [HttpGet]
+    [Authorize]
+    public async Task<IActionResult> GetAllFriends(CancellationToken cancellationToken)
+    {
+        var query = new GetAllFriendsQuery
+        {
+            CurrenUserId = HttpContext.GetUserProfileId()
+        };
+        var response = await _mediator.Send(query, cancellationToken);
+        if (response.HasError)
+            return HandleError(response.Errors);
+        return Ok(response.Data);
     }
 }

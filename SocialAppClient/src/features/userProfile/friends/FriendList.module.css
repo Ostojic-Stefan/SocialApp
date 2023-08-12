@@ -1,0 +1,33 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 90vh;
+  overflow-y: scroll;
+}
+
+.heading {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+}
+
+.friendContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px;
+  padding: 10px 15px;
+  font-size: 18px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.friendContainer:hover {
+  background-color: #322f2c;
+}
+
+.imgStyle {
+  width: 50px;
+  height: 50px;
+  border-radius: 100px;
+}

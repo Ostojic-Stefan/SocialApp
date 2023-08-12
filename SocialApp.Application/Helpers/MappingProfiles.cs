@@ -39,6 +39,9 @@ internal class MappingProfiles : Profile
             .ForMember(x => x.RequesterAvatarUrl, opt => opt.MapFrom(src => src.SenderUser.AvatarUrl))
             .ForMember(x => x.RequestTimeSent, opt => opt.MapFrom(src => src.CreatedAt));
 
+        CreateMap<UserProfile, FriendResponse>()
+            .ForMember(x => x.UserProfileId, opt => opt.MapFrom(src => src.Id));
+
         CreateMap<Comment, CommentOnPost>()
             .ForMember(x => x.CommenterUsername, opt => opt.MapFrom(src => src.UserProfile.Username))
             .ForMember(x => x.CommenterAvatarUrl, opt => opt.MapFrom(src => src.UserProfile.AvatarUrl))

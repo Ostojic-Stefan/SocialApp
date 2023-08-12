@@ -1,12 +1,13 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { failureToast } from "../../utils/toastDefinitions";
 import {
+  FriendResponse,
   GetUserProfileInformationRequest,
   SetProfileImageRequest, UserProfileInformation,
   userService
 } from "../../api/userService";
 import { ApiError } from "../../api/models";
-import { GetPostsForUserRequest, Post, postService } from "../../api/postService";
+import { GetPostsForUserRequest, PostResponse, postService } from "../../api/postService";
 
 export const uploadProfileImage = createAsyncThunk<string, FormData, { rejectValue: ApiError }>(
   "user/uploadProfileImage", async function (data, { rejectWithValue }) {
@@ -28,7 +29,7 @@ export const setUserProfileImage = createAsyncThunk<boolean, SetProfileImageRequ
   }
 )
 
-export const getPostsForUser = createAsyncThunk<Post[], GetPostsForUserRequest, { rejectValue: ApiError }>(
+export const getPostsForUser = createAsyncThunk<PostResponse[], GetPostsForUserRequest, { rejectValue: ApiError }>(
   'user/getPostsForUser', async function (data, { rejectWithValue }) {
     const result = await postService.getPostsForUser(data);
     if (result.hasError) {
@@ -49,14 +50,26 @@ export const getUserProfileInformation = createAsyncThunk<UserProfileInformation
     }
   );
 
+export const getFriends = createAsyncThunk<FriendResponse[], void, { rejectValue: ApiError }>(
+  "user/getFriends", async function (_data, { rejectWithValue }) {
+    const result = await userService.getFriends();
+    if (result.hasError) {
+      return rejectWithValue(result.error);
+    }
+    return result.value;
+  }
+)
+
 interface StateType {
-  userInfo?: UserProfileInformation,
-  posts: Post[]
+  userInfo?: UserProfileInformation;
+  posts: PostResponse[];
+  friends: FriendResponse[];
 }
 
 const initialState: StateType = {
   userInfo: undefined,
-  posts: []
+  posts: [],
+  friends: []
 }
 
 const userProfile = createSlice({
@@ -86,6 +99,19 @@ const userProfile = createSlice({
     });
 
     builder.addCase(getUserProfileInformation.rejected, (_state, action) => {
+      if (action.payload) {
+        action.payload.errorMessages.forEach((m: string) => {
+          failureToast(m);
+        });
+      }
+    });
+
+    builder.addCase(getFriends.fulfilled, (state, action) => {
+      state.friends = action.payload;
+    });
+
+    builder.addCase(getFriends.rejected, (state, action) => {
+      console.log("Failed to Get Friends");
       if (action.payload) {
         action.payload.errorMessages.forEach((m: string) => {
           failureToast(m);

@@ -2,6 +2,7 @@ import { NavLink, Outlet } from "react-router-dom";
 import styles from "./AppLayout.module.css";
 import { useAppSelector } from "../../store";
 import Header from "../components/Header";
+import FriendList from "../../features/userProfile/friends/FriendList";
 
 function AppLayout() {
   const userInfo = useAppSelector(
@@ -37,7 +38,9 @@ function AppLayout() {
       <main className={styles.content}>
         <Outlet />
       </main>
-      <aside className={styles.friendList}>Firend List</aside>
+      <aside className={styles.friendList}>
+        <FriendList />
+      </aside>
     </div>
   );
 }

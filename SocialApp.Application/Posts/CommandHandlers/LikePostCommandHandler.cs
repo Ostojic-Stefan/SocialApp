@@ -28,6 +28,7 @@ internal class LikePostCommandHandler : DataContextRequestHandler<LikePostComman
             var repo = _unitOfWork.CreateReadWriteRepository<Post>();
             var post = await repo.Query()
                 .Include(p => p.Likes)
+                .ThenInclude(l => l.UserProfile)
                 .Include(p => p.UserProfile)
                 .FirstOrDefaultAsync(p => p.Id == request.PostId, cancellationToken);
             if (post is null)

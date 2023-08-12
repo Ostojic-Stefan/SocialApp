@@ -12,12 +12,15 @@ import { useEffect } from "react";
 import { getUserInformation } from "./features/identity/identitySlice";
 import UserProfilePosts from "./features/userProfile/posts/UserProfilePosts";
 import UserProfileComments from "./features/userProfile/comments/UserProfileComments";
+import { getFriends } from "./features/userProfile/userProfileSlice";
 
 function App() {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
+    // TODO: move to different component
     dispatch(getUserInformation());
+    dispatch(getFriends());
   }, []);
 
   return (
