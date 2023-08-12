@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using EfCoreHelpers;
+using Microsoft.EntityFrameworkCore;
 using SocialApp.Application.Models;
 using SocialApp.Application.Posts.Queries;
 using SocialApp.Application.Posts.Responses;
@@ -10,7 +11,7 @@ using SocialApp.Domain;
 namespace SocialApp.Application.Posts.QueryHandlers;
 
 internal class GetAllPostsQueryHandler
-    : DataContextRequestHandler<GetAllPostsQuery, Result<PagedList<PostResponse>>>
+    : DataContextRequestHandler<GetAllPostsQuery, Result<IReadOnlyList<PostResponse>>>
 {
     private readonly IMapper _mapper;
 
@@ -20,22 +21,39 @@ internal class GetAllPostsQueryHandler
         _mapper = mapper;
     }
 
-    public override async Task<Result<PagedList<PostResponse>>> Handle(GetAllPostsQuery request,
+    public override async Task<Result<IReadOnlyList<PostResponse>>> Handle(GetAllPostsQuery request,
         CancellationToken cancellationToken)
     {
-        var result = new Result<PagedList<PostResponse>>();
+        var result = new Result<IReadOnlyList<PostResponse>>();
         try
         {
             var repo = _unitOfWork.CreateReadOnlyRepository<Post>();
+            var likeRepo = _unitOfWork.CreateReadOnlyRepository<PostLike>();
 
-            var postsQuery = repo
+            var posts = await repo
                 .Query()
-                .OrderByDescending(x => x.CreatedAt)
-                .ProjectTo<PostResponse>(_mapper.ConfigurationProvider);
+                .Include(p => p.Likes)
+                .OrderByDescending(p => p.CreatedAt)
+                .Select(p => new PostResponse
+                {
+                    Id = p.Id,
+                    Contents = p.Contents,
+                    UserInfo = new UserInfo
+                    { 
+                        UserProfileId = p.UserProfileId,
+                        Username = p.UserProfile.Username,
+                        AvatarUrl = p.UserProfile.AvatarUrl,
+                    },
+                    ImageUrl = p.ImageUrl,
+                    NumComments = p.Comments.Count(),
+                    NumLikes = p.Likes.Count(),
+                    LikedByCurrentUser = p.Likes.Any(l => l.UserProfileId == request.CurrentUserId),
+                    CreatedAt = p.CreatedAt,
+                    UpdatedAt = p.UpdatedAt,
+                })
+                .ToListAsync(cancellationToken);
 
-            var postPager = new Pager<PostResponse>(request.PageSize, request.PageNumber);
-            var paginatedList = await postPager.ToPagedList(postsQuery, cancellationToken);
-            result.Data = paginatedList;
+            result.Data = posts;
         }
         catch (Exception ex)
         {

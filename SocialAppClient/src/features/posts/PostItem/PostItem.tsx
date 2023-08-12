@@ -60,14 +60,11 @@ function PostItem({ post }: Props) {
         <span>{formatLike(post.numLikes)}</span>
       </div>
       <div className={styles.actions}>
-        <LikeButton />
-        {/* <div className={styles.btnAction} onClick={handleLikePost}>
-          Like
-        </div> */}
+        <LikeButton post={post} />
         <div className={styles.btnAction} onClick={handleOpenCommentBox}>
           Comments ({post.numComments})
         </div>
-        {openCommentBox && <CommentBox postId={post.id} />}
+        {openCommentBox && <CommentBox post={post} />}
       </div>
     </div>
   );

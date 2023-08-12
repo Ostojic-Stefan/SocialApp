@@ -27,11 +27,13 @@ public class PostsController : BaseApiController
     }
 
     [HttpGet]
+    [Authorize]
     public async Task<IActionResult> GetPosts([FromQuery] PagedRequest pagedRequest,
         CancellationToken cancellationToken)
     {
         var query = new GetAllPostsQuery
         {
+            CurrentUserId = HttpContext.GetUserProfileId(),
             PageNumber = pagedRequest.PageNumber,
             PageSize = pagedRequest.PageSize
         };

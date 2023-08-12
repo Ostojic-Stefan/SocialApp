@@ -1,6 +1,6 @@
 import { axiosInstance, executeApiCall } from "./apiConfig";
 import { ApiError, Result } from "./models";
-import { PostResponse, UserInfo } from "./postService";
+import { PostResponse } from "./postService";
 
 export enum LikeReaction {
     Like, Heart, Happy, Sad, TearsOfJoy

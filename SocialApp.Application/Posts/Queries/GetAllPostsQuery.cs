@@ -6,8 +6,9 @@ using SocialApp.Application.Services;
 namespace SocialApp.Application.Posts.Queries;
 
 public class GetAllPostsQuery 
-    : IRequest<Result<PagedList<PostResponse>>>
+    : IRequest<Result<IReadOnlyList<PostResponse>>>
 {
+    public required Guid CurrentUserId { get; set; }
     public required int PageSize { get; set; }
     public required int PageNumber { get; set; }
 }

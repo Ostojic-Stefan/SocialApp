@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { failureToast, successToast } from "../../utils/toastDefinitions";
-import { GetAllPostsResponse, PostResponse, postService } from "../../api/postService";
+import { PostResponse, postService } from "../../api/postService";
 import { ApiError } from "../../api/models";
 import { AddLikeToPostRequest, DeleteLikeRequest, GetAllLikesForPostRequest, GetLikesForAPostResponse, likeService } from "../../api/likeService";
 
@@ -19,7 +19,7 @@ const initialState: StateType = {
   }
 }
 
-export const getPosts = createAsyncThunk<GetAllPostsResponse, void, { rejectValue: ApiError }>(
+export const getPosts = createAsyncThunk<PostResponse[], void, { rejectValue: ApiError }>(
   "post/getAll", async function (_arg, { rejectWithValue }) {
     const response = await postService.getAllPosts();
     if (response.hasError) {
@@ -94,7 +94,7 @@ const postSlice = createSlice({
     });
 
     builder.addCase(getPosts.fulfilled, (state, action) => {
-      state.posts = action.payload.items;
+      state.posts = action.payload;
       state.isLoading = false;
     });
 

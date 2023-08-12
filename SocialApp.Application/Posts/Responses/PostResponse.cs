@@ -10,4 +10,5 @@ public class PostResponse
     public required UserInfo UserInfo { get; set; }
     public required int NumLikes { get; set; }
     public required int NumComments { get; set; }
+    public required bool LikedByCurrentUser { get; set; }
 }

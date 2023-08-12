@@ -2,24 +2,25 @@ import { useEffect, useState } from "react";
 import CommentItem from "./CommentItem";
 import { useAppDispatch, useAppSelector } from "../../../store";
 import { addCommentToAPost, getCommentsByPostId } from "../commentsSlice";
+import { PostResponse } from "../../../api/postService";
 
 interface Props {
-  postId: string;
+  post: PostResponse;
 }
 
-function CommentBox({ postId }: Props) {
+function CommentBox({ post }: Props) {
   const [comment, setComment] = useState("");
   const dispatch = useAppDispatch();
   const comments = useAppSelector(
-    (store) => store.comment.data.find((d) => d.postId == postId)?.comments
+    (store) => store.comment.data.find((d) => d.postId == post.id)?.comments
   );
 
   useEffect(() => {
-    dispatch(getCommentsByPostId(postId));
+    dispatch(getCommentsByPostId(post.id));
   }, []);
 
   function submitComment(): void {
-    dispatch(addCommentToAPost({ contents: comment, postId }));
+    dispatch(addCommentToAPost({ contents: comment, postId: post.id }));
   }
 
   return (

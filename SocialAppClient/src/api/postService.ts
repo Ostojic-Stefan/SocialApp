@@ -20,15 +20,16 @@ export type PostResponse = {
     userInfo: UserInfo;
     numLikes: number;
     numComments: number;
+    likedByCurrentUser: boolean;
 }
 
-export type GetAllPostsResponse = {
-    items: PostResponse[];
-    pageNumber: number;
-    pageSize: number;
-    totalCount: number;
-    totalPages: number;
-}
+// export type GetAllPostsResponse = {
+//     items: PostResponse[];
+//     pageNumber: number;
+//     pageSize: number;
+//     totalCount: number;
+//     totalPages: number;
+// }
 
 export type UploadPostRequest = {
     contents: string;
@@ -37,16 +38,16 @@ export type UploadPostRequest = {
 
 
 interface IPostService {
-    getAllPosts: () => Promise<Result<GetAllPostsResponse, ApiError>>;
+    getAllPosts: () => Promise<Result<PostResponse[], ApiError>>;
     uploadPostImage: (request: FormData) => Promise<Result<string, ApiError>>;
     uploadPost: (request: UploadPostRequest) => Promise<Result<PostResponse, ApiError>>;
     getPostsForUser: (request: GetPostsForUserRequest) => Promise<Result<PostResponse[], ApiError>>;
 }
 
 export const postService: IPostService = {
-    getAllPosts: async function (): Promise<Result<GetAllPostsResponse, ApiError>> {
+    getAllPosts: async function (): Promise<Result<PostResponse[], ApiError>> {
         return await executeApiCall(async function () {
-            const response = await axiosInstance.get<GetAllPostsResponse>('posts');
+            const response = await axiosInstance.get<PostResponse[]>('posts');
             return response.data;
         });
     },
