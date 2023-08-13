@@ -20,6 +20,8 @@ internal class MappingProfiles : Profile
             .ForMember(dest => dest.NumLikes, opt => opt.MapFrom(src => src.Likes.Count()))
             .ForMember(dest => dest.NumComments, opt => opt.MapFrom(src => src.Comments.Count()));
 
+        CreateMap<PostLike, PostLikeDeleteResponse>();
+
         CreateMap<Post, PostsForUserResponse>();
         CreateMap<UserProfile, UserInformationResponse>()
             .ForMember(uip => uip.UserProfileId, opt => opt.MapFrom(src => src.Id));

@@ -31,27 +31,33 @@ internal class GetAllPostsQueryHandler
             var likeRepo = _unitOfWork.CreateReadOnlyRepository<PostLike>();
 
             var posts = await repo
-                .Query()
-                .Include(p => p.Likes)
-                .OrderByDescending(p => p.CreatedAt)
-                .Select(p => new PostResponse
-                {
-                    Id = p.Id,
-                    Contents = p.Contents,
-                    UserInfo = new UserInfo
-                    { 
-                        UserProfileId = p.UserProfileId,
-                        Username = p.UserProfile.Username,
-                        AvatarUrl = p.UserProfile.AvatarUrl,
-                    },
-                    ImageUrl = p.ImageUrl,
-                    NumComments = p.Comments.Count(),
-                    NumLikes = p.Likes.Count(),
-                    LikedByCurrentUser = p.Likes.Any(l => l.UserProfileId == request.CurrentUserId),
-                    CreatedAt = p.CreatedAt,
-                    UpdatedAt = p.UpdatedAt,
-                })
-                .ToListAsync(cancellationToken);
+             .Query()
+             .Include(p => p.Likes)
+             .OrderByDescending(p => p.CreatedAt)
+             .Select(p => new PostResponse
+             {
+                 Id = p.Id,
+                 Contents = p.Contents,
+                 UserInfo = new UserInfo
+                 {
+                     UserProfileId = p.UserProfileId,
+                     Username = p.UserProfile.Username,
+                     AvatarUrl = p.UserProfile.AvatarUrl,
+                 },
+                 ImageUrl = p.ImageUrl,
+                 NumComments = p.Comments.Count(),
+                 NumLikes = p.Likes.Count(),
+                 LikeInfo = p.Likes.Any(l => l.UserProfileId == request.CurrentUserId)
+                     ? new LikeInfo
+                     {
+                         LikedByCurrentUser = true,
+                         LikeId = p.Likes.First(l => l.UserProfileId == request.CurrentUserId).Id,
+                     }
+                     : null,
+                 CreatedAt = p.CreatedAt,
+                 UpdatedAt = p.UpdatedAt,
+             })
+             .ToListAsync(cancellationToken);
 
             result.Data = posts;
         }

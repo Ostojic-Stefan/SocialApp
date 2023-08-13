@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using SocialApp.Api.Extensions;
 using SocialApp.Api.Filters;
 using SocialApp.Api.Requests.Likes;
-using SocialApp.Application.Likes.Commands;
 using SocialApp.Application.Likes.Queries;
 using SocialApp.Application.Posts.Commands;
 
@@ -74,7 +73,7 @@ public class LikesController : BaseApiController
     [ValidateGuids("likeId")]
     public async Task<IActionResult> DeleteLike(string likeId, CancellationToken cancellationToken)
     {
-        var command = new DeleteLikeCommand
+        var command = new DeletePostLikeCommand
         {
             LikeId = Guid.Parse(likeId),
             UserProfileId = HttpContext.GetUserProfileId()

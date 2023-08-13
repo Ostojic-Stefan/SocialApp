@@ -9,7 +9,7 @@ using SocialApp.Domain.Exceptions;
 
 namespace SocialApp.Application.Posts.CommandHandlers;
 
-internal class LikePostCommandHandler : DataContextRequestHandler<LikePostCommand, Result<PostResponse>>
+internal class LikePostCommandHandler : DataContextRequestHandler<LikePostCommand, Result<PostLikeAddResponse>>
 {
     private readonly IMapper _mapper;
 
@@ -19,10 +19,10 @@ internal class LikePostCommandHandler : DataContextRequestHandler<LikePostComman
         _mapper = mapper;
     }
 
-    public override async Task<Result<PostResponse>> Handle(LikePostCommand request,
+    public override async Task<Result<PostLikeAddResponse>> Handle(LikePostCommand request,
         CancellationToken cancellationToken)
     {
-        var result = new Result<PostResponse>();
+        var result = new Result<PostLikeAddResponse>();
         try
         {
             var repo = _unitOfWork.CreateReadWriteRepository<Post>();
@@ -38,7 +38,7 @@ internal class LikePostCommandHandler : DataContextRequestHandler<LikePostComman
                     $"Post with id of {request.PostId} does not exist");
                 return result;
             }
-            if (post.Likes.Any(l => l.UserProfile.Id == request.UserProfileId)) 
+            if (post.Likes.Any(l => l.UserProfile.Id == request.UserProfileId))
             {
                 result.AddError(AppErrorCode.DuplicateEntry, $"You Have already liked this post");
                 return result;
@@ -47,7 +47,14 @@ internal class LikePostCommandHandler : DataContextRequestHandler<LikePostComman
                 request.UserProfileId, request.LikeReaction);
             post.AddLike(postLike);
             await _unitOfWork.SaveAsync(cancellationToken);
-            result.Data = _mapper.Map<PostResponse>(post);
+
+            result.Data = new PostLikeAddResponse
+            {
+                LikeId = postLike.Id,
+                PostId = post.Id
+            };
+            //result.Data = _mapper.Map<PostLikeAddResponse>(post);
+            //result.Data = _mapper.Map<PostResponse>(post);
         }
         catch (ModelInvalidException ex)
         {

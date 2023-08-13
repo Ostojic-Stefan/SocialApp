@@ -11,6 +11,11 @@ export type UserInfo = {
     avatarUrl: string;
 }
 
+export type LikeInfo = {
+    likeId: string;
+    likedByCurrentUser: boolean;
+}
+
 export type PostResponse = {
     id: string;
     imageUrl: string;
@@ -20,7 +25,7 @@ export type PostResponse = {
     userInfo: UserInfo;
     numLikes: number;
     numComments: number;
-    likedByCurrentUser: boolean;
+    likeInfo?: LikeInfo;
 }
 
 // export type GetAllPostsResponse = {

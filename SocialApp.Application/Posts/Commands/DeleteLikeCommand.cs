@@ -1,13 +1,10 @@
 ﻿using MediatR;
 using SocialApp.Application.Models;
 using SocialApp.Application.Posts.Responses;
-using SocialApp.Domain;
 
 namespace SocialApp.Application.Posts.Commands;
-
-public class LikePostCommand : IRequest<Result<PostLikeAddResponse>>
+public class DeletePostLikeCommand : IRequest<Result<PostLikeDeleteResponse>>
 {
+    public required Guid LikeId { get; set; }
     public required Guid UserProfileId { get; set; }
-    public required Guid PostId { get; set; }
-    public required LikeReaction LikeReaction { get; set; }
 }

@@ -6,7 +6,7 @@ import CommentBox from "../../comments/CommentBox/CommentBox";
 import { NavLink } from "react-router-dom";
 import { PostResponse } from "../../../api/postService";
 import { useAppDispatch } from "../../../store";
-import { likePost } from "../postSlice";
+import { deleteLike, likePost } from "../postSlice";
 import { LikeReaction } from "../../../api/likeService";
 import LikeButton from "../LikeButton/LikeButton";
 
@@ -29,8 +29,12 @@ function PostItem({ post }: Props) {
     setOpenCommentBox((curr) => !curr);
   }
 
-  function handleLikePost(): void {
-    dispatch(likePost({ postId: post.id, reaction: LikeReaction.Like }));
+  function handleLikeClick(reaction: LikeReaction): void {
+    dispatch(likePost({ postId: post.id, reaction }));
+  }
+
+  function handleUnlike(): void {
+    dispatch(deleteLike({ likeId: post.likeInfo?.likeId! }));
   }
 
   return (
@@ -60,10 +64,16 @@ function PostItem({ post }: Props) {
         <span>{formatLike(post.numLikes)}</span>
       </div>
       <div className={styles.actions}>
-        <LikeButton post={post} />
+        {!post.likeInfo ? (
+          <LikeButton post={post} onClick={handleLikeClick} />
+        ) : (
+          <button onClick={handleUnlike}>UnLike</button>
+        )}
+
         <div className={styles.btnAction} onClick={handleOpenCommentBox}>
           Comments ({post.numComments})
         </div>
+
         {openCommentBox && <CommentBox post={post} />}
       </div>
     </div>

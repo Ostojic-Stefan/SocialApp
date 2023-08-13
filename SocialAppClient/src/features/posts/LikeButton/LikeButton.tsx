@@ -4,17 +4,15 @@ import styles from "./LikeButton.module.css";
 import Popup from "../../../components/Popup";
 import LikeReactions from "../../../ui/components/LikeReactions";
 import { LikeReaction } from "../../../api/likeService";
-import { useAppDispatch } from "../../../store";
-import { deleteLike, likePost } from "../postSlice";
 import { PostResponse } from "../../../api/postService";
 
 interface Props {
   post: PostResponse;
+  onClick: (reaction: LikeReaction) => void;
 }
 
-function LikeButton({ post }: Props) {
+function LikeButton({ post, onClick }: Props) {
   const ref = useRef<HTMLButtonElement>(null);
-  const dispatch = useAppDispatch();
   const [isHovered, setIsHovered] = useState(false);
   const [isInsidePopup, setIsInsidePopup] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -36,12 +34,7 @@ function LikeButton({ post }: Props) {
   }
 
   function handleLikeClick(reaction: LikeReaction): void {
-    if (!post.likedByCurrentUser) {
-      dispatch(likePost({ postId: post.id, reaction }));
-    } else {
-      // dispatch(deleteLike({ likeId: }));
-    }
-    console.log(reaction);
+    onClick(reaction);
   }
 
   return (
@@ -57,10 +50,12 @@ function LikeButton({ post }: Props) {
         onMouseLeave={hidePopup}
         className={styles.btnAction}
         style={{
-          borderBottom: post.likedByCurrentUser ? "2px solid yellow" : "",
+          borderBottom: post.likeInfo?.likedByCurrentUser
+            ? "2px solid yellow"
+            : "",
         }}
       >
-        Like
+        {post.likeInfo ? "UnLike" : "Like"}
       </button>
     </div>
   );
