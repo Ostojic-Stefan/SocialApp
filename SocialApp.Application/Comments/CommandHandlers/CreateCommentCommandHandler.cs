@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EfCoreHelpers;
+using Microsoft.EntityFrameworkCore;
 using SocialApp.Application.Comments.Commands;
 using SocialApp.Application.Comments.Responses;
 using SocialApp.Application.Models;
@@ -37,7 +38,11 @@ internal class CreateCommentCommandHandler
                 .CreateReadWriteRepository<Comment>();
             commentRepo.Add(comment);
             await _unitOfWork.SaveAsync(cancellationToken);
-            result.Data = _mapper.Map<CommentResponse>(comment);
+            result.Data = _mapper.Map<CommentResponse>(await commentRepo
+                .QueryById(comment.Id)
+                .Include(c => c.UserProfile)
+                .FirstAsync(cancellationToken)
+            );
         }
         catch (ModelInvalidException ex)
         {

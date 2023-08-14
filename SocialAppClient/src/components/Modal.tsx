@@ -41,9 +41,9 @@ const modalStyles: ModalStyles = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  backgroundColor: "#272523e0",
-  padding: "50px",
-  zIndex: 9999,
+  backgroundColor: "#272523",
+  // padding: "50px",
+  zIndex: 3,
   width: "40%",
   borderRadius: "5px",
 };
@@ -51,7 +51,7 @@ const modalStyles: ModalStyles = {
 const overlayStyles: OverlayStyles = {
   position: "fixed",
   backgroundColor: "rgba(0, 0, 0, 0.7)",
-  zIndex: 9999,
+  zIndex: 3,
   top: 0,
   bottom: 0,
   left: 0,

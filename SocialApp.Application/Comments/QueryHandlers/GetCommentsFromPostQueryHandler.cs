@@ -40,6 +40,7 @@ internal class GetCommentsFromPostQueryHandler
             var commentRepo = _unitOfWork.CreateReadWriteRepository<Comment>();
             var comments = await commentRepo
                 .Query()
+                .Include(c => c.UserProfile)
                 .Where(c => c.PostId == request.PostId)
                 .ToListAsync(cancellationToken);
 

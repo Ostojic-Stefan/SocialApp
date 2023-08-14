@@ -9,6 +9,7 @@ import { useAppDispatch } from "../../../store";
 import { deleteLike, likePost } from "../postSlice";
 import { LikeReaction } from "../../../api/likeService";
 import LikeButton from "../LikeButton/LikeButton";
+import Modal from "../../../components/Modal";
 
 TimeAgo.addLocale(en);
 
@@ -70,11 +71,16 @@ function PostItem({ post }: Props) {
           <button onClick={handleUnlike}>UnLike</button>
         )}
 
-        <div className={styles.btnAction} onClick={handleOpenCommentBox}>
-          Comments ({post.numComments})
-        </div>
-
-        {openCommentBox && <CommentBox post={post} />}
+        <Modal>
+          <Modal.Open>
+            <div className={styles.btnAction} onClick={handleOpenCommentBox}>
+              Comments ({post.numComments})
+            </div>
+          </Modal.Open>
+          <Modal.Content>
+            <CommentBox post={post} />
+          </Modal.Content>
+        </Modal>
       </div>
     </div>
   );

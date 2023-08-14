@@ -24,6 +24,8 @@ export type CommentResponse = {
     contents: string;
     // postId: string;
     userProfileId: string;
+    avatarUrl: string;
+    username: string;
     createdAt: Date;
     updatedAt: Date;
 }

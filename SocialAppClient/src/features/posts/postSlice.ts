@@ -117,9 +117,10 @@ const postSlice = createSlice({
     });
 
     builder.addCase(likePost.fulfilled, (state, action) => {
-      const idx = state.posts.findIndex(p => p.id === action.payload.postId); // postId
+      const idx = state.posts.findIndex(p => p.id === action.payload.postId);
       if (idx !== -1) {
-        state.posts[idx].likeInfo = { likedByCurrentUser: true, likeId: action.payload.likeId }; // likeId
+        state.posts[idx].likeInfo = { likedByCurrentUser: true, likeId: action.payload.likeId };
+        state.posts[idx].numLikes += 1;
         successToast("Successfully liked post");
       }
     });
@@ -136,6 +137,7 @@ const postSlice = createSlice({
       const post = state.posts.find(p => p.id === action.payload.postId);
       if (post) {
         post.likeInfo = undefined;
+        post.numLikes -= 1;
       }
     });
 
