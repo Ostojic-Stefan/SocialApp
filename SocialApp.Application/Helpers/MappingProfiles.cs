@@ -28,11 +28,14 @@ internal class MappingProfiles : Profile
         CreateMap<UserProfile, UserInformationResponse>()
             .ForMember(uip => uip.UserProfileId, opt => opt.MapFrom(src => src.Id));
 
-        CreateMap<UserProfile, LikeUserInfo>();
+        //CreateMap<UserProfile, LikeUserInfo>();
 
-        //CreateMap<PostLike, PostLikeResponse>();
-        CreateMap<PostLike, GetLikesForAPostResponse>()
-            .ForMember(x => x.UserInformation, opt => opt.MapFrom(src => src.UserProfile));
+        //CreateMap<PostLike, LikeInfo>()
+        //    .ForMember(x => x.UserInformation, opt => opt.MapFrom(src => src.UserProfile));
+
+        CreateMap<Post, GetLikesForAPostResponse>()
+            .ForMember(x => x.LikeInfo, opt => opt.MapFrom(src => src.Likes))
+            .ForMember(x => x.PostId, opt => opt.MapFrom(src => src.Id));
 
         CreateMap<UserProfile, UserInformation>()
             .ForMember(x => x.UserId, opt => opt.MapFrom(src => src.Id));

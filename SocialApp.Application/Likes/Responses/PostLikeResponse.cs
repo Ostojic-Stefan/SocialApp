@@ -5,7 +5,7 @@ namespace SocialApp.Application.Likes.Responses;
 
 public class PostLikeResponse
 {
+    public required Guid Id { get; set; }
     public required LikeReaction LikeReaction { get; set; }
-    public Guid UserProfileId { get; set; }
     public required UserInfo UserInformation { get; set; }
 }

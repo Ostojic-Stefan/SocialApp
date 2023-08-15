@@ -1,5 +1,6 @@
 import { axiosInstance, executeApiCall } from "./apiConfig";
 import { ApiError, Result } from "./models";
+import { UserInfo } from "./postService";
 
 export enum LikeReaction {
     Like, Heart, Happy, Sad, TearsOfJoy
@@ -10,27 +11,18 @@ export type AddLikeToPostRequest = {
     reaction: LikeReaction;
 }
 
-// export type AddLikeToPostResponse = {
-//     likeReaction: LikeReaction;
-//     userProfileId: string;
-//     userInformation: UserInfo
-// }
-
 export type GetAllLikesForPostRequest = {
     postId: string;
 }
 
-export type LikeUserInfo = {
-    id: string;
-    username: string;
-    avatarUrl: string;
-}
-
-export type GetLikesForAPostResponse = {
-    id: string;
+export type LikeForAPostResponse = {
     postId: string;
-    likeReaction: LikeReaction;
-    userInformation: LikeUserInfo
+    likeInfo: {
+        likeReaction: LikeReaction;
+        id: string;
+        likeUserInformation: UserInfo
+    }[];
+    likedByUser: boolean;
 }
 
 export type DeleteLikeRequest = {
@@ -41,28 +33,23 @@ export type DeleteLikeResponse = {
     postId: string;
 }
 
-export type PostLikeAddResponse = {
-    postId: string;
-    likeId: string;
-}
-
 interface ILikeService {
-    addLikeToPost: (request: AddLikeToPostRequest) => Promise<Result<PostLikeAddResponse, ApiError>>;
-    getAllLikesForPost: (request: GetAllLikesForPostRequest) => Promise<Result<GetLikesForAPostResponse, ApiError>>;
+    addLikeToPost: (request: AddLikeToPostRequest) => Promise<Result<LikeForAPostResponse, ApiError>>;
+    getAllLikesForPost: (request: GetAllLikesForPostRequest) => Promise<Result<LikeForAPostResponse, ApiError>>;
     deleteLike: (request: DeleteLikeRequest) => Promise<Result<DeleteLikeResponse, ApiError>>;
 }
 
 export const likeService: ILikeService = {
-    addLikeToPost: async function (request: AddLikeToPostRequest): Promise<Result<PostLikeAddResponse, ApiError>> {
+    addLikeToPost: async function (request: AddLikeToPostRequest): Promise<Result<LikeForAPostResponse, ApiError>> {
         return await executeApiCall(async function () {
             const response = await axiosInstance
-                .post<PostLikeAddResponse>(`likes/posts/${request.postId}`, { likeReaction: request.reaction });
+                .post<LikeForAPostResponse>(`likes/posts/${request.postId}`, { likeReaction: request.reaction });
             return response.data;
         });
     },
-    getAllLikesForPost: async function (request: GetAllLikesForPostRequest): Promise<Result<GetLikesForAPostResponse, ApiError>> {
+    getAllLikesForPost: async function (request: GetAllLikesForPostRequest): Promise<Result<LikeForAPostResponse, ApiError>> {
         return await executeApiCall(async function () {
-            const response = await axiosInstance.get<GetLikesForAPostResponse>(`likes/posts/${request.postId}`);
+            const response = await axiosInstance.get<LikeForAPostResponse>(`likes/posts/${request.postId}`);
             return response.data;
         });
     },

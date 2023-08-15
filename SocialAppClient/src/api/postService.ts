@@ -22,8 +22,8 @@ export type PostResponse = {
     contents: string;
     createdAt: Date;
     updatedAt: Date;
-    userInfo: UserInfo;
     numLikes: number;
+    userInfo: UserInfo;
     numComments: number;
     likeInfo?: LikeInfo;
 }

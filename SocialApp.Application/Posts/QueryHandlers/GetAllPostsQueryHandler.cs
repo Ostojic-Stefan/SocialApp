@@ -48,7 +48,7 @@ internal class GetAllPostsQueryHandler
                  NumComments = p.Comments.Count(),
                  NumLikes = p.Likes.Count(),
                  LikeInfo = p.Likes.Any(l => l.UserProfileId == request.CurrentUserId)
-                     ? new LikeInfo
+                     ? new PostLikeInfo
                      {
                          LikedByCurrentUser = true,
                          LikeId = p.Likes.First(l => l.UserProfileId == request.CurrentUserId).Id,

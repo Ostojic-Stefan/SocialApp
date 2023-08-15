@@ -1,6 +1,6 @@
 ﻿namespace SocialApp.Application.Posts.Responses;
 
-public class LikeInfo
+public class PostLikeInfo
 {
     public required Guid LikeId { get; set; }
     public required bool LikedByCurrentUser { get; set; }
@@ -14,7 +14,7 @@ public class PostResponse
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
     public required UserInfo UserInfo { get; set; }
-    public LikeInfo? LikeInfo { get; set; }
+    public PostLikeInfo? LikeInfo { get; set; }
     public required int NumLikes { get; set; }
     public required int NumComments { get; set; }
 }

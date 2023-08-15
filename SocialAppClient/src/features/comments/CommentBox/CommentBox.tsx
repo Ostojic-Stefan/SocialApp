@@ -1,28 +1,44 @@
 import { useEffect, useState } from "react";
 import CommentItem from "../CommentItem/CommentItem";
-import { useAppDispatch, useAppSelector } from "../../../store";
+import { RootState, useAppDispatch, useAppSelector } from "../../../store";
 import { addCommentToAPost, getCommentsByPostId } from "../commentsSlice";
 import { PostResponse } from "../../../api/postService";
 import styles from "./styles.module.css";
 import { NavLink } from "react-router-dom";
+import { createSelector } from "@reduxjs/toolkit";
 
 interface Props {
   post: PostResponse;
 }
 
+export const selectNumLikesAndComments = (postId: string) =>
+  createSelector(
+    (state: RootState) => state.post.posts.find((p) => p.id === postId),
+    (foundPost) => ({
+      numLikes: foundPost?.numLikes,
+      numComments: foundPost?.numComments,
+    })
+  );
+
 function CommentBox({ post }: Props) {
   const [comment, setComment] = useState("");
   const dispatch = useAppDispatch();
+
   const comments = useAppSelector(
     (store) => store.comment.data.find((d) => d.postId == post.id)?.comments
   );
-  const { numLikes, numComments } = useAppSelector((store) => {
-    const foundPost = store.post.posts.find((p) => p.id === post.id);
-    return {
-      numLikes: foundPost?.numLikes,
-      numComments: foundPost?.numComments,
-    };
-  });
+
+  const { numLikes, numComments } = useAppSelector(
+    selectNumLikesAndComments(post.id)
+  );
+
+  // const { numLikes, numComments } = useAppSelector((store) => {
+  //   const foundPost = store.post.posts.find((p) => p.id === post.id);
+  //   return {
+  //     numLikes: foundPost?.numLikes!,
+  //     numComments: foundPost?.numComments!,
+  //   };
+  // });
 
   useEffect(() => {
     dispatch(getCommentsByPostId(post.id));

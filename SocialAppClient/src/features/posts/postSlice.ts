@@ -2,7 +2,6 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { failureToast, successToast } from "../../utils/toastDefinitions";
 import { PostResponse, postService } from "../../api/postService";
 import { ApiError } from "../../api/models";
-import { AddLikeToPostRequest, DeleteLikeRequest, DeleteLikeResponse, GetAllLikesForPostRequest, GetLikesForAPostResponse, PostLikeAddResponse, likeService } from "../../api/likeService";
 
 interface StateType {
   posts: PostResponse[],
@@ -44,35 +43,7 @@ export const uploadPost = createAsyncThunk<void, { formData: FormData, contents:
   }
 );
 
-export const likePost = createAsyncThunk<PostLikeAddResponse, AddLikeToPostRequest, { rejectValue: ApiError }>(
-  "post/likePost", async function (data, { rejectWithValue }) {
-    const response = await likeService.addLikeToPost(data);
-    if (response.hasError) {
-      return rejectWithValue(response.error);
-    }
-    return response.value;
-  }
-);
 
-export const getLikesForPost = createAsyncThunk<GetLikesForAPostResponse, GetAllLikesForPostRequest, { rejectValue: ApiError }>(
-  "post/getLikesForPost", async function (data, { rejectWithValue }) {
-    const response = await likeService.getAllLikesForPost(data);
-    if (response.hasError) {
-      return rejectWithValue(response.error);
-    }
-    return response.value;
-  }
-);
-
-export const deleteLike = createAsyncThunk<DeleteLikeResponse, DeleteLikeRequest, { rejectValue: ApiError }>(
-  "post/deleteLike", async function (data, { rejectWithValue }) {
-    const response = await likeService.deleteLike(data);
-    if (response.hasError) {
-      return rejectWithValue(response.error);
-    }
-    return response.value;
-  }
-);
 
 const postSlice = createSlice({
   name: 'post',
@@ -116,30 +87,30 @@ const postSlice = createSlice({
       }
     });
 
-    builder.addCase(likePost.fulfilled, (state, action) => {
-      const idx = state.posts.findIndex(p => p.id === action.payload.postId);
-      if (idx !== -1) {
-        state.posts[idx].likeInfo = { likedByCurrentUser: true, likeId: action.payload.likeId };
-        state.posts[idx].numLikes += 1;
-        successToast("Successfully liked post");
-      }
-    });
+    // builder.addCase(likePost.fulfilled, (state, action) => {
+    //   const idx = state.posts.findIndex(p => p.id === action.payload.postId);
+    //   if (idx !== -1) {
+    //     state.posts[idx].likeInfo = { likedByCurrentUser: true, likeId: action.payload.likeId };
+    //     state.posts[idx].numLikes += 1;
+    //     successToast("Successfully liked post");
+    //   }
+    // });
 
-    builder.addCase(likePost.rejected, (_state, action) => {
-      if (action.payload) {
-        action.payload.errorMessages.forEach((m: string) => {
-          failureToast(m);
-        });
-      }
-    });
+    // builder.addCase(likePost.rejected, (_state, action) => {
+    //   if (action.payload) {
+    //     action.payload.errorMessages.forEach((m: string) => {
+    //       failureToast(m);
+    //     });
+    //   }
+    // });
 
-    builder.addCase(deleteLike.fulfilled, (state, action) => {
-      const post = state.posts.find(p => p.id === action.payload.postId);
-      if (post) {
-        post.likeInfo = undefined;
-        post.numLikes -= 1;
-      }
-    });
+    // builder.addCase(deleteLike.fulfilled, (state, action) => {
+    //   const post = state.posts.find(p => p.id === action.payload.postId);
+    //   if (post) {
+    //     post.likeInfo = undefined;
+    //     post.numLikes -= 1;
+    //   }
+    // });
 
   }
 });

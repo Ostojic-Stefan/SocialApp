@@ -4,13 +4,15 @@ import postReducer from './features/posts/postSlice';
 import commentReducer from './features/comments/commentsSlice';
 import identityReducer from './features/identity/identitySlice';
 import userReducer from './features/userProfile/userProfileSlice';
+import likeReducer from './features/likes/likeSlice';
 
 const store = configureStore({
   reducer: {
     identity: identityReducer,
     post: postReducer,
     user: userReducer,
-    comment: commentReducer
+    comment: commentReducer,
+    like: likeReducer
   }
 });
 

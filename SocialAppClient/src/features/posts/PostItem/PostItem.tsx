@@ -1,15 +1,16 @@
 import styles from "./PostItem.module.css";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
-import { useState } from "react";
 import CommentBox from "../../comments/CommentBox/CommentBox";
 import { NavLink } from "react-router-dom";
 import { PostResponse } from "../../../api/postService";
-import { useAppDispatch } from "../../../store";
-import { deleteLike, likePost } from "../postSlice";
+import { useAppDispatch, useAppSelector } from "../../../store";
 import { LikeReaction } from "../../../api/likeService";
 import LikeButton from "../LikeButton/LikeButton";
 import Modal from "../../../components/Modal";
+import LikeList from "../../likes/LikeList/LikeList";
+import { deleteLike, getLikesForPost, likePost } from "../../likes/likeSlice";
+import { useEffect } from "react";
 
 TimeAgo.addLocale(en);
 
@@ -19,23 +20,29 @@ interface Props {
 
 function PostItem({ post }: Props) {
   const dispatch = useAppDispatch();
-  const [openCommentBox, setOpenCommentBox] = useState<boolean>(false);
+  const numLikes = useAppSelector((store) => {
+    const likes = store.like.likes.find((l) => l.postId === post.id)?.likeInfo;
+    return likes?.length;
+  });
+
   const timeAgo = new TimeAgo("en-US");
+
+  useEffect(() => {
+    dispatch(getLikesForPost({ postId: post.id }));
+  }, []);
 
   function formatLike(likeNum: number): string {
     return `${likeNum} ${likeNum === 1 ? "like" : "likes"}`;
   }
 
-  function handleOpenCommentBox(): void {
-    setOpenCommentBox((curr) => !curr);
+  async function handleLikeClick(reaction: LikeReaction): Promise<void> {
+    await dispatch(likePost({ postId: post.id, reaction }));
+    await dispatch(getLikesForPost({ postId: post.id }));
   }
 
-  function handleLikeClick(reaction: LikeReaction): void {
-    dispatch(likePost({ postId: post.id, reaction }));
-  }
-
-  function handleUnlike(): void {
-    dispatch(deleteLike({ likeId: post.likeInfo?.likeId! }));
+  async function handleUnlike(): Promise<void> {
+    await dispatch(deleteLike({ likeId: post.likeInfo?.likeId! }));
+    await dispatch(getLikesForPost({ postId: post.id }));
   }
 
   return (
@@ -61,9 +68,16 @@ function PostItem({ post }: Props) {
           className={styles.postImage}
         />
       </div>
-      <div className={styles.likes}>
-        <span>{formatLike(post.numLikes)}</span>
-      </div>
+      <Modal>
+        <Modal.Open>
+          <div className={styles.likes}>
+            <span>{numLikes && formatLike(numLikes)}</span>
+          </div>
+        </Modal.Open>
+        <Modal.Content>
+          <LikeList postId={post.id} />
+        </Modal.Content>
+      </Modal>
       <div className={styles.actions}>
         {!post.likeInfo ? (
           <LikeButton post={post} onClick={handleLikeClick} />
@@ -73,7 +87,7 @@ function PostItem({ post }: Props) {
 
         <Modal>
           <Modal.Open>
-            <div className={styles.btnAction} onClick={handleOpenCommentBox}>
+            <div className={styles.btnAction}>
               Comments ({post.numComments})
             </div>
           </Modal.Open>
