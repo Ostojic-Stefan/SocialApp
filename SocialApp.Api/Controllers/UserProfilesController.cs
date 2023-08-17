@@ -1,5 +1,4 @@
-﻿using EfCoreHelpers;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SocialApp.Api.Extensions;

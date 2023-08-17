@@ -12,7 +12,7 @@ function FriendList() {
           <div className={styles.friendContainer} key={friend.userProfileId}>
             <img
               className={styles.imgStyle}
-              src={`http://localhost:5167/${friend.avatarUrl}`}
+              src={friend.avatarUrl}
             />
             <span>{friend.username}</span>
           </div>
