@@ -27,7 +27,7 @@ public class IdentityController : BaseApiController
     }
 
     [HttpPost]
-    [Route("register")]
+    [Route("identity/register")]
     [ValidateModel]
     public async Task<IActionResult> Register(RegisterRequest registerRequest)
     {
@@ -45,7 +45,7 @@ public class IdentityController : BaseApiController
     }
 
     [HttpPost]
-    [Route("login")]
+    [Route("identity/login")]
     [ValidateModel]
     public async Task<IActionResult> Login(LoginRequest loginRequest)
     {
@@ -64,7 +64,7 @@ public class IdentityController : BaseApiController
     }
 
     [HttpGet]
-    [Route("me")]
+    [Route("identity/me")]
     [Authorize]
     public async Task<IActionResult> Me()
     {

@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SocialApp.Api.Extensions;
@@ -13,15 +12,14 @@ namespace SocialApp.Api.Controllers;
 public class CommentsController : BaseApiController
 {
     private readonly IMediator _mediator;
-    private readonly IMapper _mapper;
 
-    public CommentsController(IMediator mediator, IMapper mapper)
+    public CommentsController(IMediator mediator)
     {
         _mediator = mediator;
-        _mapper = mapper;
     }
 
     [HttpPost]
+    [Route("posts/{postId}/comments")]
     [Authorize]
     [ValidateModel]
     public async Task<IActionResult> AddCommentToPost(CreateComment createComment,
@@ -41,7 +39,7 @@ public class CommentsController : BaseApiController
     }
 
     [HttpGet]
-    [Route("posts/postId")]
+    [Route("posts/{postId}/comments")]
     [ValidateGuids("postId")]
     [Authorize]
     public async Task<IActionResult> GetAllCommentsFromPost(Guid postId,
@@ -59,7 +57,7 @@ public class CommentsController : BaseApiController
     }
 
     [HttpGet]
-    [Route("commentId")]
+    [Route("comments/{commentId}")]
     [ValidateGuids("commentId")]
     public async Task<IActionResult> GetCommentById(Guid commentId,
         CancellationToken cancellationToken)

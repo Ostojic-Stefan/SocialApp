@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SocialApp.Api.Extensions;
@@ -14,17 +13,16 @@ namespace SocialApp.Api.Controllers;
 public class PostsController : BaseApiController
 {
     private readonly IMediator _mediator;
-    private readonly IMapper _mapper;
     private readonly IWebHostEnvironment _environment;
 
-    public PostsController(IMediator mediator, IMapper mapper, IWebHostEnvironment environment)
+    public PostsController(IMediator mediator, IWebHostEnvironment environment)
     {
         _mediator = mediator;
-        _mapper = mapper;
         _environment = environment;
     }
 
     [HttpGet]
+    [Route("posts")]
     [Authorize]
     public async Task<IActionResult> GetPosts([FromQuery] PagedRequest pagedRequest,
         CancellationToken cancellationToken)
@@ -42,7 +40,7 @@ public class PostsController : BaseApiController
     }
 
     [HttpGet]
-    [Route("{postId}")]
+    [Route("posts/{postId}")]
     [Authorize]
     [ValidateGuids("postId")]
     public async Task<IActionResult> GetPostById(string postId,
@@ -56,6 +54,7 @@ public class PostsController : BaseApiController
     }
 
     [HttpPost]
+    [Route("posts")]
     [Authorize]
     [ValidateModel]
     public async Task<IActionResult> CreatePost(CreatePostRequest createPost,
@@ -75,7 +74,7 @@ public class PostsController : BaseApiController
     }
 
     [HttpPut]
-    [Route("{postId}")]
+    [Route("posts/{postId}")]
     [Authorize]
     [ValidateGuids("postId")]
     [ValidateModel]
@@ -96,7 +95,7 @@ public class PostsController : BaseApiController
     }
 
     [HttpDelete]
-    [Route("{postId}")]
+    [Route("posts/{postId}")]
     [Authorize]
     [ValidateGuids("postId")]
     public async Task<IActionResult> DeletePost(string postId,
@@ -113,27 +112,9 @@ public class PostsController : BaseApiController
         return Ok(response.Data);
     }
 
-    [HttpPost]
-    [Route("upload")]
-    [Authorize]
-    [ValidateModel]
-    public async Task<IActionResult> UploadPostImage([FromForm] UploadPostImageRequest uploadPostImage)
-    {
-        var command = new UploadImageCommand
-        {
-            UserProfileId = HttpContext.GetUserProfileId(),
-            ImageStream = uploadPostImage.Img.OpenReadStream(),
-            DirPath = $"{_environment.WebRootPath}/Posts",
-            ImageName = $"{uploadPostImage.Img.FileName}"
-        };
-        var response = await _mediator.Send(command);
-        if (response.HasError)
-            return HandleError(response.Errors);
-        return Ok(response.Data);
-    }
 
     [HttpGet]
-    [Route("user/{username}")]
+    [Route("users/{username}/posts")]
     [ValidateModel]
     public async Task<IActionResult> GetPostsForUser(string username)
     {

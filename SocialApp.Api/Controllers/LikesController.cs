@@ -20,7 +20,7 @@ public class LikesController : BaseApiController
     }
 
     [HttpPost]
-    [Route("posts/{postId}")]
+    [Route("posts/{postId}/likes")]
     [ValidateGuids("postId")]
     public async Task<IActionResult> AddLikeToPost(string postId,
         AddLikeRequest addLikeRequest, CancellationToken cancellationToken)
@@ -38,7 +38,7 @@ public class LikesController : BaseApiController
     }
 
     [HttpGet]
-    [Route("posts/{postId}")]
+    [Route("posts/{postId}/likes")]
     [ValidateGuids("postId")]
     public async Task<IActionResult> GetAllLikesForAPost(string postId, CancellationToken cancellationToken)
     {
@@ -54,8 +54,7 @@ public class LikesController : BaseApiController
     }
 
     [HttpGet]
-    [Route("users/{username}")]
-    [ValidateGuids("postId")]
+    [Route("users/{username}/likes")]
     public async Task<IActionResult> GetAllLikesByUser(string username, CancellationToken cancellationToken)
     {
         var query = new GetLikesByUserQuery
@@ -70,9 +69,9 @@ public class LikesController : BaseApiController
     }
 
     [HttpDelete]
-    [Route("{likeId}")]
+    [Route("posts/{postId}/likes/{likeId}")]
     [ValidateGuids("likeId")]
-    public async Task<IActionResult> DeleteLike(string likeId, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeleteLike(string postId, string likeId, CancellationToken cancellationToken)
     {
         var command = new DeletePostLikeCommand
         {
