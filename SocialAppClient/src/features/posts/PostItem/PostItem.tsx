@@ -4,13 +4,13 @@ import en from "javascript-time-ago/locale/en";
 import CommentBox from "../../comments/CommentBox/CommentBox";
 import { NavLink } from "react-router-dom";
 import { PostResponse } from "../../../api/postService";
-import { useAppDispatch, useAppSelector } from "../../../store";
+import { useAppDispatch } from "../../../store";
 import { LikeReaction } from "../../../api/likeService";
 import LikeButton from "../LikeButton/LikeButton";
 import Modal from "../../../components/Modal";
 import LikeList from "../../likes/LikeList/LikeList";
-import { deleteLike, getLikesForPost, likePost } from "../../likes/likeSlice";
-import { useEffect } from "react";
+import { deleteLike, likePost } from "../../likes/likeSlice";
+import { getPostById } from "../postSlice";
 
 TimeAgo.addLocale(en);
 
@@ -20,16 +20,8 @@ interface Props {
 
 function PostItem({ post }: Props) {
   const dispatch = useAppDispatch();
-  const numLikes = useAppSelector((store) => {
-    const likes = store.like.likes.find((l) => l.postId === post.id)?.likeInfo;
-    return likes?.length;
-  });
 
   const timeAgo = new TimeAgo("en-US");
-
-  useEffect(() => {
-    dispatch(getLikesForPost({ postId: post.id }));
-  }, []);
 
   function formatLike(likeNum: number): string {
     return `${likeNum} ${likeNum === 1 ? "like" : "likes"}`;
@@ -37,12 +29,12 @@ function PostItem({ post }: Props) {
 
   async function handleLikeClick(reaction: LikeReaction): Promise<void> {
     await dispatch(likePost({ postId: post.id, reaction }));
-    await dispatch(getLikesForPost({ postId: post.id }));
+    await dispatch(getPostById(post.id));
   }
 
   async function handleUnlike(): Promise<void> {
     await dispatch(deleteLike({ likeId: post.likeInfo?.likeId! }));
-    await dispatch(getLikesForPost({ postId: post.id }));
+    await dispatch(getPostById(post.id));
   }
 
   return (
@@ -71,7 +63,7 @@ function PostItem({ post }: Props) {
       <Modal>
         <Modal.Open>
           <div className={styles.likes}>
-            <span>{numLikes && formatLike(numLikes)}</span>
+            <span>{formatLike(post.numLikes)}</span>
           </div>
         </Modal.Open>
         <Modal.Content>

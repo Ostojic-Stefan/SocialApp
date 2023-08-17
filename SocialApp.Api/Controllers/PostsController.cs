@@ -45,11 +45,12 @@ public class PostsController : BaseApiController
 
     [HttpGet]
     [Route("{postId}")]
+    [Authorize]
     [ValidateGuids("postId")]
     public async Task<IActionResult> GetPostById(string postId,
         CancellationToken cancellationToken)
     {
-        var query = new GetPostByIdQuery { PostId = Guid.Parse(postId) };
+        var query = new GetPostByIdQuery { PostId = Guid.Parse(postId), CurrentUserId = HttpContext.GetUserProfileId() };
         var response = await _mediator.Send(query, cancellationToken);
         if (response.HasError)
             return HandleError(response.Errors);

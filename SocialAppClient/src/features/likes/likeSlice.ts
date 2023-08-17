@@ -43,7 +43,9 @@ export const deleteLike = createAsyncThunk<DeleteLikeResponse, DeleteLikeRequest
 const likeSlice = createSlice({
     name: 'like',
     initialState,
-    reducers: {},
+    reducers: {
+        
+    },
     extraReducers: function (builder) {
         builder.addCase(getLikesForPost.fulfilled, (state, action) => {
             const likes = state.likes.find(l => l.postId === action.payload.postId);
@@ -52,9 +54,7 @@ const likeSlice = createSlice({
             } else {
                 state.likes.push(action.payload);
             }
-        });
-
-        builder.addCase(getLikesForPost.rejected, (_state, action) => {
+        }).addCase(getLikesForPost.rejected, (_state, action) => {
             console.log(action.error);
         });
     }

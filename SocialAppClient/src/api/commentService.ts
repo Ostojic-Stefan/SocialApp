@@ -35,7 +35,7 @@ export type CommentsFromPostResponse = {
     comments: CommentResponse[]
 }
 
-interface ICommentService {
+export interface ICommentService {
     getCommentsOnAPost: (request: GetCommentOnAPostRequest) => Promise<Result<CommentsFromPostResponse, ApiError>>;
     addCommentToAPost: (request: AddCommentRequest) => Promise<Result<AddCommentResponse, ApiError>>;
 }

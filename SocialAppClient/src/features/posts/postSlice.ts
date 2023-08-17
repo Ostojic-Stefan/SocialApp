@@ -5,17 +5,12 @@ import { ApiError } from "../../api/models";
 
 interface StateType {
   posts: PostResponse[],
-  userPosts: { username: string, posts: PostResponse[] }
   isLoading: boolean;
 }
 
 const initialState: StateType = {
   posts: [],
   isLoading: false,
-  userPosts: {
-    username: "",
-    posts: []
-  }
 }
 
 export const getPosts = createAsyncThunk<PostResponse[], void, { rejectValue: ApiError }>(
@@ -27,6 +22,16 @@ export const getPosts = createAsyncThunk<PostResponse[], void, { rejectValue: Ap
     return response.value;
   }
 );
+
+export const getPostById = createAsyncThunk<PostResponse, string, { rejectValue: ApiError }>(
+  'post/getById', async function (data, { rejectWithValue }) {
+    const response = await postService.getPostById(data);
+    if (response.hasError) {
+      return rejectWithValue(response.error);
+    }
+    return response.value;
+  }
+)
 
 export const uploadPost = createAsyncThunk<void, { formData: FormData, contents: string }, { rejectValue: ApiError }>(
   'post/upload', async function ({ formData, contents }, { dispatch, rejectWithValue }) {
@@ -43,8 +48,6 @@ export const uploadPost = createAsyncThunk<void, { formData: FormData, contents:
   }
 );
 
-
-
 const postSlice = createSlice({
   name: 'post',
   initialState,
@@ -59,59 +62,37 @@ const postSlice = createSlice({
       }
     }
   },
-  extraReducers(builder) {
+  extraReducers: function (builder) {
     builder.addCase(getPosts.pending, (state, _action) => {
       state.isLoading = true;
-    });
+    })
+      .addCase(getPosts.fulfilled, (state, action) => {
+        state.posts = action.payload;
+        state.isLoading = false;
+      }).
+      addCase(getPosts.rejected, (state, _action) => {
+        state.isLoading = false;
+      });
 
-    builder.addCase(getPosts.fulfilled, (state, action) => {
-      state.posts = action.payload;
-      state.isLoading = false;
-    });
-
-    builder.addCase(getPosts.rejected, (state, _action) => {
-      state.isLoading = false;
+    builder.addCase(getPostById.fulfilled, (state, action) => {
+      const post = state.posts.find(p => p.id === action.payload.id);
+      if (post) {
+        Object.assign(post, action.payload)
+      }
     });
 
     builder.addCase(uploadPost.fulfilled, (_state, _action) => {
       successToast("Successfully created a post!")
-    });
-
-    builder.addCase(uploadPost.rejected, (_state, action) => {
-      if (action.payload) {
-        action.payload.errorMessages.forEach((m: string) => {
-          failureToast(m);
-        });
-      } else {
-        failureToast("Failed to create a post");
-      }
-    });
-
-    // builder.addCase(likePost.fulfilled, (state, action) => {
-    //   const idx = state.posts.findIndex(p => p.id === action.payload.postId);
-    //   if (idx !== -1) {
-    //     state.posts[idx].likeInfo = { likedByCurrentUser: true, likeId: action.payload.likeId };
-    //     state.posts[idx].numLikes += 1;
-    //     successToast("Successfully liked post");
-    //   }
-    // });
-
-    // builder.addCase(likePost.rejected, (_state, action) => {
-    //   if (action.payload) {
-    //     action.payload.errorMessages.forEach((m: string) => {
-    //       failureToast(m);
-    //     });
-    //   }
-    // });
-
-    // builder.addCase(deleteLike.fulfilled, (state, action) => {
-    //   const post = state.posts.find(p => p.id === action.payload.postId);
-    //   if (post) {
-    //     post.likeInfo = undefined;
-    //     post.numLikes -= 1;
-    //   }
-    // });
-
+    })
+      .addCase(uploadPost.rejected, (_state, action) => {
+        if (action.payload) {
+          action.payload.errorMessages.forEach((m: string) => {
+            failureToast(m);
+          });
+        } else {
+          failureToast("Failed to create a post");
+        }
+      });
   }
 });
 

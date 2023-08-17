@@ -29,7 +29,30 @@ internal class GetPostByIdQueryHandler
             var post = await postRepo
                 .QueryById(request.PostId)
                 .TagWith($"[{nameof(GetPostByIdQueryHandler)}] - Get Single Post")
-                .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
+                .Select(p => new PostResponse
+                {
+                    Id = p.Id,
+                    Contents = p.Contents,
+                    UserInfo = new UserInfo
+                    {
+                        UserProfileId = p.UserProfileId,
+                        Username = p.UserProfile.Username,
+                        AvatarUrl = p.UserProfile.AvatarUrl,
+                    },
+                    ImageUrl = p.ImageUrl,
+                    NumComments = p.Comments.Count(),
+                    NumLikes = p.Likes.Count(),
+                    LikeInfo = p.Likes.Any(l => l.UserProfileId == request.CurrentUserId)
+                     ? new PostLikeInfo
+                     {
+                         LikedByCurrentUser = true,
+                         LikeId = p.Likes.First(l => l.UserProfileId == request.CurrentUserId).Id,
+                     }
+                     : null,
+                    CreatedAt = p.CreatedAt,
+                    UpdatedAt = p.UpdatedAt,
+                })
+                //.ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
                 .SingleOrDefaultAsync(cancellationToken);
             if (post is null)
             {

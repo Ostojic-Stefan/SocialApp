@@ -11,7 +11,7 @@ interface Props {
   onClick: (reaction: LikeReaction) => void;
 }
 
-function LikeButton({ post, onClick }: Props) {
+function LikeButton({ onClick }: Props) {
   const ref = useRef<HTMLButtonElement>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [isInsidePopup, setIsInsidePopup] = useState(false);
@@ -49,13 +49,8 @@ function LikeButton({ post, onClick }: Props) {
         onMouseEnter={showPopup}
         onMouseLeave={hidePopup}
         className={styles.btnAction}
-        style={{
-          borderBottom: post.likeInfo?.likedByCurrentUser
-            ? "2px solid yellow"
-            : "",
-        }}
       >
-        {post.likeInfo ? "UnLike" : "Like"}
+        Like
       </button>
     </div>
   );

@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using SocialApp.Application.Likes.Queries;
 using SocialApp.Application.Likes.Responses;
 using SocialApp.Application.Models;
-using SocialApp.Application.Posts.Responses;
 using SocialApp.Domain;
 
 namespace SocialApp.Application.Likes.QueryHandlers;

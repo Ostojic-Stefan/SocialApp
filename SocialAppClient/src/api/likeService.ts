@@ -20,7 +20,7 @@ export type LikeForAPostResponse = {
     likeInfo: {
         likeReaction: LikeReaction;
         id: string;
-        likeUserInformation: UserInfo
+        userInformation: UserInfo
     }[];
     likedByUser: boolean;
 }
@@ -33,7 +33,7 @@ export type DeleteLikeResponse = {
     postId: string;
 }
 
-interface ILikeService {
+export interface ILikeService {
     addLikeToPost: (request: AddLikeToPostRequest) => Promise<Result<LikeForAPostResponse, ApiError>>;
     getAllLikesForPost: (request: GetAllLikesForPostRequest) => Promise<Result<LikeForAPostResponse, ApiError>>;
     deleteLike: (request: DeleteLikeRequest) => Promise<Result<DeleteLikeResponse, ApiError>>;

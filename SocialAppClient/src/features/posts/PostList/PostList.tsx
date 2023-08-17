@@ -5,7 +5,9 @@ import PostItem from "../PostItem/PostItem";
 
 function PostList() {
   const dispatch = useAppDispatch();
-  const { posts, isLoading } = useAppSelector((store) => store.post);
+  const { posts, isLoading } = useAppSelector((store) => {
+    return store.post;
+  });
 
   useEffect(() => {
     dispatch(getPosts());

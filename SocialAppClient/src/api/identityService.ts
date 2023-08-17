@@ -58,7 +58,7 @@ export type LoggedInUserInfomation = {
 }
 
 
-interface IIdentityService {
+export interface IIdentityService {
     login: (request: UserLoginRequest) => Promise<Result<void, ApiError>>;
     register: (request: UserRegisterRequest) => Promise<Result<void, ApiError>>;
     getCurrentUserInfo: () => Promise<Result<LoggedInUserInfomation, ApiError>>;

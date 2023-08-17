@@ -9,6 +9,7 @@ using SocialApp.Application.Posts.Commands;
 
 namespace SocialApp.Api.Controllers;
 
+[Authorize]
 public class LikesController : BaseApiController
 {
     private readonly IMediator _mediator;
@@ -39,7 +40,6 @@ public class LikesController : BaseApiController
     [HttpGet]
     [Route("posts/{postId}")]
     [ValidateGuids("postId")]
-    [Authorize]
     public async Task<IActionResult> GetAllLikesForAPost(string postId, CancellationToken cancellationToken)
     {
         var query = new GetLikesForAPostQuery
@@ -60,7 +60,8 @@ public class LikesController : BaseApiController
     {
         var query = new GetLikesByUserQuery
         {
-            Username = username
+            Username = username,
+            CurrentUserId = HttpContext.GetUserProfileId()
         };
         var response = await _mediator.Send(query, cancellationToken);
         if (response.HasError)

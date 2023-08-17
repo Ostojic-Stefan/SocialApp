@@ -42,8 +42,9 @@ export type UploadPostRequest = {
 }
 
 
-interface IPostService {
+export interface IPostService {
     getAllPosts: () => Promise<Result<PostResponse[], ApiError>>;
+    getPostById: (postId: string) => Promise<Result<PostResponse, ApiError>>;
     uploadPostImage: (request: FormData) => Promise<Result<string, ApiError>>;
     uploadPost: (request: UploadPostRequest) => Promise<Result<PostResponse, ApiError>>;
     getPostsForUser: (request: GetPostsForUserRequest) => Promise<Result<PostResponse[], ApiError>>;
@@ -53,6 +54,12 @@ export const postService: IPostService = {
     getAllPosts: async function (): Promise<Result<PostResponse[], ApiError>> {
         return await executeApiCall(async function () {
             const response = await axiosInstance.get<PostResponse[]>('posts');
+            return response.data;
+        });
+    },
+    getPostById: async function (postId: string): Promise<Result<PostResponse, ApiError>> {
+        return await executeApiCall(async function () {
+            const response = await axiosInstance.get<PostResponse>(`posts/${postId}`);
             return response.data;
         });
     },
@@ -77,5 +84,5 @@ export const postService: IPostService = {
             const response = await axiosInstance.get<PostResponse[]>(`posts/user/${request.username}`);
             return response.data;
         });
-    }
+    },
 }

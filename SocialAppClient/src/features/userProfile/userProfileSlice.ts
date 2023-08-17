@@ -110,7 +110,7 @@ const userProfile = createSlice({
       state.friends = action.payload;
     });
 
-    builder.addCase(getFriends.rejected, (state, action) => {
+    builder.addCase(getFriends.rejected, (_state, action) => {
       console.log("Failed to Get Friends");
       if (action.payload) {
         action.payload.errorMessages.forEach((m: string) => {
