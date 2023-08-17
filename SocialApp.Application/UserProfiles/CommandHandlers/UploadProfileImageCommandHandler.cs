@@ -22,7 +22,7 @@ internal class UploadProfileImageCommandHandler
             var imageService = new ImageService(directoryService,
                 new LoggerFactory().CreateLogger<ImageService>());
             var savePath = await imageService.SaveImageAsync(request.ImageName, request.ImageStream);
-            result.Data = savePath.Split("\\wwwroot\\")[1].Replace("\\", "/");
+            result.Data = $"http://localhost:5167{savePath.Split("wwwroot")[1].Replace("\\", "/")}";
         }
         catch (Exception ex)
         {
