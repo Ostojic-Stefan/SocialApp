@@ -10,6 +10,8 @@ using SocialApp.Api.Filters;
 using SocialApp.Api.Middleware;
 using SocialApp.Application.Posts.Queries;
 using SocialApp.Application.Services;
+using SocialApp.Application.Services.DirectoryService;
+using SocialApp.Application.Services.FileUpload;
 using SocialApp.Application.Settings;
 using System.Text;
 
@@ -32,6 +34,19 @@ public static class WebApplicationBuilderExtensions
         builder.Services.AddAutoMapper(typeof(Program), typeof(GetAllPostsQuery));
 
         builder.Services.AddTransient<ITokenService, TokenService>();
+        builder.Services.AddTransient<IDirectoryService, DirectoryService>(provider => 
+        {
+            var webHostEnv = provider.GetRequiredService<IWebHostEnvironment>();
+            return new DirectoryService(webHostEnv.WebRootPath);
+        });
+        builder.Services.AddTransient<ServerUrlService>();
+        builder.Services.AddTransient<FileToHttpConverter>(provider => 
+        {
+            var webHostEnv = provider.GetRequiredService<IWebHostEnvironment>();
+            var serverUrlService = provider.GetRequiredService<ServerUrlService>();
+            return new FileToHttpConverter(webHostEnv.WebRootPath, serverUrlService);
+        });
+        builder.Services.AddTransient<IFileUploadService, FileUploadService>();
 
         builder.Services.Configure<ApiBehaviorOptions>(options
             => options.SuppressModelStateInvalidFilter = true);

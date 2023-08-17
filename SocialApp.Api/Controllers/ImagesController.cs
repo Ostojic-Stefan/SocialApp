@@ -1,22 +1,21 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using SocialApp.Api.Extensions;
 using SocialApp.Api.Requests.Posts;
 using SocialApp.Api.Requests.UserProfiles;
-using SocialApp.Application.Posts.Commands;
-using SocialApp.Application.UserProfiles.Commands;
+using SocialApp.Application.Files.Commands;
+using SocialApp.Application.Services;
 
 namespace SocialApp.Api.Controllers;
 
 public class ImagesController : BaseApiController
 {
     private readonly IMediator _mediator;
-    private readonly IWebHostEnvironment _environment;
+    private readonly FileToHttpConverter _converter;
 
-    public ImagesController(IMediator mediator, IWebHostEnvironment environment)
+    public ImagesController(IMediator mediator, FileToHttpConverter converter)
     {
+        _converter = converter;
         _mediator = mediator;
-        _environment = environment;
     }
 
     [HttpPost]
@@ -24,16 +23,15 @@ public class ImagesController : BaseApiController
     public async Task<IActionResult> UploadProfileImage([FromForm] UploadUserProfileImageRequest uploadUserProfileImage,
         CancellationToken cancellationToken)
     {
-        var command = new UploadProfileImageCommand
+        var command = new UploadUserProfileImageCommand
         {
-            UserProfileId = HttpContext.GetUserProfileId(),
             ImageStream = uploadUserProfileImage.Img.OpenReadStream(),
-            DirPath = $"{_environment.WebRootPath}/User",
             ImageName = $"{uploadUserProfileImage.Img.FileName}"
         };
         var response = await _mediator.Send(command, cancellationToken);
         if (response.HasError)
             return HandleError(response.Errors);
+        response.Data.AvatarUrl = _converter.ConvertToHttpEndpoint(response.Data.AvatarUrl);
         return Ok(response.Data);
     }
 
@@ -41,16 +39,15 @@ public class ImagesController : BaseApiController
     [Route("posts/images")]
     public async Task<IActionResult> UploadPostImage([FromForm] UploadPostImageRequest uploadPostImage)
     {
-        var command = new UploadImageCommand
+        var command = new UploadPostImageCommand
         {
-            UserProfileId = HttpContext.GetUserProfileId(),
             ImageStream = uploadPostImage.Img.OpenReadStream(),
-            DirPath = $"{_environment.WebRootPath}/Posts",
             ImageName = $"{uploadPostImage.Img.FileName}"
         };
         var response = await _mediator.Send(command);
         if (response.HasError)
             return HandleError(response.Errors);
+        response.Data.ImagePath = _converter.ConvertToHttpEndpoint(response.Data.ImagePath);
         return Ok(response.Data);
     }
 }
