@@ -31,7 +31,6 @@ public sealed class UnitOfWork : IUnitOfWork
 
     public void StartTransaction()
     {
-        // Avoid to create nested transations
         if (Context.Database.CurrentTransaction is null)
             _transaction = Context.Database.BeginTransaction();
     }

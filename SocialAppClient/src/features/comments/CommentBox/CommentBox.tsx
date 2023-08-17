@@ -70,7 +70,7 @@ function CommentBox({ post }: Props) {
 
       <div className={styles.image}>
         <img
-          src={`http://localhost:5167/${post.imageUrl}`}
+          src={post.imageUrl}
           className={styles.postImage}
         />
       </div>

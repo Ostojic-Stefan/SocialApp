@@ -5,11 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using SocialApp.Api.Extensions;
 using SocialApp.Api.Filters;
 using SocialApp.Api.Requests;
-using SocialApp.Api.Requests.Comments;
 using SocialApp.Api.Requests.Posts;
 using SocialApp.Application.Posts.Commands;
 using SocialApp.Application.Posts.Queries;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace SocialApp.Api.Controllers;
 
@@ -124,7 +122,7 @@ public class PostsController : BaseApiController
         {
             UserProfileId = HttpContext.GetUserProfileId(),
             ImageStream = uploadPostImage.Img.OpenReadStream(),
-            DirPath = $"{_environment.WebRootPath}\\Posts",
+            DirPath = $"{_environment.WebRootPath}/Posts",
             ImageName = $"{uploadPostImage.Img.FileName}"
         };
         var response = await _mediator.Send(command);

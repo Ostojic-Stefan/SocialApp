@@ -27,7 +27,7 @@ internal class UploadImageCommandHandler
             var directoryService = new DirectoryService(request.DirPath);
             var imageService = new ImageService(directoryService, _imgLogger);
             var savePath = await imageService.SaveImageAsync(request.ImageName, request.ImageStream);
-            result.Data = savePath.Split("\\wwwroot\\")[1].Replace("\\", "/");
+            result.Data = $"http://localhost:5167{savePath.Split("wwwroot")[1].Replace("\\", "/")}";
         }
         catch (Exception ex)
         {

@@ -64,7 +64,7 @@ function PostItem({ post }: Props) {
       <span>{post.contents}</span>
       <div className={styles.image}>
         <img
-          src={`http://localhost:5167/${post.imageUrl}`}
+          src={post.imageUrl}
           className={styles.postImage}
         />
       </div>
