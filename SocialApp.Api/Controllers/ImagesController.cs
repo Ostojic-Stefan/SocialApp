@@ -37,14 +37,15 @@ public class ImagesController : BaseApiController
 
     [HttpPost]
     [Route("posts/images")]
-    public async Task<IActionResult> UploadPostImage([FromForm] UploadPostImageRequest uploadPostImage)
+    public async Task<IActionResult> UploadPostImage([FromForm] UploadPostImageRequest uploadPostImage,
+        CancellationToken cancellationToken)
     {
         var command = new UploadPostImageCommand
         {
             ImageStream = uploadPostImage.Img.OpenReadStream(),
             ImageName = $"{uploadPostImage.Img.FileName}"
         };
-        var response = await _mediator.Send(command);
+        var response = await _mediator.Send(command, cancellationToken);
         if (response.HasError)
             return HandleError(response.Errors);
         response.Data.ImagePath = _converter.ConvertToHttpEndpoint(response.Data.ImagePath);

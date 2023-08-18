@@ -13,12 +13,10 @@ namespace SocialApp.Api.Controllers;
 public class PostsController : BaseApiController
 {
     private readonly IMediator _mediator;
-    private readonly IWebHostEnvironment _environment;
 
-    public PostsController(IMediator mediator, IWebHostEnvironment environment)
+    public PostsController(IMediator mediator)
     {
         _mediator = mediator;
-        _environment = environment;
     }
 
     [HttpGet]

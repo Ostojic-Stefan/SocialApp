@@ -62,12 +62,24 @@ public class UserProfile : BaseEntity
             .FirstOrDefault(fr => fr.SenderUserId == userId);
         if (foundRequest is null)
         {
-            // validation exception
+            // TODO: validation exception
             return;
         }
         foundRequest.SenderUser._friends.Add(this);
         foundRequest.Status = FriendRequestStatus.Accepted;
         _friends.Add(foundRequest.SenderUser);
+    }
+
+    public void RejectFriendRequest(Guid userId)
+    {
+        var foundRequest = ReceivedFriendRequests
+            .FirstOrDefault(fr => fr.SenderUserId == userId);
+        if (foundRequest is null)
+        {
+            // TODO: validation exception
+            return;
+        }
+        foundRequest.Status = FriendRequestStatus.Denied;
     }
 
     public void UpdateUserProfile(string newAvatarUrl)

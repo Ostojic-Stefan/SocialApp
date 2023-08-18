@@ -4,8 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using SocialApp.Api.Extensions;
 using SocialApp.Api.Filters;
 using SocialApp.Api.Requests.Likes;
-using SocialApp.Application.Likes.Queries;
 using SocialApp.Application.Posts.Commands;
+using SocialApp.Application.Posts.Queries;
+using SocialApp.Application.UserProfiles.Queries;
 
 namespace SocialApp.Api.Controllers;
 
@@ -42,7 +43,7 @@ public class LikesController : BaseApiController
     [ValidateGuids("postId")]
     public async Task<IActionResult> GetAllLikesForAPost(string postId, CancellationToken cancellationToken)
     {
-        var query = new GetLikesForAPostQuery
+        var query = new GetPostLikesQuery
         {
             PostId = Guid.Parse(postId),
             CurrentUser = HttpContext.GetUserProfileId()
@@ -57,10 +58,10 @@ public class LikesController : BaseApiController
     [Route("users/{username}/likes")]
     public async Task<IActionResult> GetAllLikesByUser(string username, CancellationToken cancellationToken)
     {
-        var query = new GetLikesByUserQuery
+        var query = new GetUserLikesQuery
         {
             Username = username,
-            CurrentUserId = HttpContext.GetUserProfileId()
+            UserId = HttpContext.GetUserProfileId()
         };
         var response = await _mediator.Send(query, cancellationToken);
         if (response.HasError)

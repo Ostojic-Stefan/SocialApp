@@ -6,5 +6,5 @@ namespace SocialApp.Application.UserProfiles.Queries;
 
 public class GetAllFriendsQuery : IRequest<Result<IReadOnlyList<FriendResponse>>>
 {
-    public required Guid CurrenUserId { get; set; }
+    public required Guid UserId { get; set; }
 }

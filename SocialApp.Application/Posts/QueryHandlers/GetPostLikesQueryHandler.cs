@@ -1,27 +1,26 @@
-﻿using AutoMapper;
+using AutoMapper;
 using EfCoreHelpers;
 using Microsoft.EntityFrameworkCore;
-using SocialApp.Application.Likes.Queries;
-using SocialApp.Application.Likes.Responses;
 using SocialApp.Application.Models;
+using SocialApp.Application.Posts.Queries;
+using SocialApp.Application.Posts.Responses;
 using SocialApp.Domain;
 
-namespace SocialApp.Application.Likes.QueryHandlers;
+namespace SocialApp.Application.Posts.QueryHandlers;
 
-internal class GetLikesForAPostQueryHandler
-    : DataContextRequestHandler<GetLikesForAPostQuery,
-        Result<GetLikesForAPostResponse>>
+internal class GetPostLikesQueryHandler
+    : DataContextRequestHandler<GetPostLikesQuery, Result<GetLikesForAPostResponse>>
 {
     private readonly IMapper _mapper;
 
-    public GetLikesForAPostQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) 
+    public GetPostLikesQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) 
         : base(unitOfWork)
     {
-        _mapper = mapper;
+            _mapper = mapper;
     }
 
-    public override async Task<Result<GetLikesForAPostResponse>> Handle(
-        GetLikesForAPostQuery request, CancellationToken cancellationToken)
+    public override async Task<Result<GetLikesForAPostResponse>> Handle(GetPostLikesQuery request,
+        CancellationToken cancellationToken)
     {
         var result = new Result<GetLikesForAPostResponse>();
         try
@@ -32,11 +31,14 @@ internal class GetLikesForAPostQueryHandler
                 .Include(p => p.Likes)
                 .ThenInclude(p => p.UserProfile)
                 .FirstAsync(cancellationToken);
+
+            // TODO: Move elsewhere
             if (post.UserProfileId == request.CurrentUser)
             {
                 foreach (var like in post.Likes)
                     like.SetLikeAsSeen();
             }
+            
             result.Data = _mapper.Map<GetLikesForAPostResponse>(post);
             await _unitOfWork.SaveAsync(cancellationToken);
         }

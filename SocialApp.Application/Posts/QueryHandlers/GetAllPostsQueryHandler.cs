@@ -1,11 +1,10 @@
 ﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using EfCoreHelpers;
 using Microsoft.EntityFrameworkCore;
 using SocialApp.Application.Models;
 using SocialApp.Application.Posts.Queries;
 using SocialApp.Application.Posts.Responses;
-using SocialApp.Application.Services;
+using SocialApp.Application.UserProfiles.Responses;
 using SocialApp.Domain;
 
 namespace SocialApp.Application.Posts.QueryHandlers;

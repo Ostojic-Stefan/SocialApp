@@ -1,4 +1,4 @@
-﻿namespace SocialApp.Application.Likes.Responses;
+﻿namespace SocialApp.Application.Posts.Responses;
 
 public class GetLikesForAPostResponse
 {

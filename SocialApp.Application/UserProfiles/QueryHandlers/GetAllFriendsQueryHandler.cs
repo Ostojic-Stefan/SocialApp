@@ -29,7 +29,7 @@ internal class GetAllFriendsQueryHandler
             var repo = _unitOfWork.CreateReadOnlyRepository<UserProfile>();
             var friends = await repo
                 .Query()
-                .Where(u => u.Id == request.CurrenUserId)
+                .Where(u => u.Id == request.UserId)
                 .SelectMany(u => u.Friends)
                 .ProjectTo<FriendResponse>(_mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);

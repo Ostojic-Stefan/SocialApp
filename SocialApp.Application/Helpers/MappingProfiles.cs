@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using SocialApp.Application.Comments.Responses;
 using SocialApp.Application.Identity.Responses;
-using SocialApp.Application.Likes.Responses;
 using SocialApp.Application.Posts.Responses;
+using SocialApp.Application.UserProfiles.QueryHandlers;
 using SocialApp.Application.UserProfiles.Responses;
 using SocialApp.Domain;
 
@@ -63,6 +63,14 @@ internal class MappingProfiles : Profile
 
         CreateMap<PostLike, PostLikeResponse>()
             .ForMember(x => x.UserInformation, opt => opt.MapFrom(src => src.UserProfile));
+
+        CreateMap<PostLike, LikesForUserResponse>()
+            .ForMember(x => x.UserInfo, opt => opt.MapFrom(src => src.UserProfile));
+
+        // CreateMap<PostLike, PostLikeForUserResponse>();
+
+        CreateMap<Post, PostForLikeUserResponse>()
+            .ForMember(x => x.PostId, opt => opt.MapFrom(src => src.Id));
     }
 
 }

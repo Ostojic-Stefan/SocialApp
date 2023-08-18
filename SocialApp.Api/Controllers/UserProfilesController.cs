@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SocialApp.Api.Extensions;
-using SocialApp.Api.Filters;
 using SocialApp.Api.Requests.Identity;
 using SocialApp.Application.UserProfiles.Commands;
 using SocialApp.Application.UserProfiles.Queries;
@@ -43,55 +42,6 @@ public class UserProfilesController : BaseApiController
             Username = username
         };
         var response = await _mediator.Send(query);
-        if (response.HasError)
-            return HandleError(response.Errors);
-        return Ok(response.Data);
-    }
-
-    [HttpPost]
-    [Route("sendFriendRequest/{userId}")]
-    [Authorize]
-    [ValidateGuids("userId")]
-    public async Task<IActionResult> SendFriendRequest(string userId, CancellationToken cancellationToken)
-    {
-        var command = new SendFriendRequestCommand
-        {
-            CurrentUser = HttpContext.GetUserProfileId(),
-            RecieverUser = Guid.Parse(userId)
-        };
-        var response = await _mediator.Send(command, cancellationToken);
-        if (response.HasError)
-            return HandleError(response.Errors);
-        return Ok();
-    }
-
-    [HttpPost]
-    [Route("acceptFriendRequest/{userId}")]
-    [Authorize]
-    [ValidateGuids("userId")]
-    public async Task<IActionResult> AcceptFriendRequest(string userId, CancellationToken cancellationToken)
-    {
-        var command = new AcceptFriendRequestCommand
-        {
-            CurrentUser = HttpContext.GetUserProfileId(),
-            OtherUser = Guid.Parse(userId)
-        };
-        var response = await _mediator.Send(command, cancellationToken);
-        if (response.HasError)
-            return HandleError(response.Errors);
-        return Ok();
-    }
-
-    [Route("friends")]
-    [HttpGet]
-    [Authorize]
-    public async Task<IActionResult> GetAllFriends(CancellationToken cancellationToken)
-    {
-        var query = new GetAllFriendsQuery
-        {
-            CurrenUserId = HttpContext.GetUserProfileId()
-        };
-        var response = await _mediator.Send(query, cancellationToken);
         if (response.HasError)
             return HandleError(response.Errors);
         return Ok(response.Data);

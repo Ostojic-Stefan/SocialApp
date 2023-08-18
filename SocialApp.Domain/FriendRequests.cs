@@ -2,6 +2,12 @@
 
 namespace SocialApp.Domain;
 
+public enum FriendRequestUpdateStatus
+{
+    Accept, Reject
+}
+
+
 public enum FriendRequestStatus
 {
     Pending,

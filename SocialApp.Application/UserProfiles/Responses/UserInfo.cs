@@ -1,4 +1,4 @@
-﻿namespace SocialApp.Application.Posts.Responses;
+﻿namespace SocialApp.Application.UserProfiles.Responses;
 
 public class UserInfo
 {

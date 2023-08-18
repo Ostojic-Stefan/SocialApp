@@ -1,7 +1,7 @@
-﻿using SocialApp.Application.Posts.Responses;
+﻿using SocialApp.Application.UserProfiles.Responses;
 using SocialApp.Domain;
 
-namespace SocialApp.Application.Likes.Responses;
+namespace SocialApp.Application.Posts.Responses;
 
 public class PostLikeResponse
 {

@@ -7,14 +7,14 @@ using SocialApp.Domain;
 namespace SocialApp.Application.UserProfiles.CommandHandlers;
 
 internal class AcceptFriendRequestCommandHandler
-     : DataContextRequestHandler<AcceptFriendRequestCommand, Result<bool>>
+     : DataContextRequestHandler<UpdateFriendRequestCommand, Result<bool>>
 {
     public AcceptFriendRequestCommandHandler(IUnitOfWork unitOfWork) 
         : base(unitOfWork)
     {
     }
 
-    public override async Task<Result<bool>> Handle(AcceptFriendRequestCommand request,
+    public override async Task<Result<bool>> Handle(UpdateFriendRequestCommand request,
         CancellationToken cancellationToken)
     {
         var result = new Result<bool>();
@@ -32,7 +32,14 @@ internal class AcceptFriendRequestCommandHandler
                     $"You have not reveived a friend request from a user with Id: {request.OtherUser}");
                 return result;
             }
-            currUser.AcceptFriendRequest(request.OtherUser);
+            if (request.Status == FriendRequestUpdateStatus.Accept)
+            {
+                currUser.AcceptFriendRequest(request.OtherUser);
+            }
+            else if (request.Status == FriendRequestUpdateStatus.Reject)
+            {
+                currUser.RejectFriendRequest(request.OtherUser);
+            }
             await _unitOfWork.SaveAsync(cancellationToken);
             result.Data = true;
         }
