@@ -24,6 +24,7 @@ interface ModalStyles {
   zIndex: number;
   width: string;
   borderRadius: string;
+  boxShadow: string;
 }
 
 interface OverlayStyles {
@@ -41,11 +42,12 @@ const modalStyles: ModalStyles = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  backgroundColor: "#272523",
-  // padding: "50px",
+  backgroundColor: "var(--main-darker-gray)",
+  padding: "50px",
   zIndex: 3,
   width: "40%",
   borderRadius: "5px",
+  boxShadow: "0px 0px 20px 10px var(--main-gray)"
 };
 
 const overlayStyles: OverlayStyles = {

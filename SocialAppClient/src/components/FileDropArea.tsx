@@ -14,8 +14,8 @@ function FileDropArea({ onFileChange, children }: Props) {
     justifyContent: "center",
     alignItems: "center",
     border: `2px solid ${isInside ? "#fff" : "#444"}`,
-    backgroundColor: "#1d1b1a",
-    color: "#999",
+    backgroundColor: "var(--main-dark-gray)",
+    color: "var(--main-color)",
     height: "200px",
   };
 

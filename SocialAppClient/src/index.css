@@ -1,3 +1,19 @@
+:root {
+  --main-gray: #3f3f3f;
+  --main-dark-gray: #292929;
+  --main-darker-gray: #212121;
+  --main-color: #ffc815;
+  --main-white: #ffffff;
+  --main-black: #000;
+
+  --background-color: #eee;
+  --background-gray: #a1a1a1;
+  --background-color-lighter: #f4f4f4;
+
+  --text-color-dark: #333;
+  --text-color-light: #eee;
+}
+
 * {
   padding: 0;
   margin: 0;
@@ -6,4 +22,17 @@
 
 body {
   font-family: sans-serif;
+  color: #333;
+}
+
+a:link {
+  text-decoration: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+a:visited {
+  text-decoration: inherit;
+  color: inherit;
+  cursor: pointer;
 }

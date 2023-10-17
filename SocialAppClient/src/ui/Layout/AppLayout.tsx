@@ -34,10 +34,9 @@ function AppLayout() {
           </>
         )}
       </aside>
-
-      <main className={styles.content}>
-        <Outlet />
-      </main>
+        <main className={styles.content}>
+          <Outlet />
+        </main>
       <aside className={styles.friendList}>
         <FriendList />
       </aside>

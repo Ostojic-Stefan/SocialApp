@@ -5,6 +5,7 @@ import Popup from "../../../components/Popup";
 import LikeReactions from "../../../ui/components/LikeReactions";
 import { LikeReaction } from "../../../api/likeService";
 import { PostResponse } from "../../../api/postService";
+import Button from "../../../ui/components/Button/Button";
 
 interface Props {
   post: PostResponse;
@@ -44,14 +45,18 @@ function LikeButton({ onClick }: Props) {
           <LikeReactions handleLikeClick={handleLikeClick} />
         </Popup>
       )}
-      <button
+      <Button 
+        ref={ref}
+        onMouseEnter={showPopup}
+        onMouseLeave={hidePopup}>Like</Button>
+      {/* <button
         ref={ref}
         onMouseEnter={showPopup}
         onMouseLeave={hidePopup}
         className={styles.btnAction}
       >
         Like
-      </button>
+      </button> */}
     </div>
   );
 }

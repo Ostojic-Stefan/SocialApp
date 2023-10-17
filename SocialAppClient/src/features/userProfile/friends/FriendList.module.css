@@ -6,24 +6,27 @@
 }
 
 .heading {
-  margin-top: 10px;
-  display: flex;
-  justify-content: center;
+  margin-bottom: 20px;
+  padding: 10px 15px;
+  background-color: var(--main-dark-gray);
+  color: var(--main-color);
+  text-align: center;
 }
 
 .friendContainer {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin: 10px;
-  padding: 10px 15px;
+  /* margin: 10px; */
+  padding: 10px 20px 20px 15px;
   font-size: 18px;
   border-radius: 5px;
   cursor: pointer;
 }
 
 .friendContainer:hover {
-  background-color: #322f2c;
+  background-color: var(--main-dark-gray);
+  color: var(--main-color);
 }
 
 .imgStyle {

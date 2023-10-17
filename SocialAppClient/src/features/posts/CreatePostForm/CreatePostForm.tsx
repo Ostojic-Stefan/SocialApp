@@ -3,6 +3,7 @@ import styles from "./CreatePostForm.module.css";
 import { useAppDispatch } from "../../../store";
 import { uploadPost } from "../postSlice";
 import FileDropArea from "../../../components/FileDropArea";
+import Button from "../../../ui/components/Button/Button";
 
 function CreatePostForm() {
   const dispatch = useAppDispatch();
@@ -47,13 +48,13 @@ function CreatePostForm() {
     <form onSubmit={handleSubmit} className={styles.createPost}>
       <FileDropArea onFileChange={onFileChange}>
         {!file ? (
-          <>
-            <p>Drag and Drop Image Or</p>
+          <div className={styles.fileDropContents}>
+            <p style={{ fontWeight: 700, fontSize: 20 }}>Drag and Drop Image Or</p>
             <label className={styles.btn}>
               Upload
               <input type="file" onChange={handleFileChange} />
             </label>
-          </>
+          </div>
         ) : (
           <img width={150} src={imagePreview} />
         )}
@@ -66,12 +67,12 @@ function CreatePostForm() {
         className={styles.createPostInput}
       />
       <div className={styles.buttonContainer}>
-        <button className={styles.btn} onClick={() => {}}>
+        <Button className={styles.btn}>
           Cancel
-        </button>
-        <button type="submit" className={styles.btn}>
+        </Button>
+        <Button className={styles.btn} type="submit">
           Submit
-        </button>
+        </Button>
       </div>
     </form>
   );

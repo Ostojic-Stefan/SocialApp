@@ -1,8 +1,17 @@
 .navbar {
-  background-color: #292524;
+  background-color: var(--main-darker-gray);
   grid-column: 1 / 4;
   display: flex;
   align-items: center;
+}
+
+.navbar .logo {
+  font-size: 24px;
+  position: absolute;
+  left: 20px;
+  color: var(--main-color);
+
+  cursor: pointer;
 }
 
 .navbar .flexContainer {
@@ -12,19 +21,19 @@
   width: 100%;
 }
 
-.navbar .flexContainer button {
+/* .navbar .flexContainer button {
   position: absolute;
   left: 20px;
 
   padding: 5px 10px;
   border: none;
   border-radius: 5px;
-  background-color: #534d49;
-  color: #eeecea;
-}
+  background-color: var(--main-gray);
+  color: #eee;
+} */
 
 .navbar .flexContainer button:hover {
-  background-color: #77706b;
+  color: var(--main-color);
   cursor: pointer;
 }
 

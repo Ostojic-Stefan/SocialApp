@@ -5,18 +5,23 @@
   font-family: sans-serif;
 }
 
+.fileDropContents {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
 input[type="file"] {
   display: none;
 }
 
 .createPostInput {
-  background-color: #1d1b1a;
+  border: 2px solid #333;
+  background-color: var(--main-dark-gray);
   width: 100%;
-  border: 1px solid #5b5b5b;
-  border-radius: 5px;
   height: 100%;
   padding: 10px;
-  color: inherit;
+  color: var(--text-color-light);
 }
 
 .createPostImg {
@@ -54,11 +59,11 @@ input[type="file"] {
 
 .btn {
   border: none;
-  border-radius: 5px;
-  border: 1px solid #ddd;
-  background-color: #363534;
+  border: 2px solid gray;
+  font-size: 16px;
+  background-color: var(--main-gray);
   padding: 5px 10px;
-  color: #ddd;
+  color: var(--main-color);
   font-weight: bold;
   cursor: pointer;
 }

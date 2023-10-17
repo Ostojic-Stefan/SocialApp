@@ -11,6 +11,7 @@ import Modal from "../../../components/Modal";
 import LikeList from "../../likes/LikeList/LikeList";
 import { deleteLike, likePost } from "../../likes/likeSlice";
 import { getPostById } from "../postSlice";
+import Button from "../../../ui/components/Button/Button";
 
 TimeAgo.addLocale(en);
 
@@ -60,33 +61,45 @@ function PostItem({ post }: Props) {
           className={styles.postImage}
         />
       </div>
-      <Modal>
-        <Modal.Open>
-          <div className={styles.likes}>
-            <span>{formatLike(post.numLikes)}</span>
-          </div>
-        </Modal.Open>
-        <Modal.Content>
-          <LikeList postId={post.id} />
-        </Modal.Content>
-      </Modal>
-      <div className={styles.actions}>
-        {!post.likeInfo ? (
-          <LikeButton post={post} onClick={handleLikeClick} />
-        ) : (
-          <button onClick={handleUnlike}>UnLike</button>
-        )}
 
-        <Modal>
-          <Modal.Open>
-            <div className={styles.btnAction}>
-              Comments ({post.numComments})
-            </div>
-          </Modal.Open>
-          <Modal.Content>
-            <CommentBox post={post} />
-          </Modal.Content>
-        </Modal>
+      <div className={styles.actions}>
+
+          {/* like button */}
+          {!post.likeInfo ? (
+            <LikeButton post={post} onClick={handleLikeClick} />
+          ) : (
+            <Button onClick={handleUnlike}>UnLike</Button>
+          )}
+
+          <div className={styles.actionsContainer}>
+
+            {/* like count */}
+            <Modal>
+              <Modal.Open>
+                <div className={styles.likes}>
+                  <span>{formatLike(post.numLikes)}</span>
+                </div>
+              </Modal.Open>
+              <Modal.Content>
+                <LikeList postId={post.id} />
+              </Modal.Content>
+            </Modal>
+
+
+            {/* Comments */}
+            <Modal>
+              <Modal.Open>
+                <Button>
+                  Comments ({post.numComments})
+                </Button>
+              </Modal.Open>
+              <Modal.Content>
+                <CommentBox post={post} />
+              </Modal.Content>
+            </Modal>
+        </div>
+
+
       </div>
     </div>
   );
