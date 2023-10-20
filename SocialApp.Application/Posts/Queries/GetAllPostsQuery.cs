@@ -1,11 +1,10 @@
 ﻿using MediatR;
 using SocialApp.Application.Models;
 using SocialApp.Application.Posts.Responses;
-using SocialApp.Application.Services;
 
 namespace SocialApp.Application.Posts.Queries;
 
-public class GetAllPostsQuery 
+public class GetAllPostsQuery
     : IRequest<Result<IReadOnlyList<PostResponse>>>
 {
     public required Guid CurrentUserId { get; set; }

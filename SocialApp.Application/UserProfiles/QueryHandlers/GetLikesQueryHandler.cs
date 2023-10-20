@@ -29,10 +29,11 @@ internal class GetLikesQueryHandler
             var userRepo = _unitOfWork.CreateReadOnlyRepository<UserProfile>();
             var ttt = await userRepo
                 .QueryById(request.UserId)
-                .SelectMany(u => u.Likes)
-                .Include(l => l.Post)
-                .ToListAsync(cancellationToken);
-            result.Data = _mapper.Map<LikesForUserResponse>(ttt);
+                .Select(u => u.Likes)
+                .ProjectTo<LikesForUserResponse>(_mapper.ConfigurationProvider)
+                .FirstAsync(cancellationToken);
+                // TODO: FIX
+            result.Data = ttt;
         }
         catch (Exception ex)
         {

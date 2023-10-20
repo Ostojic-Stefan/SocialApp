@@ -22,7 +22,7 @@ public class CommentsController : BaseApiController
     [Route("posts/{postId}/comments")]
     [Authorize]
     [ValidateModel]
-    public async Task<IActionResult> AddCommentToPost(CreateComment createComment,
+    public async Task<IActionResult> AddCommentToPost(string postId, CreateComment createComment,
         CancellationToken cancellationToken)
     {
         var userProfileId = HttpContext.GetUserProfileId();
@@ -30,7 +30,7 @@ public class CommentsController : BaseApiController
         {
             UserProfileId = userProfileId,
             Contents = createComment.Contents,
-            PostId = createComment.PostId
+            PostId = Guid.Parse(postId)
         };
         var response = await _mediator.Send(command, cancellationToken);
         if (response.HasError)
@@ -45,8 +45,8 @@ public class CommentsController : BaseApiController
     public async Task<IActionResult> GetAllCommentsFromPost(Guid postId,
         CancellationToken cancellationToken)
     {
-        var query = new GetCommentsFromPostQuery 
-        { 
+        var query = new GetCommentsFromPostQuery
+        {
             PostId = postId,
             CurrentUserId = HttpContext.GetUserProfileId()
         };
@@ -63,6 +63,20 @@ public class CommentsController : BaseApiController
         CancellationToken cancellationToken)
     {
         var query = new GetCommentByIdQuery { CommentId = commentId };
+        var response = await _mediator.Send(query, cancellationToken);
+        if (response.HasError)
+            return HandleError(response.Errors);
+        return Ok(response.Data);
+    }
+
+    [HttpGet]
+    [Route("users/{username}/comments")]
+    public async Task<IActionResult> GetCommentsForUser(string username, CancellationToken cancellationToken)
+    {
+        var query = new GetCommentsForUserQuery
+        {
+            Username = username
+        };
         var response = await _mediator.Send(query, cancellationToken);
         if (response.HasError)
             return HandleError(response.Errors);

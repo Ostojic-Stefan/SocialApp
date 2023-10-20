@@ -36,3 +36,9 @@ a:visited {
   color: inherit;
   cursor: pointer;
 }
+
+a.active {
+  background-color: var(--main-darker-gray);
+  color: var(--main-color);
+  /* color: red; */
+}

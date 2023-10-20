@@ -3,7 +3,7 @@
   background-color: var(--background-color-lighter);
   box-shadow: 0px 12px 20px 10px #d9d9d9;
   border-radius: 0 0px 5px 5px;
-  padding: 20px 30px 10px 30px;
+  padding: 20px 30px 0 30px;
 }
 
 .userInfo {
@@ -16,6 +16,7 @@
 
 .userInfoImg {
   width: 40px;
+  height: 40px;
   border-radius: 9999px;
 }
 
@@ -41,7 +42,7 @@
 .actions {
   margin-top: 36px;
   border-top: 1px solid var(--main-gray);
-  padding: 20px 0 0 0;
+  padding: 20px 0 20px 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -49,6 +50,7 @@
 
 .actionsContainer {
   display: flex;
+  align-items: center;
   gap: 10px;
 }
 

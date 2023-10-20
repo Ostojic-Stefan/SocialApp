@@ -1,14 +1,15 @@
 .commentContainer {
-  color: #fff;
+  color: var(--main-color);
   display: flex;
   align-items: center;
   padding: 10px;
   border-radius: 5px;
   gap: 10px;
+  background-color: #dcdcdc;
+
 }
 
 .commentContainer:hover {
-  background-color: #333;
 }
 
 .userInfo {
@@ -26,7 +27,7 @@
 }
 
 .main {
-  background-color: #5555558a;
+  background-color: var(--main-gray);
   padding: 5px 15px;
   border-radius: 5px;
 }

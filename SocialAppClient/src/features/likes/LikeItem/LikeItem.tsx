@@ -14,7 +14,7 @@ function LikeItem({ like }: Props) {
   return (
     <div className={style.container}>
       <div className={style.userinfo}>
-        <img src={like.userInformation.avatarUrl} />
+        <img className={style.img} src={like.userInformation.avatarUrl} />
         <span>{like.userInformation.username}</span>
       </div>
       <div>

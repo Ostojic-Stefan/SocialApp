@@ -54,7 +54,7 @@ public class PostsController : BaseApiController
     [HttpPost]
     [Route("posts")]
     [Authorize]
-    [ValidateModel]
+    // [ValidateModel]
     public async Task<IActionResult> CreatePost(CreatePostRequest createPost,
         CancellationToken cancellationToken)
     {
@@ -126,4 +126,18 @@ public class PostsController : BaseApiController
         return Ok(response.Data);
     }
 
+    [HttpGet]
+    [Route("posts/details/{postId}")]
+    [ValidateGuids("postId")]
+    public async Task<IActionResult> GetPostDetails(string postId)
+    {
+        var query = new GetPostDetailsQuery
+        {
+            PostId = Guid.Parse(postId)
+        };
+        var response = await _mediator.Send(query);
+        if (response.HasError)
+            return HandleError(response.Errors);
+        return Ok(response.Data);
+    }
 }

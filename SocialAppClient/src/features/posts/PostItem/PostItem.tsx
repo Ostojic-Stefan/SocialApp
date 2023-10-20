@@ -1,9 +1,7 @@
 import styles from "./PostItem.module.css";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
-import CommentBox from "../../comments/CommentBox/CommentBox";
 import { NavLink } from "react-router-dom";
-import { PostResponse } from "../../../api/postService";
 import { useAppDispatch } from "../../../store";
 import { LikeReaction } from "../../../api/likeService";
 import LikeButton from "../LikeButton/LikeButton";
@@ -12,14 +10,16 @@ import LikeList from "../../likes/LikeList/LikeList";
 import { deleteLike, likePost } from "../../likes/likeSlice";
 import { getPostById } from "../postSlice";
 import Button from "../../../ui/components/Button/Button";
+import { Post } from "../types";
 
 TimeAgo.addLocale(en);
 
 interface Props {
-  post: PostResponse;
+  post: Post;
+  onClick?: () => void;
 }
 
-function PostItem({ post }: Props) {
+function PostItem({ post, onClick }: Props) {
   const dispatch = useAppDispatch();
 
   const timeAgo = new TimeAgo("en-US");
@@ -39,7 +39,7 @@ function PostItem({ post }: Props) {
   }
 
   return (
-    <div className={styles.post}>
+    <div className={styles.post} onClick={onClick}>
       <div className={styles.userInfo}>
         <img
           src={`${post.userInfo.avatarUrl}`}
@@ -85,18 +85,11 @@ function PostItem({ post }: Props) {
               </Modal.Content>
             </Modal>
 
-
             {/* Comments */}
-            <Modal>
-              <Modal.Open>
-                <Button>
-                  Comments ({post.numComments})
-                </Button>
-              </Modal.Open>
-              <Modal.Content>
-                <CommentBox post={post} />
-              </Modal.Content>
-            </Modal>
+            <span>
+              Comments ({post.numComments})
+            </span>
+
         </div>
 
 

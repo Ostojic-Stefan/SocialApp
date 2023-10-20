@@ -22,14 +22,11 @@ export type FriendResponse = {
   username: string;
 };
 
+// prettier-ignore
 interface IUserService {
   uploadProfileImage: (request: FormData) => Promise<Result<string, ApiError>>;
-  setProfileImage: (
-    request: SetProfileImageRequest
-  ) => Promise<Result<boolean, ApiError>>;
-  getUserProfileInformation: (
-    request: GetUserProfileInformationRequest
-  ) => Promise<Result<UserProfileInformation, ApiError>>;
+  setProfileImage: (request: SetProfileImageRequest) => Promise<Result<boolean, ApiError>>;
+  getUserProfileInformation: (request: GetUserProfileInformationRequest) => Promise<Result<UserProfileInformation, ApiError>>;
   getFriends: () => Promise<Result<FriendResponse[], ApiError>>;
 }
 
@@ -66,7 +63,7 @@ export const userService: IUserService = {
   ): Promise<Result<UserProfileInformation, ApiError>> {
     return await executeApiCall(async function () {
       const response = await axiosInstance.get<UserProfileInformation>(
-        `userprofiles/getInformation/${request.username}`
+        `users/${request.username}`
       );
       return response.data;
     });

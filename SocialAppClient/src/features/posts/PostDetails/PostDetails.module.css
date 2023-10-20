@@ -1,28 +1,28 @@
 .container {
   display: flex;
   flex-direction: column;
+  gap: 16px;
 
-  max-height: 90vh;
   overflow-y: scroll;
+  margin: 0 auto;
+
+  background-color: var(--background-color-lighter);
+  padding: 40px;
+  border: 1px solid #d4d4d4;
+  border-radius: 5px;
 }
 
-.post {
-  width: 70%;
-  background-color: #2a2a2a73;
-  border-radius: 10px;
-  padding: 20px 30px 10px 30px;
-}
 
 .userInfo {
   display: flex;
   align-items: center;
   gap: 16px;
   font-size: 16px;
-  padding: 10px 20px;
 }
 
 .userInfoImg {
   width: 40px;
+  height: 40px;
   border-radius: 9999px;
 }
 
@@ -31,8 +31,7 @@
 }
 
 .postContents {
-  color: #fff;
-  padding: 10px 20px;
+  color: var(--text-color-dark);
 }
 
 .image {
@@ -42,6 +41,8 @@
 
 .postImage {
   max-width: 100%;
+  border: 1px solid var(--main-gray);
+  border-radius: 5px;
 }
 
 .actions {
@@ -66,7 +67,6 @@
 }
 
 .commentsContainer {
-  margin: 10px 20px;
   padding: 20px 0;
   display: flex;
   flex-direction: column;
@@ -74,13 +74,24 @@
 }
 
 .stats {
-  background-color: #333;
+  background-color: var(--main-dark-gray);
   padding: 5px 10px;
   width: fit-content;
   color: #fff;
 
-  margin: 10px 20px;
   display: flex;
   align-items: center;
   gap: 16px;
+}
+
+.inputContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.textArea {
+  /* width: 100%; */
+  resize: none;
+  overflow: auto;
 }

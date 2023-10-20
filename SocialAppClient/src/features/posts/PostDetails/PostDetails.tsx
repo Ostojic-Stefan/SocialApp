@@ -1,44 +1,37 @@
 import { useEffect, useState } from "react";
-import CommentItem from "../CommentItem/CommentItem";
+import CommentItem from "../../comments/CommentItem/CommentItem";
 import { RootState, useAppDispatch, useAppSelector } from "../../../store";
-import { addCommentToAPost, getCommentsByPostId } from "../commentsSlice";
-import { PostResponse } from "../../../api/postService";
-import styles from "./styles.module.css";
+import { addCommentToAPost, getCommentsByPostId } from "../../comments/commentsSlice";
+import styles from "./PostDetails.module.css"
 import { NavLink } from "react-router-dom";
 import { createSelector } from "@reduxjs/toolkit";
+import Button from "../../../ui/components/Button/Button";
+import { Post } from "../types";
 
 interface Props {
-  post: PostResponse;
+  post: Post;
 }
 
 export const selectNumLikesAndComments = (postId: string) =>
   createSelector(
-    (state: RootState) => state.post.posts.find((p) => p.id === postId),
+    [(state: RootState) => state.post.posts.find((p) => p.id === postId)],
     (foundPost) => ({
       numLikes: foundPost?.numLikes,
       numComments: foundPost?.numComments,
     })
   );
 
-function CommentBox({ post }: Props) {
+function PostDetails({ post }: Props) {
   const [comment, setComment] = useState("");
   const dispatch = useAppDispatch();
 
   const comments = useAppSelector(
-    (store) => store.comment.data.find((d) => d.postId == post.id)?.comments
+    (store) => store.comment.data.find((d) => d.postId === post.id)?.comments
   );
 
   const { numLikes, numComments } = useAppSelector(
     selectNumLikesAndComments(post.id)
   );
-
-  // const { numLikes, numComments } = useAppSelector((store) => {
-  //   const foundPost = store.post.posts.find((p) => p.id === post.id);
-  //   return {
-  //     numLikes: foundPost?.numLikes!,
-  //     numComments: foundPost?.numComments!,
-  //   };
-  // });
 
   useEffect(() => {
     dispatch(getCommentsByPostId(post.id));
@@ -58,7 +51,7 @@ function CommentBox({ post }: Props) {
         />
         <div>
           <NavLink to={`profile/${post.userInfo.username}`}>
-            {post.userInfo.username}
+            <h4>{post.userInfo.username}</h4>
           </NavLink>
           <span className={styles.createdAgo}>
             {/* {timeAgo.format(new Date(post.createdAt).getTime())} */}
@@ -66,14 +59,12 @@ function CommentBox({ post }: Props) {
         </div>
       </div>
 
-      <div className={styles.postContents}>{post.contents}</div>
+      <h1 className={styles.postContents}>{post.contents}</h1>
 
-      <div className={styles.image}>
-        <img
-          src={post.imageUrl}
-          className={styles.postImage}
-        />
-      </div>
+      <img
+        src={post.imageUrl}
+        className={styles.postImage}
+      />
       <div className={styles.stats}>
         <span>Likes: {numLikes}</span>
         <span>Comments: {numComments}</span>
@@ -84,15 +75,18 @@ function CommentBox({ post }: Props) {
             <CommentItem key={comment.id} comment={comment} />
           ))}
       </div>
-      <input
-        type="text"
-        placeholder="write a comment..."
-        value={comment}
-        onChange={(e) => setComment(e.target.value)}
-      />
-      <button onClick={submitComment}>submit comment</button>
+      <div className={styles.inputContainer}>
+        <textarea
+          className={styles.textArea}
+          placeholder="write a comment..."
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+        />
+        <Button style={{ width: "fit-content" }} onClick={submitComment}>submit comment</Button>  
+      </div>
+      
     </div>
   );
 }
 
-export default CommentBox;
+export default PostDetails;

@@ -10,21 +10,32 @@ namespace SocialApp.Application.Helpers;
 
 internal class MappingProfiles : Profile
 {
-	public MappingProfiles()
-	{
+    public MappingProfiles()
+    {
         CreateMap<Comment, CommentResponse>()
             .ForMember(dest => dest.AvatarUrl, opt => opt.MapFrom(src => src.UserProfile.AvatarUrl))
             .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.UserProfile.Username));
+
         CreateMap<UserProfile, UserInfo>()
             .ForMember(dest => dest.UserProfileId, opt => opt.MapFrom(src => src.Id));
+
         CreateMap<Post, PostResponse>()
             .ForMember(dest => dest.UserInfo, opt => opt.MapFrom(src => src.UserProfile))
             .ForMember(dest => dest.NumLikes, opt => opt.MapFrom(src => src.Likes.Count()))
             .ForMember(dest => dest.NumComments, opt => opt.MapFrom(src => src.Comments.Count()));
 
+        CreateMap<Post, PostDetailsResponse>()
+            .ForMember(dest => dest.UserInfo, opt => opt.MapFrom(src => src.UserProfile))
+            .ForMember(dest => dest.NumLikes, opt => opt.MapFrom(src => src.Likes.Count()))
+            .ForMember(dest => dest.NumComments, opt => opt.MapFrom(src => src.Comments.Count()))
+            .ForMember(dest => dest.Comments, opt => opt.MapFrom(src => src.Comments));
+
         CreateMap<PostLike, PostLikeDeleteResponse>();
 
-        CreateMap<Post, PostsForUserResponse>();
+        CreateMap<Post, PostData>()
+            .ForMember(dest => dest.NumLikes, opt => opt.MapFrom(src => src.Likes.Count()))
+            .ForMember(dest => dest.NumComments, opt => opt.MapFrom(src => src.Comments.Count()));
+
         CreateMap<UserProfile, UserInformationResponse>()
             .ForMember(uip => uip.UserProfileId, opt => opt.MapFrom(src => src.Id));
 
@@ -71,6 +82,7 @@ internal class MappingProfiles : Profile
 
         CreateMap<Post, PostForLikeUserResponse>()
             .ForMember(x => x.PostId, opt => opt.MapFrom(src => src.Id));
+
     }
 
 }

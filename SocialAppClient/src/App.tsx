@@ -12,6 +12,7 @@ import { getUserInformation } from "./features/identity/identitySlice";
 import UserProfilePosts from "./features/userProfile/posts/UserProfilePosts";
 import UserProfileComments from "./features/userProfile/comments/UserProfileComments";
 import { getFriends } from "./features/userProfile/userProfileSlice";
+import Post from "./features/posts/Post";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -43,6 +44,7 @@ function App() {
             <Route path="posts" element={<UserProfilePosts />} />
             <Route path="comments" element={<UserProfileComments />} />
           </Route>
+          <Route path="/post/:postId" element={<Post />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
         </Route>

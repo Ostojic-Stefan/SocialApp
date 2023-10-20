@@ -1,14 +1,14 @@
 import { useRef, useState } from "react";
 import { OnMouseOverArgs } from "../../../components/Popup";
-import styles from "./LikeButton.module.css";
+// import styles from "./LikeButton.module.css";
 import Popup from "../../../components/Popup";
 import LikeReactions from "../../../ui/components/LikeReactions";
 import { LikeReaction } from "../../../api/likeService";
-import { PostResponse } from "../../../api/postService";
 import Button from "../../../ui/components/Button/Button";
+import { Post } from "../types";
 
 interface Props {
-  post: PostResponse;
+  post: Post;
   onClick: (reaction: LikeReaction) => void;
 }
 
@@ -49,14 +49,6 @@ function LikeButton({ onClick }: Props) {
         ref={ref}
         onMouseEnter={showPopup}
         onMouseLeave={hidePopup}>Like</Button>
-      {/* <button
-        ref={ref}
-        onMouseEnter={showPopup}
-        onMouseLeave={hidePopup}
-        className={styles.btnAction}
-      >
-        Like
-      </button> */}
     </div>
   );
 }
