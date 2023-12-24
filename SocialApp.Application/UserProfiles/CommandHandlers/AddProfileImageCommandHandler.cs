@@ -8,17 +8,17 @@ namespace SocialApp.Application.UserProfiles.CommandHandlers;
 
 
 internal class AddProfileImageCommandHandler
-    : DataContextRequestHandler<AddProfileImageCommand, Result<bool>>
+    : DataContextRequestHandler<AddProfileImageCommand, Result<string>>
 {
     public AddProfileImageCommandHandler(IUnitOfWork unitOfWork)
         : base(unitOfWork)
     {
     }
 
-    public override async Task<Result<bool>> Handle(AddProfileImageCommand request,
+    public override async Task<Result<string>> Handle(AddProfileImageCommand request,
         CancellationToken cancellationToken)
     {
-        var result = new Result<bool>();
+        var result = new Result<string>();
         try
         {
             var userProfileRepo = _unitOfWork.CreateReadWriteRepository<UserProfile>();
@@ -27,7 +27,7 @@ internal class AddProfileImageCommandHandler
                 .SingleAsync(u => u.Id == request.UserProfileId, cancellationToken);
             userProfile.UpdateUserProfile(request.ImageUrl);
             await _unitOfWork.SaveAsync(cancellationToken);
-            result.Data = true;
+            result.Data = userProfile.AvatarUrl;
         }
         catch (Exception ex)
         {

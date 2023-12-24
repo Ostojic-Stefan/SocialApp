@@ -20,7 +20,7 @@ internal class RegisterCommandHandler
     public RegisterCommandHandler(IUnitOfWork unitOfWork,
         UserManager<IdentityUser> userManager,
         ITokenService tokenService
-        ) 
+        )
         : base(unitOfWork)
     {
         _userManager = userManager;
@@ -70,6 +70,12 @@ internal class RegisterCommandHandler
                 identity.Id, request.Username,
                 request.Biography, request.AvatarUrl);
 
+            // add a default user profile image if none is specified
+            if (userProfile.AvatarUrl is null)
+            {
+                userProfile.UpdateUserProfile("http://localhost:5000/Users/default-avatar.jpg");
+            }
+
             var userProfileRepo = _unitOfWork.CreateReadWriteRepository<UserProfile>();
             userProfileRepo.Add(userProfile);
             await _unitOfWork.SaveAsync(cancellationToken);
@@ -77,10 +83,10 @@ internal class RegisterCommandHandler
             // generate jwt
             string token = _tokenService.GetToken(new Claim[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, identity.Email),
-                new Claim(JwtRegisteredClaimNames.Email, identity.Email),
-                new Claim("IdentityId", identity.Id),
-                new Claim("UserProfileId", userProfile.Id.ToString()),
+                new(JwtRegisteredClaimNames.Sub, identity.Email),
+                new(JwtRegisteredClaimNames.Email, identity.Email),
+                new("IdentityId", identity.Id),
+                new("UserProfileId", userProfile.Id.ToString()),
             });
 
             result.Data = new IdentityResponse { AccessToken = token };

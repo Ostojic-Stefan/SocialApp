@@ -8,4 +8,5 @@ public class UploadUserProfileImageCommand : IRequest<Result<UploadUserProfileIm
 {
     public required string ImageName { get; set; }
     public required Stream ImageStream { get; set; }
+    public Guid UserProfileId { get; set; }
 }

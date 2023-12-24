@@ -1,11 +1,11 @@
 import { ReactNode, useEffect, useRef, useState } from "react";
 
 interface Props {
-  onFileChange: (file: FileList) => void;
+  onDrop: (file: FileList) => void;
   children: ReactNode;
 }
 
-function FileDropArea({ onFileChange, children }: Props) {
+function FileDropArea({ onDrop, children }: Props) {
   const fileAreaRef = useRef<HTMLDivElement>(null);
   const [isInside, setIsInside] = useState(false);
 
@@ -34,18 +34,18 @@ function FileDropArea({ onFileChange, children }: Props) {
     setIsInside(false);
 
     const files = event.dataTransfer.files;
-    onFileChange(files);
+    onDrop(files);
   }
 
   useEffect(() => {
     const preventDefault = (e: Event) => e.preventDefault();
 
     fileAreaRef.current?.addEventListener("dragover", preventDefault);
-    fileAreaRef.current?.addEventListener("dtop", preventDefault);
+    fileAreaRef.current?.addEventListener("drop", preventDefault);
 
     return () => {
       fileAreaRef.current?.removeEventListener("dragover", preventDefault);
-      fileAreaRef.current?.removeEventListener("dtop", preventDefault);
+      fileAreaRef.current?.removeEventListener("drop", preventDefault);
     };
   }, []);
 

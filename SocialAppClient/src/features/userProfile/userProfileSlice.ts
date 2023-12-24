@@ -1,9 +1,8 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { failureToast } from '../../utils/toastDefinitions';
+import { failureToast, successToast } from '../../utils/toastDefinitions';
 import {
   FriendResponse,
   GetUserProfileInformationRequest,
-  SetProfileImageRequest,
   UserProfileInformation,
   userService,
 } from '../../api/userService';
@@ -12,22 +11,16 @@ import { ApiError } from '../../api/models';
 export const uploadProfileImage = createAsyncThunk<string, FormData, { rejectValue: ApiError }>(
   'user/uploadProfileImage',
   async function (data, { rejectWithValue }) {
-    const result = await userService.uploadProfileImage(data);
-    if (result.hasError) {
-      return rejectWithValue(result.error);
+    const uploadImageResponse = await userService.uploadProfileImage(data);
+    if (uploadImageResponse.hasError) {
+      return rejectWithValue(uploadImageResponse.error);
     }
-    return result.value;
-  }
-);
-
-export const setUserProfileImage = createAsyncThunk<boolean, SetProfileImageRequest, { rejectValue: ApiError }>(
-  'user/setUserProfileImage',
-  async function (data, { rejectWithValue }) {
-    const result = await userService.setProfileImage(data);
-    if (result.hasError) {
-      return rejectWithValue(result.error);
+    const { avatarUrl } = uploadImageResponse.value;
+    const setImageResponse = await userService.setProfileImage({ avatarUrl });
+    if (setImageResponse.hasError) {
+      return rejectWithValue(setImageResponse.error);
     }
-    return result.value;
+    return avatarUrl;
   }
 );
 
@@ -54,6 +47,7 @@ export const getFriends = createAsyncThunk<FriendResponse[], void, { rejectValue
   }
 );
 
+// state about the currently logged in user
 interface StateType {
   userInfo?: UserProfileInformation;
   friends: FriendResponse[];
@@ -96,6 +90,18 @@ const userProfile = createSlice({
           failureToast(m);
         });
       }
+    });
+
+    builder.addCase(uploadProfileImage.fulfilled, (state, action) => {
+      if (state.userInfo) {
+        state.userInfo.avatarUrl = action.payload;
+        successToast('Successfully uploaded profile image');
+      }
+    });
+
+    builder.addCase(uploadProfileImage.rejected, (_state, action) => {
+      failureToast('Failed to upload profile image');
+      console.log(action.error);
     });
   },
 });

@@ -1,19 +1,25 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { failureToast, successToast } from "../../utils/toastDefinitions";
-import { setUserProfileImage, uploadProfileImage } from "../userProfile/userProfileSlice";
-import { LoggedInUserInfomation, UserLoginRequest, UserRegisterRequest, identityService } from "../../api/identityService";
-import { ApiError, Result } from "../../api/models";
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { failureToast, successToast } from '../../utils/toastDefinitions';
+import { uploadProfileImage } from '../userProfile/userProfileSlice';
+import {
+  LoggedInUserInfomation,
+  UserLoginRequest,
+  UserRegisterRequest,
+  identityService,
+} from '../../api/identityService';
+import { ApiError, Result } from '../../api/models';
 
 interface StateType {
-  userInfo?: LoggedInUserInfomation,
+  userInfo?: LoggedInUserInfomation;
 }
 
 const initialState: StateType = {
-  userInfo: undefined
-}
+  userInfo: undefined,
+};
 
 export const login = createAsyncThunk<void, UserLoginRequest, { rejectValue: ApiError }>(
-  "user/login", async function (data, { rejectWithValue }) {
+  'user/login',
+  async function (data, { rejectWithValue }) {
     const response = await identityService.login(data);
     if (response.hasError) {
       return rejectWithValue(response.error);
@@ -23,21 +29,24 @@ export const login = createAsyncThunk<void, UserLoginRequest, { rejectValue: Api
 );
 
 export const register = createAsyncThunk<Result<void, ApiError>, UserRegisterRequest, { rejectValue: ApiError }>(
-  "user/register", async function (data, { rejectWithValue, dispatch }) {
+  'user/register',
+  async function (data, { rejectWithValue, dispatch }) {
     const response = await identityService.register(data);
     if (response.hasError) {
       return rejectWithValue(response.error);
     }
     if (data.imageData) {
-      const avatarUrl = (await dispatch(uploadProfileImage(data.imageData))).payload as string;
-      await dispatch(setUserProfileImage({ avatarUrl }));
+      await dispatch(uploadProfileImage(data.imageData));
+      // const res = (await dispatch(uploadProfileImage(data.imageData))).payload as UploadProfileImageResponse;
+      // await dispatch(setUserProfileImage(res));
     }
     return response;
   }
 );
 
 export const getUserInformation = createAsyncThunk<LoggedInUserInfomation, void, { rejectValue: ApiError }>(
-  'user/getInfo', async function (_data, { rejectWithValue }) {
+  'user/getInfo',
+  async function (_data, { rejectWithValue }) {
     const response = await identityService.getCurrentUserInfo();
     if (response.hasError) {
       return rejectWithValue(response.error);
@@ -45,7 +54,6 @@ export const getUserInformation = createAsyncThunk<LoggedInUserInfomation, void,
     return response.value;
   }
 );
-
 
 const identitySlice = createSlice({
   name: 'user',
@@ -74,12 +82,12 @@ const identitySlice = createSlice({
           failureToast(m);
         });
       } else {
-        failureToast("Failed to register");
+        failureToast('Failed to register');
       }
     });
 
     builder.addCase(login.fulfilled, (_state, _action) => {
-      successToast('Successfuly Logged In')
+      successToast('Successfuly Logged In');
     });
 
     builder.addCase(login.rejected, (_state, action) => {
@@ -88,10 +96,10 @@ const identitySlice = createSlice({
           failureToast(m);
         });
       } else {
-        failureToast("Failed to login");
+        failureToast('Failed to login');
       }
     });
-  }
+  },
 });
 
 export default identitySlice.reducer;

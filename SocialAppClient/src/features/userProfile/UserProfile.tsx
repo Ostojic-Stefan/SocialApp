@@ -3,11 +3,12 @@ import { useAppDispatch, useAppSelector } from "../../store";
 import { useEffect } from "react";
 import { clearState, getUserProfileInformation } from "./userProfileSlice";
 import styles from './UserProfile.module.css';
+import Modal from "../../components/Modal";
+import UploadUserProfileForm from "./UploadUserProfileForm/UploadUserProfileForm";
 
 function UserProfile() {
   const dispatch = useAppDispatch();
   const userProfileInformation = useAppSelector((store) => store.user.userInfo);
-
   const { username } = useParams();
 
   useEffect(() => {
@@ -20,10 +21,18 @@ function UserProfile() {
     };
   }, []);
 
+
   return (
     <>
       <div className={styles.container}>
-        <img className={styles.imgStyles} src={userProfileInformation?.avatarUrl} alt="" />
+      <Modal>
+        <Modal.Open>
+          <img className={styles.imgStyles} src={userProfileInformation?.avatarUrl} alt="" />
+        </Modal.Open>
+        <Modal.Content>
+          <UploadUserProfileForm />
+        </Modal.Content>
+      </Modal>
         <aside className={styles.userInformation}>
           <h2>{userProfileInformation?.username}</h2>
           <p>{userProfileInformation?.biography}</p>

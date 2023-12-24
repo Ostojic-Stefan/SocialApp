@@ -1,7 +1,11 @@
-import { axiosInstance, executeApiCall } from "./apiConfig";
-import { ApiError, Result } from "./models";
+import { axiosInstance, executeApiCall } from './apiConfig';
+import { ApiError, Result } from './models';
 
 export type SetProfileImageRequest = {
+  avatarUrl: string;
+};
+
+export type UploadProfileImageResponse = {
   avatarUrl: string;
 };
 
@@ -24,37 +28,35 @@ export type FriendResponse = {
 
 // prettier-ignore
 interface IUserService {
-  uploadProfileImage: (request: FormData) => Promise<Result<string, ApiError>>;
-  setProfileImage: (request: SetProfileImageRequest) => Promise<Result<boolean, ApiError>>;
+  uploadProfileImage: (request: FormData) => Promise<Result<UploadProfileImageResponse, ApiError>>;
+  setProfileImage: (request: SetProfileImageRequest) => Promise<Result<string, ApiError>>;
   getUserProfileInformation: (request: GetUserProfileInformationRequest) => Promise<Result<UserProfileInformation, ApiError>>;
   getFriends: () => Promise<Result<FriendResponse[], ApiError>>;
 }
 
 export const userService: IUserService = {
-  uploadProfileImage: async function (
-    request: FormData
-  ): Promise<Result<string, ApiError>> {
+  uploadProfileImage: async function (request: FormData): Promise<Result<UploadProfileImageResponse, ApiError>> {
     return await executeApiCall(async function () {
-      const response = await axiosInstance.post<string>(
-        "userprofiles/uploadImage",
-        request,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await axiosInstance.post<UploadProfileImageResponse>('users/images', request, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      // const response = await axiosInstance.post<string>(
+      //   "userprofiles/uploadImage",
+      //   request,
+      //   {
+      //     headers: {
+      //       "Content-Type": "multipart/form-data",
+      //     },
+      //   }
+      // );
       return response.data;
     });
   },
-  setProfileImage: async function (
-    request: SetProfileImageRequest
-  ): Promise<Result<boolean, ApiError>> {
+  setProfileImage: async function (request: SetProfileImageRequest): Promise<Result<string, ApiError>> {
     return await executeApiCall(async function () {
-      const response = await axiosInstance.post<boolean>(
-        "userprofiles/setImage",
-        request
-      );
+      const response = await axiosInstance.post<string>('users/setImage', request);
       return response.data;
     });
   },
@@ -62,17 +64,13 @@ export const userService: IUserService = {
     request: GetUserProfileInformationRequest
   ): Promise<Result<UserProfileInformation, ApiError>> {
     return await executeApiCall(async function () {
-      const response = await axiosInstance.get<UserProfileInformation>(
-        `users/${request.username}`
-      );
+      const response = await axiosInstance.get<UserProfileInformation>(`users/${request.username}`);
       return response.data;
     });
   },
   getFriends: async function (): Promise<Result<FriendResponse[], ApiError>> {
     return await executeApiCall(async function () {
-      const response = await axiosInstance.get<FriendResponse[]>(
-        "userprofiles/friends"
-      );
+      const response = await axiosInstance.get<FriendResponse[]>('userprofiles/friends');
       return response.data;
     });
   },
