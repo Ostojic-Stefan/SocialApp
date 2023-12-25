@@ -10,11 +10,13 @@ import {
 import { ApiError, Result } from '../../api/models';
 
 interface StateType {
-  userInfo?: LoggedInUserInfomation;
+  userInfo?: LoggedInUserInfomation; // why is this needed?
+  authenticated: boolean;
 }
 
 const initialState: StateType = {
   userInfo: undefined,
+  authenticated: false
 };
 
 export const login = createAsyncThunk<void, UserLoginRequest, { rejectValue: ApiError }>(
@@ -48,6 +50,7 @@ export const getUserInformation = createAsyncThunk<LoggedInUserInfomation, void,
   'user/getInfo',
   async function (_data, { rejectWithValue }) {
     const response = await identityService.getCurrentUserInfo();
+
     if (response.hasError) {
       return rejectWithValue(response.error);
     }
@@ -61,6 +64,7 @@ const identitySlice = createSlice({
   reducers: {},
   extraReducers(builder) {
     builder.addCase(getUserInformation.fulfilled, (state, action) => {
+      console.log(action.payload);
       state.userInfo = action.payload;
     });
 
@@ -86,7 +90,8 @@ const identitySlice = createSlice({
       }
     });
 
-    builder.addCase(login.fulfilled, (_state, _action) => {
+    builder.addCase(login.fulfilled, (state, _action) => {
+      state.authenticated = true;
       successToast('Successfuly Logged In');
     });
 

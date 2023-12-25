@@ -7,13 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="wwwroot\Posts\**" />
-    <Content Remove="wwwroot\Posts\**" />
-    <EmbeddedResource Remove="wwwroot\Posts\**" />
-    <None Remove="wwwroot\Posts\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="DotNetEnv" Version="2.5.0" />
     <PackageReference Include="MediatR" Version="12.1.1" />
@@ -35,6 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="wwwroot\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
