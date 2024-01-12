@@ -1,6 +1,6 @@
 import { axiosInstance, executeApiCall } from "./apiConfig";
 import { ApiError, Result } from "./models";
-import { UserInfo } from "./postService";
+import { UserInfoResponse } from "./postService";
 
 export enum LikeReaction {
   Like,
@@ -21,15 +21,27 @@ export type GetAllLikesForPostRequest = {
 
 export type LikeForAPostResponse = {
   postId: string;
+  likeId: string;
+  // likeInfo: {
+  //   likeReaction: LikeReaction;
+  //   id: string;
+  //   userInformation: UserInfoResponse;
+  // }[];
+  // likedByUser: boolean;
+};
+
+export type AllLikesForPostResponse = {
+  postId: string;
   likeInfo: {
     likeReaction: LikeReaction;
     id: string;
-    userInformation: UserInfo;
+    userInformation: UserInfoResponse;
   }[];
   likedByUser: boolean;
 };
 
 export type DeleteLikeRequest = {
+  postId: string;
   likeId: string;
 };
 
@@ -43,7 +55,7 @@ export interface ILikeService {
   ) => Promise<Result<LikeForAPostResponse, ApiError>>;
   getAllLikesForPost: (
     request: GetAllLikesForPostRequest
-  ) => Promise<Result<LikeForAPostResponse, ApiError>>;
+  ) => Promise<Result<AllLikesForPostResponse, ApiError>>;
   deleteLike: (
     request: DeleteLikeRequest
   ) => Promise<Result<DeleteLikeResponse, ApiError>>;
@@ -63,10 +75,10 @@ export const likeService: ILikeService = {
   },
   getAllLikesForPost: async function (
     request: GetAllLikesForPostRequest
-  ): Promise<Result<LikeForAPostResponse, ApiError>> {
+  ): Promise<Result<AllLikesForPostResponse, ApiError>> {
     return await executeApiCall(async function () {
-      const response = await axiosInstance.get<LikeForAPostResponse>(
-        `likes/posts/${request.postId}`
+      const response = await axiosInstance.get<AllLikesForPostResponse>(
+        `posts/${request.postId}/likes`
       );
       return response.data;
     });
@@ -76,7 +88,7 @@ export const likeService: ILikeService = {
   ): Promise<Result<DeleteLikeResponse, ApiError>> {
     return await executeApiCall(async function () {
       const response = await axiosInstance.delete<DeleteLikeResponse>(
-        `likes/${request.likeId}`
+        `posts/${request.postId}/likes/${request.likeId}`
       );
       return response.data;
     });

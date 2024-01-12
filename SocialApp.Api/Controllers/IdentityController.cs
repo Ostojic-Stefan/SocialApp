@@ -36,12 +36,12 @@ public class IdentityController : BaseApiController
         if (result.HasError)
             return HandleError(result.Errors);
         var token = result.Data.AccessToken;
-        Response.Cookies.Append(_jwtSettings.CookieName, token, new CookieOptions
-        {
-            HttpOnly = true,
-            SameSite = SameSiteMode.Strict
-        });
-        return Ok();
+        //Response.Cookies.Append(_jwtSettings.CookieName, token, new CookieOptions
+        //{
+        //    HttpOnly = true,
+        //    SameSite = SameSiteMode.None
+        //});
+        return Ok(token);
     }
 
     [HttpPost]
@@ -54,18 +54,18 @@ public class IdentityController : BaseApiController
         if (result.HasError)
             return HandleError(result.Errors);
         var token = result.Data.AccessToken;
-        Response.Cookies.Append(_jwtSettings.CookieName, token, new CookieOptions
-        { 
-            HttpOnly = true,
-            SameSite = SameSiteMode.Strict,
-            Secure = true
-        });
-        return Ok();
+        //Response.Cookies.Append(_jwtSettings.CookieName, token, new CookieOptions
+        //{ 
+        //    HttpOnly = false,
+        //    SameSite = SameSiteMode.None,
+        //    Secure = false
+        //});
+        return Ok(token);
     }
 
     [HttpGet]
     [Route("identity/me")]
-    [Authorize]
+    //[Authorize]
     public async Task<IActionResult> Me()
     {
         var userProfileId = HttpContext.GetUserProfileId();

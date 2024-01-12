@@ -29,7 +29,6 @@ export type PostResponse = {
   likeInfo?: LikeInfoResponse;
 };
 
-// TODO: not used
 export type PostDetailsResponse = {
   id: string;
   imageUrl: string;

@@ -30,6 +30,15 @@ public static class WebApplicationBuilderExtensions
         builder.AddDbServices();
         builder.AddSwaggerConfiguration();
 
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy(name: "AllowAll",
+                policy =>
+                {
+                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:5173");
+                });
+        });
+
         builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetAllPostsQuery).Assembly));
         builder.Services.AddAutoMapper(typeof(Program), typeof(GetAllPostsQuery));
 

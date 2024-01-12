@@ -2,8 +2,8 @@ import axios, { AxiosError } from "axios";
 import { ApiError, Result } from "./models";
 
 export const axiosInstance = axios.create({
-  baseURL: '/api',
-  withCredentials: true
+  baseURL: 'http://localhost:5000/api',
+  // withCredentials: true
 });
 
 axiosInstance.interceptors.response.use(null, (error: AxiosError) => {
@@ -16,6 +16,13 @@ axiosInstance.interceptors.response.use(null, (error: AxiosError) => {
   return Promise.reject(error);
 });
 
+axiosInstance.interceptors.request.use(function (config) {
+  const authToken = JSON.parse(window.localStorage.getItem("auth")!);
+  config.headers.set("Authorization", `Bearer ${authToken}`);
+  return config;
+}, function (error) {
+  return Promise.reject(error);
+});
 
 export async function executeApiCall<TResult>(func: () => Promise<TResult>): Promise<Result<TResult, ApiError>> {
   try {

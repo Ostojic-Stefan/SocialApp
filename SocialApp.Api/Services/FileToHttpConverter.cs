@@ -13,8 +13,8 @@ public class FileToHttpConverter
 
     public string ConvertToHttpEndpoint(string filePath)
     {
-        var normalizedPath = filePath.Replace("\\", "/");
-        var relativePath = normalizedPath.Replace(_rootPath, "").TrimStart('/');
+        //var normalizedPath = filePath.Replace("\\", "/");
+        var relativePath = filePath.Replace(_rootPath, "").TrimStart('/');
         var httpEndPoint = $"{_serverUrlService.GetServerUrl()}/{relativePath}";
         return httpEndPoint;
     }

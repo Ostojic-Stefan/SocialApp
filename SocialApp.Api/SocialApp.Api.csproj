@@ -27,9 +27,4 @@
     <ProjectReference Include="..\SocialApp.Application\SocialApp.Application.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="wwwroot\" />
-    <Folder Include="wwwroot\" />
-  </ItemGroup>
-
 </Project>

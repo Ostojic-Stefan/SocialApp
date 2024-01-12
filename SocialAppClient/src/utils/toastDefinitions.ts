@@ -9,7 +9,7 @@ export function successToast(message: string): void {
         pauseOnHover: true,
         draggable: true,
         progress: undefined,
-        theme: "dark",
+        theme: "light",
     });
 }
 
@@ -22,6 +22,6 @@ export function failureToast(message: string): void {
         pauseOnHover: true,
         draggable: true,
         progress: undefined,
-        theme: "dark",
+        theme: "light",
     });
 }

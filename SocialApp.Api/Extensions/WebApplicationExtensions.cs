@@ -12,6 +12,8 @@ public static class WebApplicationExtensions
             app.UseSwaggerUI();
         }
 
+        app.UseCors("AllowAll");
+
         app.UseStaticFiles();
 
         app.UseMiddleware<GlobalExceptionMiddleware>();
@@ -22,10 +24,11 @@ public static class WebApplicationExtensions
 
         app.MapControllers();
 
-        app.MapWhen(x => !x.Request.Path.Value.StartsWith("/api"), builder =>
-        {
-            builder.UseSpa(builder => builder.UseProxyToSpaDevelopmentServer("http://localhost:5173"));
-        });
+        //app.MapWhen(x => !x.Request.Path.Value.StartsWith("/api"), builder =>
+        //{
+        //    //builder.UseSpa(builder => builder.UseProxyToSpaDevelopmentServer("http://localhost:5173"));
+        //    builder.UseSpa(builder => builder.UseProxyToSpaDevelopmentServer("http://localhost:3000"));
+        //});
 
         app.Run();
     }

@@ -51,33 +51,32 @@ export type FriendRequests = {
     requestTimeSent: Date;
 }
 
-export type LoggedInUserInfomation = {
+export type CurrentUserInfo = {
     userInformation: UserInformation;
-    notifications: Notifications;
-    friendRequests: FriendRequests[];
+    // notifications: Notifications;
+    // friendRequests: FriendRequests[];
 }
 
-
 export interface IIdentityService {
-    login: (request: UserLoginRequest) => Promise<Result<void, ApiError>>;
-    register: (request: UserRegisterRequest) => Promise<Result<void, ApiError>>;
-    getCurrentUserInfo: () => Promise<Result<LoggedInUserInfomation, ApiError>>;
+    login: (request: UserLoginRequest) => Promise<Result<{ data: string }, ApiError>>;
+    register: (request: UserRegisterRequest) => Promise<Result<{ data: string }, ApiError>>;
+    getCurrentUserInfo: () => Promise<Result<CurrentUserInfo, ApiError>>;
 }
 
 export const identityService: IIdentityService = {
-    login: async function (request: UserLoginRequest): Promise<Result<void, ApiError>> {
+    login: async function (request: UserLoginRequest): Promise<Result<{ data: string }, ApiError>> {
         return await executeApiCall(async function () {
-            await axiosInstance.post('identity/login', request);
+            return await axiosInstance.post('identity/login', request);
         });
     },
-    register: async function (request: UserRegisterRequest): Promise<Result<void, ApiError>> {
+    register: async function (request: UserRegisterRequest): Promise<Result<{ data: string }, ApiError>> {
         return await executeApiCall(async function () {
-            await axiosInstance.post('identity/register', request);
+            return await axiosInstance.post('identity/register', request);
         });
     },
-    getCurrentUserInfo: async function (): Promise<Result<LoggedInUserInfomation, ApiError>> {
+    getCurrentUserInfo: async function (): Promise<Result<CurrentUserInfo, ApiError>> {
         return await executeApiCall(async function () {
-            const response = await axiosInstance.get<LoggedInUserInfomation>('identity/me');
+            const response = await axiosInstance.get<CurrentUserInfo>('identity/me');
             return response.data;
         })
     }

@@ -14,7 +14,8 @@ internal class MappingProfiles : Profile
     {
         CreateMap<Comment, CommentResponse>()
             .ForMember(dest => dest.AvatarUrl, opt => opt.MapFrom(src => src.UserProfile.AvatarUrl))
-            .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.UserProfile.Username));
+            .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.UserProfile.Username))
+            .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.Post.ImageUrl));
 
         CreateMap<UserProfile, UserInfo>()
             .ForMember(dest => dest.UserProfileId, opt => opt.MapFrom(src => src.Id));

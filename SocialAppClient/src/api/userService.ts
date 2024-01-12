@@ -28,10 +28,17 @@ export type FriendResponse = {
 
 // prettier-ignore
 interface IUserService {
+  // uploads the profile image
   uploadProfileImage: (request: FormData) => Promise<Result<UploadProfileImageResponse, ApiError>>;
+
+  // sets the profile image for a currently logged in user
   setProfileImage: (request: SetProfileImageRequest) => Promise<Result<string, ApiError>>;
+
+  // gets the user profile information for a given username
   getUserProfileInformation: (request: GetUserProfileInformationRequest) => Promise<Result<UserProfileInformation, ApiError>>;
-  getFriends: () => Promise<Result<FriendResponse[], ApiError>>;
+
+  // gets all the friends for a given user id
+  getFriends: (userId: string) => Promise<Result<FriendResponse[], ApiError>>;
 }
 
 export const userService: IUserService = {
@@ -42,15 +49,6 @@ export const userService: IUserService = {
           'Content-Type': 'multipart/form-data',
         },
       });
-      // const response = await axiosInstance.post<string>(
-      //   "userprofiles/uploadImage",
-      //   request,
-      //   {
-      //     headers: {
-      //       "Content-Type": "multipart/form-data",
-      //     },
-      //   }
-      // );
       return response.data;
     });
   },
@@ -68,9 +66,9 @@ export const userService: IUserService = {
       return response.data;
     });
   },
-  getFriends: async function (): Promise<Result<FriendResponse[], ApiError>> {
+  getFriends: async function (userId: string): Promise<Result<FriendResponse[], ApiError>> {
     return await executeApiCall(async function () {
-      const response = await axiosInstance.get<FriendResponse[]>('userprofiles/friends');
+      const response = await axiosInstance.get<FriendResponse[]>(`users/${userId}/friends`);
       return response.data;
     });
   },
