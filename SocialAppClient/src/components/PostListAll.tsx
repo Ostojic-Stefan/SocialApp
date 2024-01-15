@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { getAllPosts } from '../store/post-slice';
 
 export default function PostListAll() {
-  const { posts, postsLoading, allPostsError } = useAppSelector((store) => store.post);
+  const { allPosts, postsLoading, allPostsError } = useAppSelector((store) => store.post);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -20,5 +20,5 @@ export default function PostListAll() {
     return <p className='text-danger'>{allPostsError}</p>;
   }
 
-  return <PostList posts={posts} />;
+  return <PostList posts={allPosts} />;
 }

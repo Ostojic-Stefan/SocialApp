@@ -1,15 +1,17 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { PostResponse, postService } from "../api/postService";
+import { PostResponse, PostsForUserResponse, postService } from "../api/postService";
 import { ApiError } from "../api/models";
 
 interface StateType {
-    posts: PostResponse[];
+    allPosts: PostResponse[];
+    postsForUser: PostsForUserResponse[]
     postsLoading: boolean;
     allPostsError: string | undefined;
 }
 
 const initialState: StateType = {
-    posts: [],
+    allPosts: [],
+    postsForUser: [],
     postsLoading: false,
     allPostsError: undefined
 };
@@ -42,17 +44,25 @@ export const uploadPost = createAsyncThunk<PostResponse, { formData: FormData, c
     }
 );
 
+export const getPostsForUser = createAsyncThunk<PostsForUserResponse, { username: string }, { rejectValue: ApiError }>(
+    'posts/getForUser', async function ({ username }, { rejectWithValue }) {
+        const res = await postService.getPostsForUser({ username });
+        if (res.hasError) {
+            return rejectWithValue(res.error);
+        }
+        return res.value;
+    }
+);
+
 const postSlice = createSlice({
     name: 'post',
     initialState,
     reducers: {
-        addPost(state, action) {
-            state.posts.unshift(action.payload);
-        },
+
         addLikeToPost(state, action) {
             console.log(action.payload);
 
-            const thePost = state.posts.find(post => post.id === action.payload.postId);
+            const thePost = state.allPosts.find(post => post.id === action.payload.postId);
             if (!thePost) {
                 console.log("could not find the post");
                 return;
@@ -66,7 +76,7 @@ const postSlice = createSlice({
         removeLikeFromPost(state, action) {
             console.log(action.payload);
 
-            const thePost = state.posts.find(post => post.id === action.payload.postId);
+            const thePost = state.allPosts.find(post => post.id === action.payload.postId);
             if (!thePost) {
                 console.log("could not find the post");
                 return;
@@ -74,13 +84,17 @@ const postSlice = createSlice({
             thePost.numLikes -= 1;
             // TODO: figure out why is like info nullable and if there is a better way to handle this situation
             thePost.likeInfo = undefined;
+        },
+        addPostForUser(state, action) {
+            const postsForUser = state.postsForUser.find(user => user.userInfo.userProfileId === action.payload.userId);
+            postsForUser?.posts.unshift(action.payload.postData);
         }
     },
     extraReducers: function (builder) {
         builder.addCase(getAllPosts.pending, (state, _action) => {
             state.postsLoading = true;
         }).addCase(getAllPosts.fulfilled, (state, action) => {
-            state.posts = action.payload;
+            state.allPosts = action.payload;
             state.postsLoading = false;
         }).addCase(getAllPosts.rejected, (state, action) => {
             console.log('Failed to get posts');
@@ -90,15 +104,29 @@ const postSlice = createSlice({
         });
 
         builder.addCase(uploadPost.fulfilled, (state, action) => {
-            state.posts.unshift(action.payload);
-        })
-        builder.addCase(uploadPost.rejected, (_state, action) => {
+            const pathname = window.location.pathname
+            const regex = new RegExp(/\/profile\/.*/);
+            if (regex.test(pathname)) {
+                const postsForUser = state.postsForUser.find(x => x.userInfo.userProfileId === action.payload.userInfo.userProfileId);
+                if (!postsForUser) return;
+                postsForUser.posts.unshift(action.payload);
+            } else {
+                state.allPosts.unshift(action.payload);
+            }
+        }).addCase(uploadPost.rejected, (_state, action) => {
             console.log('Failed upload post');
+            console.log(action.payload);
+        });
+
+        builder.addCase(getPostsForUser.fulfilled, (state, action) => {
+            state.postsForUser.push(action.payload);
+        }).addCase(getPostsForUser.rejected, (_state, action) => {
+            console.log('Failed to get posts for user');
             console.log(action.payload);
         });
     }
 })
 
-export const { addPost, addLikeToPost, removeLikeFromPost } = postSlice.actions;
+export const { addLikeToPost, removeLikeFromPost, addPostForUser } = postSlice.actions;
 
 export default postSlice.reducer;

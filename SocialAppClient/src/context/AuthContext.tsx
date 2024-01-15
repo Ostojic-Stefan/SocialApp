@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { CurrentUserInfo, identityService } from '../api/identityService';
+import { CurrentUserInfo, UserRegisterRequest, identityService } from '../api/identityService';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useNavigate } from 'react-router-dom';
 
@@ -7,6 +7,7 @@ interface AuthState {
   user: CurrentUserInfo | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
+  register: (registerRequest: UserRegisterRequest) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthState | null>(null);
@@ -57,13 +58,24 @@ export const AuthProvider = ({ children }: Props) => {
     window.location.reload();
   }
 
+  async function register(registerRequest: UserRegisterRequest) {
+    const response = await identityService.register(registerRequest);
+    if (response.hasError) {
+      console.log('Failed to register');
+      return;
+    }
+    setValue(response.value.data);
+    navigate('/');
+    window.location.reload();
+  }
+
   function logout() {
     setValue(null);
     setUser(null);
     navigate('/login', { replace: true });
   }
 
-  return <AuthContext.Provider value={{ login, logout, user }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ login, logout, user, register }}>{children}</AuthContext.Provider>;
 };
 
 export function useAuth() {

@@ -39,6 +39,7 @@ public class UserProfilesController : BaseApiController
     {
         var query = new GetUserInformationByUsernameQuery
         {
+            CurrentUserId = HttpContext.GetUserProfileId(),
             Username = username
         };
         var response = await _mediator.Send(query);

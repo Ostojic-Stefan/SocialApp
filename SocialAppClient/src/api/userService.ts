@@ -18,6 +18,7 @@ export type UserProfileInformation = {
   username: string;
   biography: string;
   avatarUrl: string;
+  isFriend: boolean;
 };
 
 export type FriendResponse = {
@@ -25,6 +26,10 @@ export type FriendResponse = {
   avatarUrl: string;
   username: string;
 };
+
+export type SendFriendRequest = {
+  userId: string;
+}
 
 // prettier-ignore
 interface IUserService {
@@ -39,6 +44,8 @@ interface IUserService {
 
   // gets all the friends for a given user id
   getFriends: (userId: string) => Promise<Result<FriendResponse[], ApiError>>;
+
+  sendFriendRequest: (request: SendFriendRequest) => Promise<Result<boolean, ApiError>>;
 }
 
 export const userService: IUserService = {
@@ -72,4 +79,10 @@ export const userService: IUserService = {
       return response.data;
     });
   },
+  sendFriendRequest: async function (request: SendFriendRequest): Promise<Result<boolean, ApiError>> {
+    return await executeApiCall(async function () {
+      const response = await axiosInstance.post<boolean>(`users/${request.userId}/friendRequests`);
+      return response.data;
+    });
+  }
 };

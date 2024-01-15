@@ -45,7 +45,6 @@ function PostItem({ post }: PostItemProps) {
         console.log(response.error);
         return;
       }
-      // console.log(response);
       dispatch(removeLikeFromPost({ postId: post.id }));
     } else {
       const response = await likeService.addLikeToPost({ postId: post.id, reaction: LikeReaction.Like });
@@ -54,7 +53,6 @@ function PostItem({ post }: PostItemProps) {
         return;
       }
       dispatch(addLikeToPost({ likeId: response.value.likeId, postId: response.value.postId }));
-      // console.log(response);
     }
   }
 
@@ -103,9 +101,9 @@ function PostItem({ post }: PostItemProps) {
                 Likes ({post.numLikes})
               </span>
             </PopoverTrigger>
-            <PopoverContent className='w-[240px]'>
+            <PopoverContent>
               <div>
-                <div>
+                <div className='flex flex-col gap-3 p-2'>
                   {likesForAPost?.likeInfo.map((like) => (
                     <UserInfo key={like.id} dimension={25} userInfo={like.userInformation} />
                   ))}

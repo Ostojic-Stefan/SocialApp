@@ -29,11 +29,25 @@ internal class GetUserInformationByUsernameQueryHandler
         try
         {
             var userRepo = _unitOfWork.CreateReadOnlyRepository<UserProfile>();
+            //var user = await userRepo
+            //    .Query()
+            //    .Where(u => u.Username == request.Username)
+            //    .ProjectTo<UserInformationResponse>(_mapper.ConfigurationProvider)
+            //    .SingleOrDefaultAsync(cancellationToken);
             var user = await userRepo
-                .Query()
-                .Where(u => u.Username == request.Username)
-                .ProjectTo<UserInformationResponse>(_mapper.ConfigurationProvider)
-                .SingleOrDefaultAsync(cancellationToken);
+                    .Query()
+                    .Where(u => u.Username == request.Username)
+                    .Select(user => new UserInformationResponse
+                    {
+                        Username = user.Username,
+                        UserProfileId = user.Id,
+                        AvatarUrl = user.AvatarUrl,
+                        Biography = user.Biography,
+                        CreatedAt = user.CreatedAt,
+                        UpdatedAt = user.UpdatedAt,
+                        IsFriend = user.Friends.Any(f => f.Id == request.CurrentUserId),
+                    }).SingleOrDefaultAsync(cancellationToken);
+
             if (user is null)
             {
                 result.AddError(AppErrorCode.NotFound,

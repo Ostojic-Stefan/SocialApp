@@ -26,9 +26,9 @@ export default function App() {
             <Route path='comments' element={<UserProfileComments />} /> */}
           </Route>
           <Route path='/post/:postId' element={<Post />} />
-          <Route path='/login' element={<Login />} />
-          <Route path='/register' element={<Register />} />
         </Route>
+        <Route path='/login' element={<Login />} />
+        <Route path='/register' element={<Register />} />
       </Routes>
     </div>
   );

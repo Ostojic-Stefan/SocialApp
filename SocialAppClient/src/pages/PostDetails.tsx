@@ -29,7 +29,7 @@ export default function PostDetails() {
       setPostDetails(response.value);
     }
     getPostDetails();
-  }, []);
+  }, [handleSubmitComment]);
 
   // TODO: only used for the case when adding a comment. Fix the return type first
   const { user } = useAuth();
