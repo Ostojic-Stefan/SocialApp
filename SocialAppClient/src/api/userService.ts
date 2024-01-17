@@ -45,6 +45,7 @@ interface IUserService {
   // gets all the friends for a given user id
   getFriends: (userId: string) => Promise<Result<FriendResponse[], ApiError>>;
 
+  // sends a friend request to the user with userId
   sendFriendRequest: (request: SendFriendRequest) => Promise<Result<boolean, ApiError>>;
 }
 

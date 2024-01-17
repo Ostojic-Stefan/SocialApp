@@ -20,5 +20,14 @@ export default function PostListAll() {
     return <p className='text-danger'>{allPostsError}</p>;
   }
 
-  return <PostList posts={allPosts} />;
+  return (
+    <div
+      style={{
+        height: '80vh',
+      }}
+      className='w-full overflow-y-scroll'
+    >
+      <PostList posts={allPosts} />;
+    </div>
+  );
 }

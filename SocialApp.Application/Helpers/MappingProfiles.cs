@@ -62,14 +62,18 @@ internal class MappingProfiles : Profile
             .ForMember(x => x.UserProfileId, opt => opt.MapFrom(src => src.Id));
 
         CreateMap<Comment, CommentOnPost>()
-            .ForMember(x => x.CommenterUsername, opt => opt.MapFrom(src => src.UserProfile.Username))
-            .ForMember(x => x.CommenterAvatarUrl, opt => opt.MapFrom(src => src.UserProfile.AvatarUrl))
+            .ForMember(x => x.UserInformation, opt => opt.MapFrom(src => src.UserProfile))
+            .ForMember(x => x.PostResponse, opt => opt.MapFrom(src => src.Post))
+            //.ForMember(x => x.CommenterUsername, opt => opt.MapFrom(src => src.UserProfile.Username))
+            //.ForMember(x => x.CommenterAvatarUrl, opt => opt.MapFrom(src => src.UserProfile.AvatarUrl))
             .ForMember(x => x.CommentId, opt => opt.MapFrom(src => src.Id))
             .ForMember(x => x.ContentsReduced, opt => opt.MapFrom(src => src.Contents));
-
+        // TODO: Why are there multiple UserInfo classes?
         CreateMap<PostLike, LikeOnPost>()
-            .ForMember(x => x.LikerUsername, opt => opt.MapFrom(src => src.UserProfile.Username))
-            .ForMember(x => x.LikerAvatarUrl, opt => opt.MapFrom(src => src.UserProfile.AvatarUrl))
+            .ForMember(x => x.UserInformation, opt => opt.MapFrom(src => src.UserProfile))
+            .ForMember(x => x.PostResponse, opt => opt.MapFrom(src => src.Post))
+            //.ForMember(x => x.LikerUsername, opt => opt.MapFrom(src => src.UserProfile.Username))
+            //.ForMember(x => x.LikerAvatarUrl, opt => opt.MapFrom(src => src.UserProfile.AvatarUrl))
             .ForMember(x => x.LikeId, opt => opt.MapFrom(src => src.Id))
             .ForMember(x => x.LikeReaction, opt => opt.MapFrom(src => src.LikeReaction));
 

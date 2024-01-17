@@ -1,5 +1,6 @@
 import { axiosInstance, executeApiCall } from "./apiConfig";
 import { ApiError, Result } from "./models";
+import { PostResponse, UserInfoResponse } from "./postService";
 
 export type UserLoginRequest = {
     email: string;
@@ -26,16 +27,20 @@ export type UserInformation = {
 export type CommentsOnPost = {
     commentId: string;
     postId: string;
-    commenterAvatarUrl: string;
-    commenterUsername: string;
+    userInformation: UserInfoResponse
+    postResponse: PostResponse;
+    // commenterAvatarUrl: string;
+    // commenterUsername: string;
     contentsReduced: string;
 }
 
 export type LikesOnPost = {
     likeId: string;
     postId: string;
-    likerAvatarUrl: string;
-    likerUsername: string;
+    userInformation: UserInfoResponse;
+    postResponse: PostResponse;
+    // likerAvatarUrl: string;
+    // likerUsername: string;
     likerReaction: number; // make enum
 }
 
@@ -53,8 +58,8 @@ export type FriendRequests = {
 
 export type CurrentUserInfo = {
     userInformation: UserInformation;
-    // notifications: Notifications;
-    // friendRequests: FriendRequests[];
+    notifications: Notifications;
+    friendRequests: FriendRequests[];
 }
 
 export interface IIdentityService {

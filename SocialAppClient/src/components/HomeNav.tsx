@@ -7,7 +7,7 @@ export default function HomeNav() {
 
   return (
     <div>
-      <div className='flex justify-between shadow-md border-b-2 border-secondary-300  px-6 py-4'>
+      <div className='flex justify-between shadow-md px-6 py-4'>
         <div className='flex gap-4'>
           <Link to={'friend-posts'}>
             <Button className='text-md font-semibold' variant='flat' color='secondary'>

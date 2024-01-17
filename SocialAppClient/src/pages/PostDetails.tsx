@@ -4,8 +4,7 @@ import { Link, useParams } from 'react-router-dom';
 import { Textarea, Image, Spinner, Divider } from '@nextui-org/react';
 import ProfileImage from '../components/ProfileImage';
 import TimeAgo from 'timeago-react';
-import { CommentResponse, commentService } from '../api/commentService';
-import { useAuth } from '../context/AuthContext';
+import { commentService } from '../api/commentService';
 import CommentList from '../components/CommentList';
 
 export default function PostDetails() {
@@ -31,9 +30,6 @@ export default function PostDetails() {
     getPostDetails();
   }, [handleSubmitComment]);
 
-  // TODO: only used for the case when adding a comment. Fix the return type first
-  const { user } = useAuth();
-
   if (!postDetails) {
     return <Spinner />;
   } else if (error) {
@@ -50,24 +46,6 @@ export default function PostDetails() {
     }
 
     setCommentContents('');
-
-    // TODO: only temporary
-    const data: CommentResponse = {
-      id: response.value.id,
-      avatarUrl: user?.userInformation.avatarUrl!,
-      contents: response.value.contents,
-      createdAt: response.value.createdAt,
-      updatedAt: response.value.updatedAt,
-      username: user?.userInformation.username!,
-      userProfileId: user?.userInformation.userId!,
-    };
-
-    // ugly as fuck
-    setPostDetails((prev) => {
-      const copy = { ...prev! };
-      copy.comments.push(data);
-      return copy;
-    });
   }
 
   return (

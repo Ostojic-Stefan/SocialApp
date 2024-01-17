@@ -65,7 +65,7 @@ function PostItem({ post }: PostItemProps) {
   }
 
   return (
-    <Card className='rounded-sm'>
+    <Card className='rounded-sm w-full'>
       <CardHeader className='flex justify-between'>
         <div className='flex gap-3'>
           <ProfileImage dimension={50} src={post.userInfo.avatarUrl} />

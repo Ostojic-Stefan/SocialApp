@@ -63,11 +63,16 @@ export default function UserProfile() {
     }
   }
 
-  const isCurrentUsersProfile = username === user?.userInformation.username;
+  function shouldRenderSendRequestButton() {
+    const isCurrentUsersProfile = user?.userInformation.userId === userInformation?.userProfileId;
+    if (isCurrentUsersProfile) return false;
+
+    return !userInformation?.isFriend;
+  }
 
   return (
     <div className='flex flex-col gap-12'>
-      <div className='flex gap-36 bg-default-50 p-10 justify-between'>
+      <div className='flex gap-36 bg-default-50 p-10 '>
         <ProfileImage dimension={240} src={userInformation?.avatarUrl!} />
         <div className='flex flex-col'>
           <h1 className='text-3xl'>{userInformation?.username}</h1>
@@ -79,7 +84,15 @@ export default function UserProfile() {
           <div className='bg-default-200 rounded p-2'>{userInformation?.biography}</div>
         </div>
 
-        {!isCurrentUsersProfile && userInformation?.isFriend ? (
+        {shouldRenderSendRequestButton() && (
+          <div>
+            <Button onClick={sendFriendRequestHandler} color='primary' variant='flat' className='font-semibold'>
+              Send Friend Request
+            </Button>
+          </div>
+        )}
+
+        {/* {!isCurrentUsersProfile && userInformation?.isFriend ? (
           <div>Already Friends</div>
         ) : (
           <div>
@@ -87,7 +100,7 @@ export default function UserProfile() {
               Send Friend Request
             </Button>
           </div>
-        )}
+        )} */}
       </div>
 
       <div className='flex gap-4 bg-default-100 p-4 rounded'>
