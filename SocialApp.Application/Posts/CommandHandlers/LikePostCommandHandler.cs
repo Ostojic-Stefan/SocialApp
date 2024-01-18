@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using SocialApp.Application.Models;
 using SocialApp.Application.Posts.Commands;
 using SocialApp.Application.Posts.Responses;
+using SocialApp.Application.Services.BackgroundService;
 using SocialApp.Domain;
 using SocialApp.Domain.Exceptions;
 
@@ -12,11 +13,13 @@ namespace SocialApp.Application.Posts.CommandHandlers;
 internal class LikePostCommandHandler : DataContextRequestHandler<LikePostCommand, Result<PostLikeAddResponse>>
 {
     private readonly IMapper _mapper;
+    private readonly INotificationQueue _notificationQueue;
 
-    public LikePostCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) 
+    public LikePostCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, INotificationQueue notificationQueue) 
         : base(unitOfWork)
     {
         _mapper = mapper;
+        _notificationQueue = notificationQueue;
     }
 
     public override async Task<Result<PostLikeAddResponse>> Handle(LikePostCommand request,
@@ -53,8 +56,8 @@ internal class LikePostCommandHandler : DataContextRequestHandler<LikePostComman
                 LikeId = postLike.Id,
                 PostId = post.Id
             };
-            //result.Data = _mapper.Map<PostLikeAddResponse>(post);
-            //result.Data = _mapper.Map<PostResponse>(post);
+
+            _notificationQueue.AddNotification(new QueueData(request.UserProfileId, post, null, postLike));
         }
         catch (ModelInvalidException ex)
         {
