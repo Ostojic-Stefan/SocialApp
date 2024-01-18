@@ -3,6 +3,7 @@ using System;
 using DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace SocialApp.DataAccess.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240117172239_AddNotificationEntity")]
+    partial class AddNotificationEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -295,16 +298,14 @@ namespace SocialApp.DataAccess.Migrations
                     b.Property<Guid?>("LikeId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<Guid>("PostId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("RecipientUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("SeenByRecipient")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("SenderUserId")
+                    b.Property<Guid>("UserProfileId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -315,9 +316,7 @@ namespace SocialApp.DataAccess.Migrations
 
                     b.HasIndex("PostId");
 
-                    b.HasIndex("RecipientUserId");
-
-                    b.HasIndex("SenderUserId");
+                    b.HasIndex("UserProfileId");
 
                     b.ToTable("Notifications");
                 });
@@ -545,15 +544,9 @@ namespace SocialApp.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SocialApp.Domain.UserProfile", "RecipientUser")
+                    b.HasOne("SocialApp.Domain.UserProfile", "User")
                         .WithMany()
-                        .HasForeignKey("RecipientUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SocialApp.Domain.UserProfile", "SenderUser")
-                        .WithMany()
-                        .HasForeignKey("SenderUserId")
+                        .HasForeignKey("UserProfileId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -563,9 +556,7 @@ namespace SocialApp.DataAccess.Migrations
 
                     b.Navigation("Post");
 
-                    b.Navigation("RecipientUser");
-
-                    b.Navigation("SenderUser");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("SocialApp.Domain.Post", b =>

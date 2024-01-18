@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using SocialApp.Application.Comments.Commands;
 using SocialApp.Application.Comments.Responses;
 using SocialApp.Application.Models;
+using SocialApp.Application.Services.BackgroundService;
 using SocialApp.Domain;
 using SocialApp.Domain.Exceptions;
 
@@ -13,11 +14,13 @@ internal class CreateCommentCommandHandler
     : DataContextRequestHandler<CreateCommentCommand, Result<CommentResponse>>
 {
     private readonly IMapper _mapper;
+    private readonly INotificationQueue _notificationQueue;
 
-    public CreateCommentCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) 
+    public CreateCommentCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, INotificationQueue notificationQueue) 
         : base(unitOfWork)
     {
        _mapper = mapper;
+        _notificationQueue = notificationQueue;
     }
 
     public override async Task<Result<CommentResponse>> Handle(CreateCommentCommand request,
@@ -34,8 +37,7 @@ internal class CreateCommentCommandHandler
                 return result;
             }
             var comment = Comment.CreateComment(request.Contents, request.UserProfileId, request.PostId);
-            var commentRepo = _unitOfWork
-                .CreateReadWriteRepository<Comment>();
+            var commentRepo = _unitOfWork.CreateReadWriteRepository<Comment>();
             commentRepo.Add(comment);
             await _unitOfWork.SaveAsync(cancellationToken);
             result.Data = _mapper.Map<CommentResponse>(await commentRepo
@@ -43,6 +45,8 @@ internal class CreateCommentCommandHandler
                 .Include(c => c.UserProfile)
                 .FirstAsync(cancellationToken)
             );
+
+            _notificationQueue.AddNotification(new QueueData(request.UserProfileId, post, comment, null));
         }
         catch (ModelInvalidException ex)
         {

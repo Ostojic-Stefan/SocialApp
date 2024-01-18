@@ -8,6 +8,7 @@ using SocialApp.Application.UserProfiles.Queries;
 
 namespace SocialApp.Api.Controllers;
 
+// TODO: Add Update Endpoint
 public class UserProfilesController : BaseApiController
 {
     private readonly IMediator _mediator;

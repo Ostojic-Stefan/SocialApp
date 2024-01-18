@@ -13,9 +13,7 @@ internal class MappingProfiles : Profile
     public MappingProfiles()
     {
         CreateMap<Comment, CommentResponse>()
-            .ForMember(dest => dest.AvatarUrl, opt => opt.MapFrom(src => src.UserProfile.AvatarUrl))
-            .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.UserProfile.Username))
-            .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.Post.ImageUrl));
+            .ForMember(dest => dest.UserInfo, opt => opt.MapFrom(src => src.UserProfile));
 
         CreateMap<UserProfile, UserInfo>()
             .ForMember(dest => dest.UserProfileId, opt => opt.MapFrom(src => src.Id));
@@ -29,28 +27,14 @@ internal class MappingProfiles : Profile
             .ForMember(dest => dest.UserInfo, opt => opt.MapFrom(src => src.UserProfile))
             .ForMember(dest => dest.NumLikes, opt => opt.MapFrom(src => src.Likes.Count()))
             .ForMember(dest => dest.NumComments, opt => opt.MapFrom(src => src.Comments.Count()))
-            .ForMember(dest => dest.Comments, opt => opt.MapFrom(src => src.Comments));
+            .ForMember(dest => dest.Comments, opt => opt.MapFrom(src => src.Comments))
+            .ForMember(dest => dest.UserInfo, opt => opt.MapFrom(src => src.UserProfile));
 
         CreateMap<PostLike, PostLikeDeleteResponse>();
-
-        CreateMap<Post, PostData>()
-            .ForMember(dest => dest.NumLikes, opt => opt.MapFrom(src => src.Likes.Count()))
-            .ForMember(dest => dest.NumComments, opt => opt.MapFrom(src => src.Comments.Count()));
-
-        CreateMap<UserProfile, UserInformationResponse>()
-            .ForMember(uip => uip.UserProfileId, opt => opt.MapFrom(src => src.Id));
-
-        //CreateMap<UserProfile, LikeUserInfo>();
-
-        //CreateMap<PostLike, LikeInfo>()
-        //    .ForMember(x => x.UserInformation, opt => opt.MapFrom(src => src.UserProfile));
 
         CreateMap<Post, GetLikesForAPostResponse>()
             .ForMember(x => x.LikeInfo, opt => opt.MapFrom(src => src.Likes))
             .ForMember(x => x.PostId, opt => opt.MapFrom(src => src.Id));
-
-        CreateMap<UserProfile, UserInformation>()
-            .ForMember(x => x.UserId, opt => opt.MapFrom(src => src.Id));
 
         CreateMap<FriendRequest, FriendRequestResponse>()
             .ForMember(x => x.RequesterId, opt => opt.MapFrom(src => src.SenderUserId))
@@ -61,33 +45,14 @@ internal class MappingProfiles : Profile
         CreateMap<UserProfile, FriendResponse>()
             .ForMember(x => x.UserProfileId, opt => opt.MapFrom(src => src.Id));
 
-        CreateMap<Comment, CommentOnPost>()
-            .ForMember(x => x.UserInformation, opt => opt.MapFrom(src => src.UserProfile))
-            .ForMember(x => x.PostResponse, opt => opt.MapFrom(src => src.Post))
-            //.ForMember(x => x.CommenterUsername, opt => opt.MapFrom(src => src.UserProfile.Username))
-            //.ForMember(x => x.CommenterAvatarUrl, opt => opt.MapFrom(src => src.UserProfile.AvatarUrl))
-            .ForMember(x => x.CommentId, opt => opt.MapFrom(src => src.Id))
-            .ForMember(x => x.ContentsReduced, opt => opt.MapFrom(src => src.Contents));
-        // TODO: Why are there multiple UserInfo classes?
-        CreateMap<PostLike, LikeOnPost>()
-            .ForMember(x => x.UserInformation, opt => opt.MapFrom(src => src.UserProfile))
-            .ForMember(x => x.PostResponse, opt => opt.MapFrom(src => src.Post))
-            //.ForMember(x => x.LikerUsername, opt => opt.MapFrom(src => src.UserProfile.Username))
-            //.ForMember(x => x.LikerAvatarUrl, opt => opt.MapFrom(src => src.UserProfile.AvatarUrl))
-            .ForMember(x => x.LikeId, opt => opt.MapFrom(src => src.Id))
-            .ForMember(x => x.LikeReaction, opt => opt.MapFrom(src => src.LikeReaction));
-
         CreateMap<PostLike, PostLikeResponse>()
             .ForMember(x => x.UserInformation, opt => opt.MapFrom(src => src.UserProfile));
 
         CreateMap<PostLike, LikesForUserResponse>()
             .ForMember(x => x.UserInfo, opt => opt.MapFrom(src => src.UserProfile));
 
-        // CreateMap<PostLike, PostLikeForUserResponse>();
-
-        CreateMap<Post, PostForLikeUserResponse>()
-            .ForMember(x => x.PostId, opt => opt.MapFrom(src => src.Id));
-
+        CreateMap<PostLike, PostLikeForUserResponse>()
+            .ForMember(x => x.Post, opt => opt.MapFrom(src => src.Post));
     }
 
 }

@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using EfCoreHelpers;
 using Microsoft.EntityFrameworkCore;
 using SocialApp.Application.Models;
 using SocialApp.Application.Posts.Commands;
 using SocialApp.Application.Posts.Responses;
+using SocialApp.Application.UserProfiles.Responses;
 using SocialApp.Domain;
 using SocialApp.Domain.Exceptions;
 
@@ -33,7 +33,33 @@ internal class CreatePostCommandHandler
             await _unitOfWork.SaveAsync(cancellationToken);
 
             var newPost = await postRepo.Query()
-                .ProjectTo<PostResponse>(_mapper.ConfigurationProvider)
+                .Select(p => new PostResponse
+                {
+                    Id = p.Id,
+                    Contents = p.Contents,
+                    UserInfo = new UserInfo
+                    {
+                        UserProfileId = p.UserProfileId,
+                        Username = p.UserProfile.Username,
+                        AvatarUrl = p.UserProfile.AvatarUrl,
+                    },
+                    ImageUrl = p.ImageUrl,
+                    NumComments = p.Comments.Count(),
+                    NumLikes = p.Likes.Count(),
+                    LikeInfo = p.Likes.Any(l => l.UserProfileId == request.UserProfileId)
+                        ? new PostLikeInfo
+                        {
+                            LikedByCurrentUser = true,
+                            LikeId = p.Likes.First(l => l.UserProfileId == request.UserProfileId).Id,
+                        }
+                        : new PostLikeInfo
+                        {
+                            LikedByCurrentUser = false,
+                            LikeId = Guid.Empty,
+                        },
+                        CreatedAt = p.CreatedAt,
+                        UpdatedAt = p.UpdatedAt,
+                })
                 .SingleOrDefaultAsync(p => p.Id == post.Id, cancellationToken);
 
             result.Data = newPost;

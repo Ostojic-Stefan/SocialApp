@@ -6,8 +6,8 @@ namespace SocialApp.Domain;
 
 public class Post : BaseEntity
 {
-    private readonly ICollection<Comment> _comments;
-    private readonly ICollection<PostLike> _likes;
+    private readonly ICollection<Comment> _comments = new List<Comment>();
+    private readonly ICollection<PostLike> _likes = new List<PostLike>();
 
     private Post() 
     {
@@ -23,8 +23,8 @@ public class Post : BaseEntity
     // Relationships
     public Guid UserProfileId { get; private set; }
     public UserProfile UserProfile { get; private set; }
-    public IEnumerable<Comment>? Comments => _comments;
-    public IEnumerable<PostLike>? Likes => _likes;
+    public IEnumerable<Comment> Comments => _comments;
+    public IEnumerable<PostLike> Likes => _likes;
 
     public static Post CreatePost(string imageUrl, string contents, Guid userId)
     {

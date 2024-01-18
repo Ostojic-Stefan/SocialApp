@@ -8,7 +8,6 @@ public class Comment : BaseEntity
 {
     private Comment() { }
 
-    //public int Id { get; private set; }
     public string Contents { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime UpdatedAt { get; private set; }

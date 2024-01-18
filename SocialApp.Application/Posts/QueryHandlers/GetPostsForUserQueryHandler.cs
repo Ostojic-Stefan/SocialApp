@@ -35,8 +35,15 @@ internal class GetPostsForUserQueryHandler :
                 .Where(p => p.UserProfile.Username == request.Username)
                 .Include(p => p.Likes)
                 .OrderByDescending(p => p.CreatedAt)
-                .Select(p => new PostData
+                .Select(p => new PostResponse
                 {
+                    UserInfo = new UserInfo()
+                    { 
+                        Username = p.UserProfile.Username,
+                        AvatarUrl = p.UserProfile.AvatarUrl,
+                        Biography = p.UserProfile.Biography,
+                        UserProfileId = p.UserProfile.Id
+                    },
                     Id = p.Id,
                     Contents = p.Contents,
                     ImageUrl = p.ImageUrl,

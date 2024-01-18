@@ -16,7 +16,7 @@ public class PostResponse
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
     public required UserInfo UserInfo { get; set; }
-    public PostLikeInfo? LikeInfo { get; set; }
+    public required PostLikeInfo LikeInfo { get; set; }
     public required int NumLikes { get; set; }
     public required int NumComments { get; set; }
 }

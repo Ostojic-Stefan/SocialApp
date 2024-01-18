@@ -3,6 +3,7 @@ using AutoMapper.QueryableExtensions;
 using EfCoreHelpers;
 using Microsoft.EntityFrameworkCore;
 using SocialApp.Application.Models;
+using SocialApp.Application.Posts.Responses;
 using SocialApp.Application.UserProfiles.Queries;
 using SocialApp.Application.UserProfiles.Responses;
 using SocialApp.Domain;
@@ -52,15 +53,16 @@ public class LikesForUserResponse
 public class PostLikeForUserResponse
 {
     public required LikeReaction LikeReaction { get; set; }
-    public required PostForLikeUserResponse PostInfo { get; set; }
+    public required PostResponse Post { get; set; }
+    //public required PostForLikeUserResponse PostInfo { get; set; }
 }
 
-public class PostForLikeUserResponse
-{
-    public required Guid PostId { get; set; }
-    public string ImageUrl { get; set; }
-    public string Contents { get; set; }
-    public required DateTime CreatedAt { get; set; }
-    public required DateTime UpdatedAt { get; set; }
-    public required UserInfo UserInfo { get; set; }
-}
+//public class PostForLikeUserResponse
+//{
+//    public required Guid PostId { get; set; }
+//    public string ImageUrl { get; set; }
+//    public string Contents { get; set; }
+//    public required DateTime CreatedAt { get; set; }
+//    public required DateTime UpdatedAt { get; set; }
+//    public required UserInfo UserInfo { get; set; }
+//}

@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using EfCoreHelpers;
 using Microsoft.EntityFrameworkCore;
 using SocialApp.Application.Models;
@@ -11,7 +10,7 @@ namespace SocialApp.Application.UserProfiles.QueryHandlers;
 
 internal class GetUserInformationByUsernameQueryHandler
     : DataContextRequestHandler<GetUserInformationByUsernameQuery,
-        Result<UserInformationResponse>>
+        Result<UserDetailsResponse>>
 {
     private readonly IMapper _mapper;
 
@@ -21,11 +20,11 @@ internal class GetUserInformationByUsernameQueryHandler
         _mapper = mapper;
     }
 
-    public override async Task<Result<UserInformationResponse>> Handle(
+    public override async Task<Result<UserDetailsResponse>> Handle(
         GetUserInformationByUsernameQuery request,
         CancellationToken cancellationToken)
     {
-        var result = new Result<UserInformationResponse>();
+        var result = new Result<UserDetailsResponse>();
         try
         {
             var userRepo = _unitOfWork.CreateReadOnlyRepository<UserProfile>();
@@ -37,12 +36,15 @@ internal class GetUserInformationByUsernameQueryHandler
             var user = await userRepo
                     .Query()
                     .Where(u => u.Username == request.Username)
-                    .Select(user => new UserInformationResponse
+                    .Select(user => new UserDetailsResponse
                     {
-                        Username = user.Username,
-                        UserProfileId = user.Id,
-                        AvatarUrl = user.AvatarUrl,
-                        Biography = user.Biography,
+                        UserInfo = new UserInfo
+                        {
+                            Username = user.Username,
+                            AvatarUrl = user.AvatarUrl,
+                            Biography = user.Biography,
+                            UserProfileId = user.Id
+                        },
                         CreatedAt = user.CreatedAt,
                         UpdatedAt = user.UpdatedAt,
                         IsFriend = user.Friends.Any(f => f.Id == request.CurrentUserId),

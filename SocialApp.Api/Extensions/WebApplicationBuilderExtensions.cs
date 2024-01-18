@@ -10,6 +10,7 @@ using SocialApp.Api.Filters;
 using SocialApp.Api.Middleware;
 using SocialApp.Application.Posts.Queries;
 using SocialApp.Application.Services;
+using SocialApp.Application.Services.BackgroundService;
 using SocialApp.Application.Services.DirectoryService;
 using SocialApp.Application.Services.FileUpload;
 using SocialApp.Application.Settings;
@@ -38,6 +39,8 @@ public static class WebApplicationBuilderExtensions
                     policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:5173");
                 });
         });
+        builder.Services.AddSingleton<INotificationQueue, NotificationQueue>();
+        builder.Services.AddHostedService<NotificationService>();
 
         builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetAllPostsQuery).Assembly));
         builder.Services.AddAutoMapper(typeof(Program), typeof(GetAllPostsQuery));

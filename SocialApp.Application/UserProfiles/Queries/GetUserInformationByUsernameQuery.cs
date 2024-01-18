@@ -4,7 +4,7 @@ using SocialApp.Application.UserProfiles.Responses;
 
 namespace SocialApp.Application.UserProfiles.Queries;
 
-public class GetUserInformationByUsernameQuery : IRequest<Result<UserInformationResponse>>
+public class GetUserInformationByUsernameQuery : IRequest<Result<UserDetailsResponse>>
 {
     public required Guid CurrentUserId { get; set; }
     public required string Username { get; set; }

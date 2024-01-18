@@ -52,7 +52,11 @@ internal class GetAllPostsQueryHandler
                          LikedByCurrentUser = true,
                          LikeId = p.Likes.First(l => l.UserProfileId == request.CurrentUserId).Id,
                      }
-                     : null,
+                     : new PostLikeInfo
+                     {
+                         LikedByCurrentUser = false,
+                         LikeId = Guid.Empty,
+                     },
                  CreatedAt = p.CreatedAt,
                  UpdatedAt = p.UpdatedAt,
              })

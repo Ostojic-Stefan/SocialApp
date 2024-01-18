@@ -1,11 +1,9 @@
 ﻿namespace SocialApp.Application.UserProfiles.Responses;
 
-public class UserInformationResponse
+// used for when querying for user profile page
+public class UserDetailsResponse
 {
-    public required Guid UserProfileId { get; set; }
-    public required string Username { get; set; }
-    public string? Biography { get; set; }
-    public string? AvatarUrl { get; set; }
+    public required UserInfo UserInfo { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
     public bool IsFriend { get; set; }
