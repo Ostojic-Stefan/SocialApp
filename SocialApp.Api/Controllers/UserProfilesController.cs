@@ -8,7 +8,6 @@ using SocialApp.Application.UserProfiles.Queries;
 
 namespace SocialApp.Api.Controllers;
 
-// TODO: Add Update Endpoint
 public class UserProfilesController : BaseApiController
 {
     private readonly IMediator _mediator;
@@ -19,11 +18,11 @@ public class UserProfilesController : BaseApiController
     }
 
     [HttpPost]
-    [Route("users/setImage")]
+    [Route("users/images/add")]
     [Authorize]
     public async Task<IActionResult> SetProfileImage(SetProfileImageRequest avatarUrl)
     {
-        var command = new AddProfileImageCommand
+        var command = new AddUserImageCommand
         {
             UserProfileId = HttpContext.GetUserProfileId(),
             ImageUrl = avatarUrl.AvatarUrl

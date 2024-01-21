@@ -1,6 +1,7 @@
 ﻿using SocialApp.Domain;
 
-namespace SocialApp.Application.Services.BackgroundService;
+namespace SocialApp.Application.Services.BackgroundServices.Notification;
+
 
 public record QueueData(Guid SenderUserId, Post Post, Comment? Comment, PostLike? Like);
 

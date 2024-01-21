@@ -1,4 +1,5 @@
-﻿using SocialApp.Application.UserProfiles.Responses;
+﻿using SocialApp.Application.Files.Responses;
+using SocialApp.Application.UserProfiles.Responses;
 
 namespace SocialApp.Application.Posts.Responses;
 
@@ -11,7 +12,8 @@ public class PostLikeInfo
 public class PostResponse
 {
     public Guid Id { get; set; }
-    public string? ImageUrl { get; set; }
+    //public string? ImageUrl { get; set; }
+    public required IEnumerable<ImageResponse> Images { get; set; }
     public string? Contents { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }

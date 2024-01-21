@@ -112,13 +112,13 @@ public class PostsController : BaseApiController
 
 
     [HttpGet]
-    [Route("users/{username}/posts")]
+    [Route("users/{userId}/posts")]
     [ValidateModel]
-    public async Task<IActionResult> GetPostsForUser(string username)
+    public async Task<IActionResult> GetPostsForUser(Guid userId)
     {
         var query = new GetPostsForUserQuery
         {
-            Username = username
+            UserProfileId = userId
         };
         var response = await _mediator.Send(query);
         if (response.HasError)

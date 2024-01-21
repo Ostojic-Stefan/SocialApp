@@ -1,7 +1,7 @@
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using EfCoreHelpers;
 using Microsoft.EntityFrameworkCore;
+using SocialApp.Application.Comments.Extensions;
 using SocialApp.Application.Comments.Query;
 using SocialApp.Application.Comments.Responses;
 using SocialApp.Application.Models;
@@ -20,7 +20,8 @@ internal class GetCommentsForUserQueryHandler
         _mapper = mapper;
     }
 
-    public override async Task<Result<IReadOnlyList<CommentResponse>>> Handle(GetCommentsForUserQuery request, CancellationToken cancellationToken)
+    public override async Task<Result<IReadOnlyList<CommentResponse>>> Handle(GetCommentsForUserQuery request,
+        CancellationToken cancellationToken)
     {
         var result = new Result<IReadOnlyList<CommentResponse>>();
         try
@@ -28,10 +29,10 @@ internal class GetCommentsForUserQueryHandler
             var commentRepo = _unitOfWork.CreateReadOnlyRepository<Comment>();
             var comments = await commentRepo
                 .Query()
+                .Include(c => c.UserProfile.ProfileImage)
                 .Where(c => c.UserProfile.Username.Equals(request.Username))
-                .ProjectTo<CommentResponse>(_mapper.ConfigurationProvider)
+                .Select(c => c.MapToCommentResponse())
                 .ToListAsync(cancellationToken);
-
             result.Data = comments;
         }
         catch (Exception ex)

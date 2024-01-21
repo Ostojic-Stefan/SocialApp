@@ -5,7 +5,7 @@ using SocialApp.Domain;
 
 namespace SocialApp.Application.Posts.Commands;
 
-public class CreatePostCommand : IRequest<Result<PostResponse>>
+public class CreatePostCommand : IRequest<Result<bool>>
 {
     public required string ImageUrl { get; set; }
     public required string Contents { get; set; }

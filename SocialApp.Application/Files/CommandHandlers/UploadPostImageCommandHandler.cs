@@ -9,10 +9,10 @@ namespace SocialApp.Application.Files.CommandHandlers;
 internal class UploadPostImageCommandHandler
     : DataContextRequestHandler<UploadPostImageCommand, Result<UploadPostImageResponse>>
 {
-    private readonly IFileUploadService _fileUploadService;
+    private readonly ITempFileUploadService _fileUploadService;
 
     public UploadPostImageCommandHandler(IUnitOfWork unitOfWork,
-        IFileUploadService fileUploadService) 
+        ITempFileUploadService fileUploadService) 
         : base(unitOfWork)
     {
         _fileUploadService = fileUploadService;
@@ -24,8 +24,8 @@ internal class UploadPostImageCommandHandler
         var result = new Result<UploadPostImageResponse>();
         try
         {
-            var path = await _fileUploadService.UploadFileAsync(request.ImageStream, "Posts", request.ImageName);
-            result.Data = new UploadPostImageResponse{ ImagePath = path };
+            var imageName = await _fileUploadService.UploadFileAsync(request.ImageStream, request.ImageName, cancellationToken);
+            result.Data = new UploadPostImageResponse{ ImageName = imageName };
         }
         catch (Exception ex)
         {

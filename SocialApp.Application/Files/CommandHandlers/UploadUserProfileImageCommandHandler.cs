@@ -9,10 +9,10 @@ namespace SocialApp.Application.Files.CommandHandlers;
 internal class UploadUserProfileImageCommandHandler
     : DataContextRequestHandler<UploadUserProfileImageCommand, Result<UploadUserProfileImageResponse>>
 {
-    private readonly IFileUploadService _fileUploadService;
+    private readonly ITempFileUploadService _fileUploadService;
 
     public UploadUserProfileImageCommandHandler(IUnitOfWork unitOfWork,
-        IFileUploadService fileUploadService) 
+        ITempFileUploadService fileUploadService) 
         : base(unitOfWork)
     {
         _fileUploadService = fileUploadService;
@@ -24,7 +24,7 @@ internal class UploadUserProfileImageCommandHandler
         var result = new Result<UploadUserProfileImageResponse>();
         try
         {
-            var path = await _fileUploadService.UploadFileAsync(request.ImageStream, "Users", request.ImageName, cancellationToken);
+            var path = await _fileUploadService.UploadFileAsync(request.ImageStream, request.ImageName, cancellationToken);
             result.Data = new UploadUserProfileImageResponse{ AvatarUrl = path };
         }
         catch (Exception ex)

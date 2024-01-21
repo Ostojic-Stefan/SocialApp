@@ -6,5 +6,5 @@ namespace SocialApp.Application.Posts.Queries;
 
 public class GetPostsForUserQuery : IRequest<Result<PostsForUserResponse>>
 {
-    public required string Username { get; set; }
+    public required Guid UserProfileId { get; set; }
 }

@@ -1,68 +1,39 @@
 ﻿using AutoMapper;
 using EfCoreHelpers;
-using Microsoft.EntityFrameworkCore;
 using SocialApp.Application.Models;
 using SocialApp.Application.Posts.Commands;
-using SocialApp.Application.Posts.Responses;
-using SocialApp.Application.UserProfiles.Responses;
+using SocialApp.Application.Services.BackgroundServices.ImageProcessing;
 using SocialApp.Domain;
 using SocialApp.Domain.Exceptions;
+using System.Threading.Channels;
 
 namespace SocialApp.Application.Posts.CommandHandlers;
 
 internal class CreatePostCommandHandler
-    : DataContextRequestHandler<CreatePostCommand, Result<PostResponse>>
+    : DataContextRequestHandler<CreatePostCommand, Result<bool>>
 {
     private readonly IMapper _mapper;
+    private readonly ChannelWriter<ImageProcessingMessage> _channelWriter;
 
-    public CreatePostCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) 
+    public CreatePostCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, Channel<ImageProcessingMessage> channel) 
         : base(unitOfWork)
     {
         _mapper = mapper;
+        _channelWriter = channel.Writer;
     }
 
-    public override async Task<Result<PostResponse>> Handle(CreatePostCommand request,
+    public override async Task<Result<bool>> Handle(CreatePostCommand request,
         CancellationToken cancellationToken)
     {
-        var result = new Result<PostResponse>();
+        var result = new Result<bool>();
         try
         {
-            var post = Post.CreatePost(request.ImageUrl, request.Contents, request.UserProfileId);
+            var post = Post.CreatePost(request.Contents, request.UserProfileId);
             var postRepo = _unitOfWork.CreateReadWriteRepository<Post>();
             postRepo.Add(post);
             await _unitOfWork.SaveAsync(cancellationToken);
-
-            var newPost = await postRepo.Query()
-                .Select(p => new PostResponse
-                {
-                    Id = p.Id,
-                    Contents = p.Contents,
-                    UserInfo = new UserInfo
-                    {
-                        UserProfileId = p.UserProfileId,
-                        Username = p.UserProfile.Username,
-                        AvatarUrl = p.UserProfile.AvatarUrl,
-                    },
-                    ImageUrl = p.ImageUrl,
-                    NumComments = p.Comments.Count(),
-                    NumLikes = p.Likes.Count(),
-                    LikeInfo = p.Likes.Any(l => l.UserProfileId == request.UserProfileId)
-                        ? new PostLikeInfo
-                        {
-                            LikedByCurrentUser = true,
-                            LikeId = p.Likes.First(l => l.UserProfileId == request.UserProfileId).Id,
-                        }
-                        : new PostLikeInfo
-                        {
-                            LikedByCurrentUser = false,
-                            LikeId = Guid.Empty,
-                        },
-                        CreatedAt = p.CreatedAt,
-                        UpdatedAt = p.UpdatedAt,
-                })
-                .SingleOrDefaultAsync(p => p.Id == post.Id, cancellationToken);
-
-            result.Data = newPost;
+            await _channelWriter.WriteAsync(new ImageProcessingMessage(request.ImageUrl, post.Id, ImageFor.Post), cancellationToken);
+            result.Data = true;
         }
         catch (ModelInvalidException ex)
         {

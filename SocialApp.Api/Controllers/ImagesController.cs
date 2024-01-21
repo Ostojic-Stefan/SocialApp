@@ -1,3 +1,4 @@
+using EfCoreHelpers;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using SocialApp.Api.Requests.Posts;
@@ -10,13 +11,16 @@ namespace SocialApp.Api.Controllers;
 public class ImagesController : BaseApiController
 {
     private readonly IMediator _mediator;
-    private readonly FileToHttpConverter _converter;
+    private readonly IWebHostEnvironment env;
+    private readonly IUnitOfWork unitOfWork;
 
-    public ImagesController(IMediator mediator, FileToHttpConverter converter)
+    public ImagesController(IMediator mediator, IWebHostEnvironment env, IUnitOfWork unitOfWork)
     {
-        _converter = converter;
+        this.env = env;
+        this.unitOfWork = unitOfWork;
         _mediator = mediator;
     }
+
 
     [HttpPost]
     [Route("users/images")]
@@ -31,7 +35,6 @@ public class ImagesController : BaseApiController
         var response = await _mediator.Send(command, cancellationToken);
         if (response.HasError)
             return HandleError(response.Errors);
-        response.Data.AvatarUrl = _converter.ConvertToHttpEndpoint(response.Data.AvatarUrl);
         return Ok(response.Data);
     }
 
@@ -48,7 +51,6 @@ public class ImagesController : BaseApiController
         var response = await _mediator.Send(command, cancellationToken);
         if (response.HasError)
             return HandleError(response.Errors);
-        response.Data.ImagePath = _converter.ConvertToHttpEndpoint(response.Data.ImagePath);
         return Ok(response.Data);
     }
 }

@@ -4,7 +4,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using SocialApp.Domain;
 
-namespace SocialApp.Application.Services.BackgroundService;
+namespace SocialApp.Application.Services.BackgroundServices.Notification;
 
 public sealed class NotificationService : IHostedService, IDisposable
 {
@@ -16,7 +16,7 @@ public sealed class NotificationService : IHostedService, IDisposable
     public NotificationService(
         INotificationQueue queue,
         ILogger<NotificationService> logger,
-        IServiceScopeFactory serviceScopeFactory 
+        IServiceScopeFactory serviceScopeFactory
         )
     {
         _queue = queue;
@@ -47,11 +47,11 @@ public sealed class NotificationService : IHostedService, IDisposable
                 {
                     using IServiceScope scope = _serviceScopeFactory.CreateScope();
                     var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-                    var notificationRepo = unitOfWork.CreateReadWriteRepository<Notification>();
+                    var notificationRepo = unitOfWork.CreateReadWriteRepository<Domain.Notification>();
 
                     if (queueData.Comment is not null)
                     {
-                        var notification = Notification.CreateNotification(
+                        var notification = Domain.Notification.CreateNotification(
                             queueData.SenderUserId,
                             queueData.Post.UserProfileId,
                             queueData.Post.Id,
@@ -62,7 +62,7 @@ public sealed class NotificationService : IHostedService, IDisposable
                     }
                     else if (queueData.Like is not null)
                     {
-                        var notification = Notification.CreateNotification(
+                        var notification = Domain.Notification.CreateNotification(
                             queueData.SenderUserId,
                             queueData.Post.UserProfileId,
                             queueData.Post.Id,

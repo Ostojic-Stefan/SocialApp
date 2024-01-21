@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using SocialApp.Application.Models;
 using SocialApp.Application.Posts.Commands;
 using SocialApp.Application.Posts.Responses;
-using SocialApp.Application.Services.BackgroundService;
+using SocialApp.Application.Services.BackgroundServices.Notification;
 using SocialApp.Domain;
 using SocialApp.Domain.Exceptions;
 

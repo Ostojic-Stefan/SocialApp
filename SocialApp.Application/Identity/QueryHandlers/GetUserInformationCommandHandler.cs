@@ -7,6 +7,7 @@ using SocialApp.Application.Identity.Queries;
 using SocialApp.Application.Identity.Responses;
 using SocialApp.Application.Models;
 using SocialApp.Application.Posts.Responses;
+using SocialApp.Application.UserProfiles.Extensions;
 using SocialApp.Application.UserProfiles.Responses;
 using SocialApp.Domain;
 
@@ -48,13 +49,7 @@ internal class GetUserInformationQueryHandler
                     {
                         Contents = n.Comment.Contents,
                         Id = n.Comment.Id,
-                        UserInfo = new UserInfo
-                        {
-                            Username = n.Comment.UserProfile.Username,
-                            AvatarUrl = n.Comment.UserProfile.AvatarUrl,
-                            Biography = n.Comment.UserProfile.Biography,
-                            UserProfileId = n.Comment.UserProfile.Id
-                        },
+                        UserInfo = n.Comment.UserProfile.MapToUserInfo(),
                         CreatedAt = n.Comment.CreatedAt,
                         UpdatedAt = n.Comment.UpdatedAt,
                     } : null,
@@ -62,19 +57,15 @@ internal class GetUserInformationQueryHandler
                     {
                         Id = n.Like.Id,
                         LikeReaction = n.Like.LikeReaction,
-                        UserInformation = new UserInfo
-                        {
-                            Username = n.Like.UserProfile.Username,
-                            AvatarUrl = n.Like.UserProfile.AvatarUrl,
-                            Biography = n.Like.UserProfile.Biography,
-                            UserProfileId = n.Like.UserProfile.Id
-                        }
+                        UserInformation = n.Like.UserProfile.MapToUserInfo(),
                     } : null
                 }).ToListAsync(cancellationToken);
 
             var userProfile = await userProfileRepo
                 .QueryById(request.UserProfileId)
-                .ProjectTo<UserInfo>(_mapper.ConfigurationProvider)
+                .Include(user => user.ProfileImage)
+                .Select(user => user.MapToUserInfo())
+                //.ProjectTo<UserInfo>(_mapper.ConfigurationProvider)
                 .SingleOrDefaultAsync(cancellationToken);
 
             var final = new GetUserInformationResponse

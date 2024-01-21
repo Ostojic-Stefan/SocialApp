@@ -66,15 +66,7 @@ internal class RegisterCommandHandler
             }
 
             // create user profile
-            var userProfile = UserProfile.CreateUserProfle(
-                identity.Id, request.Username,
-                request.Biography, request.AvatarUrl);
-
-            // add a default user profile image if none is specified
-            if (userProfile.AvatarUrl is null)
-            {
-                userProfile.UpdateUserProfile("http://localhost:5000/Users/default-avatar.jpg");
-            }
+            var userProfile = UserProfile.CreateUserProfle(identity.Id, request.Username, request.Biography);
 
             var userProfileRepo = _unitOfWork.CreateReadWriteRepository<UserProfile>();
             userProfileRepo.Add(userProfile);

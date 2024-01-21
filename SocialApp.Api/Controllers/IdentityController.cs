@@ -16,14 +16,11 @@ public class IdentityController : BaseApiController
 {
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
-    private readonly JwtSettings _jwtSettings;
 
-    public IdentityController(IMediator mediator, IMapper mapper,
-        IOptions<JwtSettings> jwtOptions)
+    public IdentityController(IMediator mediator, IMapper mapper)
     {
         _mediator = mediator;
         _mapper = mapper;
-        _jwtSettings = jwtOptions.Value;
     }
 
     [HttpPost]

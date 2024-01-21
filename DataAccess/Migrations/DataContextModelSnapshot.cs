@@ -280,6 +280,39 @@ namespace SocialApp.DataAccess.Migrations
                     b.ToTable("FriendRequests");
                 });
 
+            modelBuilder.Entity("SocialApp.Domain.Image", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("FullscreenImagePath")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("OriginalImagePath")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("PostId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ThumbnailImagePath")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("UserProfileId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PostId");
+
+                    b.HasIndex("UserProfileId");
+
+                    b.ToTable("Images");
+                });
+
             modelBuilder.Entity("SocialApp.Domain.Notification", b =>
                 {
                     b.Property<Guid>("Id")
@@ -337,10 +370,6 @@ namespace SocialApp.DataAccess.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasColumnType("VARCHAR(200)");
-
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
@@ -389,9 +418,6 @@ namespace SocialApp.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("AvatarUrl")
-                        .HasColumnType("VARCHAR(200)");
-
                     b.Property<string>("Biography")
                         .HasColumnType("VARCHAR(200)");
 
@@ -407,6 +433,9 @@ namespace SocialApp.DataAccess.Migrations
                     b.Property<string>("IdentityUserId")
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("ProfileImageId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
@@ -419,6 +448,8 @@ namespace SocialApp.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("IdentityUserId");
+
+                    b.HasIndex("ProfileImageId");
 
                     b.ToTable("UserProfiles");
                 });
@@ -529,6 +560,23 @@ namespace SocialApp.DataAccess.Migrations
                     b.Navigation("SenderUser");
                 });
 
+            modelBuilder.Entity("SocialApp.Domain.Image", b =>
+                {
+                    b.HasOne("SocialApp.Domain.Post", "Post")
+                        .WithMany("Images")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("SocialApp.Domain.UserProfile", "User")
+                        .WithMany("Images")
+                        .HasForeignKey("UserProfileId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Post");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("SocialApp.Domain.Notification", b =>
                 {
                     b.HasOne("SocialApp.Domain.Comment", "Comment")
@@ -604,7 +652,14 @@ namespace SocialApp.DataAccess.Migrations
                         .WithMany()
                         .HasForeignKey("IdentityUserId");
 
+                    b.HasOne("SocialApp.Domain.Image", "ProfileImage")
+                        .WithMany()
+                        .HasForeignKey("ProfileImageId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("IdentityUser");
+
+                    b.Navigation("ProfileImage");
                 });
 
             modelBuilder.Entity("UserProfileUserProfile", b =>
@@ -626,11 +681,15 @@ namespace SocialApp.DataAccess.Migrations
                 {
                     b.Navigation("Comments");
 
+                    b.Navigation("Images");
+
                     b.Navigation("Likes");
                 });
 
             modelBuilder.Entity("SocialApp.Domain.UserProfile", b =>
                 {
+                    b.Navigation("Images");
+
                     b.Navigation("Likes");
 
                     b.Navigation("ReceivedFriendRequests");

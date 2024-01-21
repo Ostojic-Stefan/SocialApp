@@ -22,9 +22,13 @@ public class UserProfile : BaseEntity
     public DateTime UpdatedAt { get; private set; }
     public string Username { get; private set; }
     public string? Biography { get; private set; }
-    public string? AvatarUrl { get; private set; }
+
+    public Guid? ProfileImageId { get; set; }
+    public Image ProfileImage { get; set; }
 
     // Relationships
+    // TODO: make private set
+    public IEnumerable<Image> Images { get; set; } = new List<Image>();
     public string IdentityId { get; private set; }
     public IdentityUser IdentityUser { get; private set; }
     public IEnumerable<PostLike>? Likes => _likes;
@@ -33,8 +37,7 @@ public class UserProfile : BaseEntity
     public IEnumerable<FriendRequest> SentFriendRequests => _sentFriendRequests;
     public IEnumerable<FriendRequest> ReceivedFriendRequests => _receivedFriendRequests;
 
-    public static UserProfile CreateUserProfle(string identityId, string userName,
-        string? biography, string? avararUrl)
+    public static UserProfile CreateUserProfle(string identityId, string userName, string? biography)
     {
         // TODO: Add Validation
         return new UserProfile
@@ -42,7 +45,8 @@ public class UserProfile : BaseEntity
             IdentityId = identityId,
             Username = userName,
             Biography = biography,
-            AvatarUrl = avararUrl
+            ProfileImage = Image.GenerateDefaultAvatar()
+            // AvatarUrl = avararUrl
         };
     }
 
@@ -84,6 +88,7 @@ public class UserProfile : BaseEntity
 
     public void UpdateUserProfile(string newAvatarUrl)
     {
-        AvatarUrl = newAvatarUrl;
+        //AvatarUrl = newAvatarUrl;
+        throw new NotImplementedException();
     }
 }

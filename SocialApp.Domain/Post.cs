@@ -8,6 +8,7 @@ public class Post : BaseEntity
 {
     private readonly ICollection<Comment> _comments = new List<Comment>();
     private readonly ICollection<PostLike> _likes = new List<PostLike>();
+    private readonly ICollection<Image> _images = new List<Image>();
 
     private Post() 
     {
@@ -15,22 +16,23 @@ public class Post : BaseEntity
         _likes = new List<PostLike>();
     }
 
-    public string ImageUrl { get; private set; }
     public string Contents { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime UpdatedAt { get; private set; }
 
     // Relationships
+    // TODO: make private set
+    public IEnumerable<Image> Images { get; set; } = new List<Image>();
+
     public Guid UserProfileId { get; private set; }
     public UserProfile UserProfile { get; private set; }
     public IEnumerable<Comment> Comments => _comments;
     public IEnumerable<PostLike> Likes => _likes;
 
-    public static Post CreatePost(string imageUrl, string contents, Guid userId)
+    public static Post CreatePost(string contents, Guid userId)
     {
         var newPost = new Post
         {
-            ImageUrl = imageUrl,
             Contents = contents,
             UserProfileId = userId
         };
@@ -43,11 +45,6 @@ public class Post : BaseEntity
         _likes.Add(postLike);
     }
 
-    public void UpdateImageUrl(string imageUrl)
-    {
-        ImageUrl = imageUrl;
-        Validate(this);
-    }
 
     public void UpdateContents(string newContents)
     {
@@ -55,18 +52,13 @@ public class Post : BaseEntity
         Validate(this);
     }
 
-    public void UpdateImage(string newImageUrl)
-    {
-        ImageUrl = newImageUrl;
-        Validate(this);
-    }
-
     public void Update(string? imageUrl, string? contents)
     {
-        if (contents is not null)
-            Contents = contents;
-        if (imageUrl is not null)
-            ImageUrl = imageUrl;
+        // TODO: look into this later
+        //if (contents is not null)
+        //    Contents = contents;
+        //if (imageUrl is not null)
+        //    ImageUrl = imageUrl;
         Validate(this);
     }
 

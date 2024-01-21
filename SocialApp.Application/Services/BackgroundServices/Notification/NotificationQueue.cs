@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 
-namespace SocialApp.Application.Services.BackgroundService;
+namespace SocialApp.Application.Services.BackgroundServices.Notification;
+
 
 public class NotificationQueue : INotificationQueue
 {

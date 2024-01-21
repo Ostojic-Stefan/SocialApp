@@ -18,7 +18,14 @@ internal class PostConfig : IEntityTypeConfiguration<Post>
 
         builder.Property(post => post.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
         builder.Property(post => post.UpdatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-        builder.Property(post => post.ImageUrl).HasColumnType("VARCHAR(200)").IsRequired();
+        //builder.Property(post => post.ImageUrl).HasColumnType("VARCHAR(200)").IsRequired();
         builder.Property(post => post.Contents).HasColumnType("VARCHAR(240)").IsRequired();
+
+        builder
+            .HasMany(post => post.Images)
+            .WithOne(image => image.Post)
+            .HasForeignKey(image => image.PostId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

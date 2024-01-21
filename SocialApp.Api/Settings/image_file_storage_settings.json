@@ -1,0 +1,7 @@
+{
+  "ImageFileStorageSettings": {
+    "TempImageFileDir": "C:/Users/Stefan/source/repos/SocialApp/SocialApp.Api/wwwroot/temp",
+    "RootFileImageDir": "C:/Users/Stefan/source/repos/SocialApp/SocialApp.Api/wwwroot/images",
+    "ImagesHttpEndpoint":  "http://localhost:5000/images"
+  }
+}

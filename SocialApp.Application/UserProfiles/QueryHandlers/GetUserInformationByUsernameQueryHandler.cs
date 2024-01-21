@@ -2,6 +2,7 @@
 using EfCoreHelpers;
 using Microsoft.EntityFrameworkCore;
 using SocialApp.Application.Models;
+using SocialApp.Application.UserProfiles.Extensions;
 using SocialApp.Application.UserProfiles.Queries;
 using SocialApp.Application.UserProfiles.Responses;
 using SocialApp.Domain;
@@ -20,36 +21,20 @@ internal class GetUserInformationByUsernameQueryHandler
         _mapper = mapper;
     }
 
-    public override async Task<Result<UserDetailsResponse>> Handle(
-        GetUserInformationByUsernameQuery request,
+    public override async Task<Result<UserDetailsResponse>> Handle(GetUserInformationByUsernameQuery request,
         CancellationToken cancellationToken)
     {
         var result = new Result<UserDetailsResponse>();
         try
         {
             var userRepo = _unitOfWork.CreateReadOnlyRepository<UserProfile>();
-            //var user = await userRepo
-            //    .Query()
-            //    .Where(u => u.Username == request.Username)
-            //    .ProjectTo<UserInformationResponse>(_mapper.ConfigurationProvider)
-            //    .SingleOrDefaultAsync(cancellationToken);
             var user = await userRepo
                     .Query()
+                    .Include(u => u.Friends)
+                    .Include(u => u.ProfileImage)
                     .Where(u => u.Username == request.Username)
-                    .Select(user => new UserDetailsResponse
-                    {
-                        UserInfo = new UserInfo
-                        {
-                            Username = user.Username,
-                            AvatarUrl = user.AvatarUrl,
-                            Biography = user.Biography,
-                            UserProfileId = user.Id
-                        },
-                        CreatedAt = user.CreatedAt,
-                        UpdatedAt = user.UpdatedAt,
-                        IsFriend = user.Friends.Any(f => f.Id == request.CurrentUserId),
-                    }).SingleOrDefaultAsync(cancellationToken);
-
+                    .Select(user => user.MapToUserDetailsResponse(request.CurrentUserId))
+                    .SingleOrDefaultAsync(cancellationToken);
             if (user is null)
             {
                 result.AddError(AppErrorCode.NotFound,

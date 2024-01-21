@@ -10,11 +10,12 @@ using SocialApp.Api.Filters;
 using SocialApp.Api.Middleware;
 using SocialApp.Application.Posts.Queries;
 using SocialApp.Application.Services;
-using SocialApp.Application.Services.BackgroundService;
-using SocialApp.Application.Services.DirectoryService;
+using SocialApp.Application.Services.BackgroundServices.ImageProcessing;
+using SocialApp.Application.Services.BackgroundServices.Notification;
 using SocialApp.Application.Services.FileUpload;
 using SocialApp.Application.Settings;
 using System.Text;
+using System.Threading.Channels;
 
 namespace SocialApp.Api.Extensions;
 
@@ -42,23 +43,22 @@ public static class WebApplicationBuilderExtensions
         builder.Services.AddSingleton<INotificationQueue, NotificationQueue>();
         builder.Services.AddHostedService<NotificationService>();
 
+        builder.Services.AddHostedService<ImageProcessingBackgroundService>();
+        builder.Services.AddSingleton(_ => Channel.CreateUnbounded<ImageProcessingMessage>());
+
         builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetAllPostsQuery).Assembly));
         builder.Services.AddAutoMapper(typeof(Program), typeof(GetAllPostsQuery));
 
         builder.Services.AddTransient<ITokenService, TokenService>();
-        builder.Services.AddTransient<IDirectoryService, DirectoryService>(provider => 
-        {
-            var webHostEnv = provider.GetRequiredService<IWebHostEnvironment>();
-            return new DirectoryService(webHostEnv.WebRootPath);
-        });
+
         builder.Services.AddTransient<ServerUrlService>();
-        builder.Services.AddTransient<FileToHttpConverter>(provider => 
+        builder.Services.AddTransient<FileHttpConverter>(provider => 
         {
             var webHostEnv = provider.GetRequiredService<IWebHostEnvironment>();
             var serverUrlService = provider.GetRequiredService<ServerUrlService>();
-            return new FileToHttpConverter(webHostEnv.WebRootPath, serverUrlService);
+            return new FileHttpConverter(webHostEnv.WebRootPath, serverUrlService, webHostEnv);
         });
-        builder.Services.AddTransient<IFileUploadService, FileUploadService>();
+        builder.Services.AddTransient<ITempFileUploadService, TempFileUploadService>();
 
         builder.Services.Configure<ApiBehaviorOptions>(options
             => options.SuppressModelStateInvalidFilter = true);
@@ -91,8 +91,11 @@ public static class WebApplicationBuilderExtensions
 
     private static void AddSettings(this WebApplicationBuilder builder)
     {
-        builder.Configuration.AddJsonFile("./Settings/jwtSettings.json");
+        builder.Configuration.AddJsonFile("./Settings/jwt_settings.json");
         builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+
+        builder.Configuration.AddJsonFile("./Settings/image_file_storage_settings.json");
+        builder.Services.Configure<ImageFileStorageSettings>(builder.Configuration.GetSection("ImageFileStorageSettings"));
     }
 
     private static void AddJwtService(this WebApplicationBuilder builder)

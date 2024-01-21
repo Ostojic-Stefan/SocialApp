@@ -39,7 +39,7 @@ internal class MappingProfiles : Profile
         CreateMap<FriendRequest, FriendRequestResponse>()
             .ForMember(x => x.RequesterId, opt => opt.MapFrom(src => src.SenderUserId))
             .ForMember(x => x.RequesterUsername, opt => opt.MapFrom(src => src.SenderUser.Username))
-            .ForMember(x => x.RequesterAvatarUrl, opt => opt.MapFrom(src => src.SenderUser.AvatarUrl))
+            //.ForMember(x => x.RequesterAvatarUrl, opt => opt.MapFrom(src => src.SenderUser.AvatarUrl))
             .ForMember(x => x.RequestTimeSent, opt => opt.MapFrom(src => src.CreatedAt));
 
         CreateMap<UserProfile, FriendResponse>()
@@ -50,9 +50,6 @@ internal class MappingProfiles : Profile
 
         CreateMap<PostLike, LikesForUserResponse>()
             .ForMember(x => x.UserInfo, opt => opt.MapFrom(src => src.UserProfile));
-
-        CreateMap<PostLike, PostLikeForUserResponse>()
-            .ForMember(x => x.Post, opt => opt.MapFrom(src => src.Post));
     }
 
 }

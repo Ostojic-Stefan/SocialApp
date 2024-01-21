@@ -3,6 +3,7 @@ using AutoMapper.QueryableExtensions;
 using EfCoreHelpers;
 using Microsoft.EntityFrameworkCore;
 using SocialApp.Application.Models;
+using SocialApp.Application.Posts.Extensions;
 using SocialApp.Application.Posts.Queries;
 using SocialApp.Application.Posts.Responses;
 using SocialApp.Application.UserProfiles.Responses;
@@ -32,45 +33,21 @@ internal class GetPostsForUserQueryHandler :
 
             var posts = await postRepo
                 .Query()
-                .Where(p => p.UserProfile.Username == request.Username)
+                .Where(p => p.UserProfile.Id == request.UserProfileId)
                 .Include(p => p.Likes)
                 .OrderByDescending(p => p.CreatedAt)
-                .Select(p => new PostResponse
-                {
-                    UserInfo = new UserInfo()
-                    { 
-                        Username = p.UserProfile.Username,
-                        AvatarUrl = p.UserProfile.AvatarUrl,
-                        Biography = p.UserProfile.Biography,
-                        UserProfileId = p.UserProfile.Id
-                    },
-                    Id = p.Id,
-                    Contents = p.Contents,
-                    ImageUrl = p.ImageUrl,
-                    NumComments = p.Comments.Count(),
-                    NumLikes = p.Likes.Count(),
-                    LikeInfo = p.Likes.Any(l => l.UserProfile.Username == request.Username)
-                        ? new PostLikeInfo
-                        {
-                            LikedByCurrentUser = true,
-                            LikeId = p.Likes.First(l => l.UserProfile.Username == request.Username).Id,
-                        }
-                        : null,
-                    CreatedAt = p.CreatedAt,
-                    UpdatedAt = p.UpdatedAt,
-                })
+                .Select(p => p.MapToPostReponse(request.UserProfileId))
                 .ToListAsync(cancellationToken);
-
 
             if (posts is null)
             {
-                result.AddError(AppErrorCode.NotFound, $"User with username of {request.Username} was not found");
+                result.AddError(AppErrorCode.NotFound, $"User with id of {request.UserProfileId} was not found");
                 return result;
             }
 
             var userInfo = await userRepo
                 .Query()
-                .Where(p => p.Username == request.Username)
+                .Where(user => user.Id == request.UserProfileId)
                 .ProjectTo<UserInfo>(_mapper.ConfigurationProvider)
                 .SingleAsync(cancellationToken);
 

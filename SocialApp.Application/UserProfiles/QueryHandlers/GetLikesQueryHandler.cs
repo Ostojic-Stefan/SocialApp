@@ -4,6 +4,7 @@ using EfCoreHelpers;
 using Microsoft.EntityFrameworkCore;
 using SocialApp.Application.Models;
 using SocialApp.Application.Posts.Responses;
+using SocialApp.Application.UserProfiles.Extensions;
 using SocialApp.Application.UserProfiles.Queries;
 using SocialApp.Application.UserProfiles.Responses;
 using SocialApp.Domain;
@@ -28,13 +29,30 @@ internal class GetLikesQueryHandler
         try
         {
             var userRepo = _unitOfWork.CreateReadOnlyRepository<UserProfile>();
-            var ttt = await userRepo
-                .QueryById(request.UserId)
-                .Select(u => u.Likes)
-                .ProjectTo<LikesForUserResponse>(_mapper.ConfigurationProvider)
-                .FirstAsync(cancellationToken);
-                // TODO: FIX
-            result.Data = ttt;
+            var likeRepo = _unitOfWork.CreateReadOnlyRepository<PostLike>();
+            // TODO: fix
+            var likes = await likeRepo
+                .Query()
+                .Where(l => l.UserProfile.Username == request.Username)
+                .Include(l => l.UserProfile.ProfileImage)
+                .Select(l => new PostLikeResponse
+                {
+                    Id = l.Id,
+                    LikeReaction = l.LikeReaction,
+                    UserInformation = l.UserProfile.MapToUserInfo()
+                })
+                .ToListAsync(cancellationToken);
+
+            var userInfo = await userRepo
+                .Query()
+                .Include(u => u.ProfileImage)
+                .Select(u => u.MapToUserInfo())
+                .SingleAsync(u => u.Username == request.Username, cancellationToken);
+            result.Data = new LikesForUserResponse
+            {
+                Likes = likes,
+                UserInfo = userInfo
+            };
         }
         catch (Exception ex)
         {
@@ -47,22 +65,5 @@ internal class GetLikesQueryHandler
 public class LikesForUserResponse
 {
     public required UserInfo UserInfo { get; set; }
-    public required IReadOnlyList<PostLikeForUserResponse> Likes { get; set; }
+    public required IReadOnlyList<PostLikeResponse> Likes { get; set; }
 }
-
-public class PostLikeForUserResponse
-{
-    public required LikeReaction LikeReaction { get; set; }
-    public required PostResponse Post { get; set; }
-    //public required PostForLikeUserResponse PostInfo { get; set; }
-}
-
-//public class PostForLikeUserResponse
-//{
-//    public required Guid PostId { get; set; }
-//    public string ImageUrl { get; set; }
-//    public string Contents { get; set; }
-//    public required DateTime CreatedAt { get; set; }
-//    public required DateTime UpdatedAt { get; set; }
-//    public required UserInfo UserInfo { get; set; }
-//}

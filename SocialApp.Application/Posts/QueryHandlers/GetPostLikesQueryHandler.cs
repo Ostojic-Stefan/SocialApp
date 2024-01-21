@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using SocialApp.Application.Models;
 using SocialApp.Application.Posts.Queries;
 using SocialApp.Application.Posts.Responses;
+using SocialApp.Application.UserProfiles.Extensions;
 using SocialApp.Domain;
 
 namespace SocialApp.Application.Posts.QueryHandlers;
@@ -29,17 +30,27 @@ internal class GetPostLikesQueryHandler
             var post = await postRepo
                 .QueryById(request.PostId)
                 .Include(p => p.Likes)
-                .ThenInclude(p => p.UserProfile)
+                .ThenInclude(p => p.UserProfile.ProfileImage)
                 .FirstAsync(cancellationToken);
 
-            // TODO: Move elsewhere
-            if (post.UserProfileId == request.CurrentUser)
+            // TODO: to do
+            //if (post.UserProfileId == request.CurrentUser)
+            //{
+            //    foreach (var like in post.Likes)
+            //        like.SetLikeAsSeen();
+            //}
+
+            result.Data = new GetLikesForAPostResponse
             {
-                foreach (var like in post.Likes)
-                    like.SetLikeAsSeen();
-            }
-            
-            result.Data = _mapper.Map<GetLikesForAPostResponse>(post);
+                PostId = post.Id,
+                LikeInfo = post.Likes.Select(l => new PostLikeResponse
+                { 
+                    Id = l.Id,
+                    LikeReaction = l.LikeReaction,
+                    UserInformation = l.UserProfile.MapToUserInfo()
+                }).ToList()
+            };
+
             await _unitOfWork.SaveAsync(cancellationToken);
         }
         catch (Exception ex)

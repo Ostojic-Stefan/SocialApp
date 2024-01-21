@@ -17,6 +17,7 @@ public  class DataContext : IdentityDbContext
     public DbSet<PostLike> PostLikes { get; set; }
     public DbSet<FriendRequest> FriendRequests { get; set; }
     public DbSet<Notification> Notifications { get; set; }
+    public DbSet<Image> Images { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
