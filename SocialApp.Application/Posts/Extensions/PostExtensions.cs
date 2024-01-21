@@ -17,6 +17,7 @@ internal static class PostExtensions
             UserInfo = post.UserProfile.MapToUserInfo(),
             Images = post.Images.Select(img => new ImageResponse
             {
+                ImageId = img.Id,
                 OriginalImagePath = img.OriginalImagePath,
                 FullscreenImagePath = img.FullscreenImagePath,
                 ThumbnailImagePath = img.ThumbnailImagePath

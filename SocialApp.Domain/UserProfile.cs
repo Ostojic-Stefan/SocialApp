@@ -46,8 +46,12 @@ public class UserProfile : BaseEntity
             Username = userName,
             Biography = biography,
             ProfileImage = Image.GenerateDefaultAvatar()
-            // AvatarUrl = avararUrl
         };
+    }
+
+    public void SetProfileImage(Guid imageId)
+    {
+        ProfileImageId = imageId;
     }
 
     public void SendFriendRequest(Guid userFrom)

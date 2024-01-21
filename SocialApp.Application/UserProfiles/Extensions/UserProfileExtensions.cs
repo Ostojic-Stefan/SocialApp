@@ -15,6 +15,7 @@ internal static class UserProfileExtensions
             Biography = userProfile.Biography,
             ProfileImage = new ImageResponse
             {
+                ImageId = userProfile.ProfileImage.Id,
                 OriginalImagePath = userProfile.ProfileImage.OriginalImagePath,
                 FullscreenImagePath = userProfile.ProfileImage.FullscreenImagePath,
                 ThumbnailImagePath = userProfile.ProfileImage.ThumbnailImagePath

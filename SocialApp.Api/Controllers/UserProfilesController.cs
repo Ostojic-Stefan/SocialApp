@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SocialApp.Api.Extensions;
-using SocialApp.Api.Requests.Identity;
+using SocialApp.Api.Requests.UserProfiles;
 using SocialApp.Application.UserProfiles.Commands;
 using SocialApp.Application.UserProfiles.Queries;
 
@@ -20,7 +20,7 @@ public class UserProfilesController : BaseApiController
     [HttpPost]
     [Route("users/images/add")]
     [Authorize]
-    public async Task<IActionResult> SetProfileImage(SetProfileImageRequest avatarUrl)
+    public async Task<IActionResult> AddImage(AddUserImage avatarUrl)
     {
         var command = new AddUserImageCommand
         {
@@ -35,6 +35,8 @@ public class UserProfilesController : BaseApiController
 
     [HttpGet]
     [Route("users/{username}")]
+    [Authorize]
+
     public async Task<IActionResult> GetUserInfomation(string username)
     {
         var query = new GetUserInformationByUsernameQuery
@@ -43,6 +45,39 @@ public class UserProfilesController : BaseApiController
             Username = username
         };
         var response = await _mediator.Send(query);
+        if (response.HasError)
+            return HandleError(response.Errors);
+        return Ok(response.Data);
+    }
+
+    [HttpPost]
+    [Route("/users/images/set")]
+    [Authorize]
+
+    public async Task<IActionResult> SetProfileImage(SetUserProfileImage request)
+    {
+        var command = new SetUserProfileImageCommand
+        {
+            CurrentUserId = HttpContext.GetUserProfileId(),
+            ImageId = request.ImageId
+        };
+        var response = await _mediator.Send(command);
+        if (response.HasError)
+            return HandleError(response.Errors);
+        return Ok(response.Data);
+    }
+
+    [HttpGet]
+    [Route("/users/{userId}/images")]
+    [Authorize]
+    public async Task<IActionResult> GetImagesForUser(Guid userId)
+    {
+        var command = new GetAllImagesQuery
+        {
+            CurrentUserId = HttpContext.GetUserProfileId(),
+            UserProfileId = userId
+        };
+        var response = await _mediator.Send(command);
         if (response.HasError)
             return HandleError(response.Errors);
         return Ok(response.Data);

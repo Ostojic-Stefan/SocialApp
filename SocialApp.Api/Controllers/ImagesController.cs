@@ -4,20 +4,15 @@ using Microsoft.AspNetCore.Mvc;
 using SocialApp.Api.Requests.Posts;
 using SocialApp.Api.Requests.UserProfiles;
 using SocialApp.Application.Files.Commands;
-using SocialApp.Application.Services;
 
 namespace SocialApp.Api.Controllers;
 
 public class ImagesController : BaseApiController
 {
     private readonly IMediator _mediator;
-    private readonly IWebHostEnvironment env;
-    private readonly IUnitOfWork unitOfWork;
 
     public ImagesController(IMediator mediator, IWebHostEnvironment env, IUnitOfWork unitOfWork)
     {
-        this.env = env;
-        this.unitOfWork = unitOfWork;
         _mediator = mediator;
     }
 
