@@ -1,0 +1,7 @@
+{
+  "ImageProcessingSettings": {
+    "ThumbnailWidth": 300,
+    "FullscreenWidth": 1000,
+    "ImageQuality":  80
+  }
+}

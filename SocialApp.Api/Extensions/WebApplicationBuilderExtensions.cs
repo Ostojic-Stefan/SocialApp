@@ -96,6 +96,9 @@ public static class WebApplicationBuilderExtensions
 
         builder.Configuration.AddJsonFile("./Settings/image_file_storage_settings.json");
         builder.Services.Configure<ImageFileStorageSettings>(builder.Configuration.GetSection("ImageFileStorageSettings"));
+
+        builder.Configuration.AddJsonFile("./Settings/image_processing_settings.json");
+        builder.Services.Configure<ImageProcessingSettings>(builder.Configuration.GetSection("ImageProcessingSettings"));
     }
 
     private static void AddJwtService(this WebApplicationBuilder builder)

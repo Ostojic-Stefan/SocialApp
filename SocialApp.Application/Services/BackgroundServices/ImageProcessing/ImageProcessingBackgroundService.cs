@@ -23,21 +23,19 @@ public record ImageProcessingMessage(string FilePath, Guid ResourceId, ImageFor 
 
 public sealed class ImageProcessingBackgroundService : IHostedService
 {
-    // TODO: read from config file
-    private const int ThumbnailWidth = 300;
-    private const int FullscreenWidth = 1000;
-
     private readonly ILogger<NotificationService> _logger;
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly ITempFileUploadService _tempFileUploadService;
     private readonly ChannelReader<ImageProcessingMessage> _channelReader;
     private readonly ImageFileStorageSettings _imageStorageSettings;
+    private readonly ImageProcessingSettings _imageProcessingSettings;
 
     public ImageProcessingBackgroundService(
         ILogger<NotificationService> logger,
         IServiceScopeFactory serviceScopeFactory,
         Channel<ImageProcessingMessage> channel,
         IOptions<ImageFileStorageSettings> imageFileStorageSettings,
+        IOptions<ImageProcessingSettings> imageProcessingSettings,
         ITempFileUploadService tempFileUploadService
         )
     {
@@ -45,6 +43,7 @@ public sealed class ImageProcessingBackgroundService : IHostedService
         _serviceScopeFactory = serviceScopeFactory;
         _tempFileUploadService = tempFileUploadService;
         _imageStorageSettings = imageFileStorageSettings.Value;
+        _imageProcessingSettings = imageProcessingSettings.Value;
         _channelReader = channel.Reader;
     }
 
@@ -78,8 +77,8 @@ public sealed class ImageProcessingBackgroundService : IHostedService
                     List<Task> tasks = new()
                     {
                         SaveImage(image, origPath, storagePath, image.Width, cancellationToken),
-                        SaveImage(image, thumbPath, storagePath, ThumbnailWidth, cancellationToken),
-                        SaveImage(image, fullPath, storagePath, FullscreenWidth, cancellationToken),
+                        SaveImage(image, thumbPath, storagePath, _imageProcessingSettings.ThumbnailWidth, cancellationToken),
+                        SaveImage(image, fullPath, storagePath, _imageProcessingSettings.FullscreenWidth, cancellationToken),
                     };
 
                     await Task.WhenAll(tasks);
@@ -114,7 +113,7 @@ public sealed class ImageProcessingBackgroundService : IHostedService
         }
     }
 
-    private static async Task SaveImage(Image image, string imageName, string storagePath, int resizeWidth, CancellationToken cancellationToken)
+    private async Task SaveImage(Image image, string imageName, string storagePath, int resizeWidth, CancellationToken cancellationToken)
     {
         var width = image.Width;
         var height = image.Height;
@@ -132,7 +131,7 @@ public sealed class ImageProcessingBackgroundService : IHostedService
         }));
         await transformed.SaveAsJpegAsync($"{storagePath}/{imageName}", new JpegEncoder
         {
-            Quality = 80
+            Quality = _imageProcessingSettings.ImageQuality
         }, cancellationToken);
     }
 
@@ -144,6 +143,7 @@ public sealed class ImageProcessingBackgroundService : IHostedService
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        _logger.LogInformation("ImageProcessing Background Service is stopping.");
+        return Task.CompletedTask;
     }
 }
