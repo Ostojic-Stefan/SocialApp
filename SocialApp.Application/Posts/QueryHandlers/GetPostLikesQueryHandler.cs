@@ -43,7 +43,7 @@ internal class GetPostLikesQueryHandler
             result.Data = new GetLikesForAPostResponse
             {
                 PostId = post.Id,
-                LikeInfo = post.Likes.Select(l => new PostLikeResponse
+                Likes = post.Likes.Select(l => new PostLikeResponse
                 { 
                     Id = l.Id,
                     LikeReaction = l.LikeReaction,

@@ -42,8 +42,11 @@ internal class GetUserInformationQueryHandler
 
             var notifications = await notificationRepo.Query()
                 .Where(n => n.RecipientUser.Id == request.UserProfileId && !n.SeenByRecipient)
+                .Include(n => n.Comment.UserProfile.ProfileImage)
+                .Include(n => n.Like.UserProfile.ProfileImage)
                 .Select(n => new NotificationResponse
                 {
+                    PostId = n.PostId,
                     NotificationType = n.Comment != null ? "Comment" : "Like",
                     Comment = n.Comment != null ? new CommentResponse
                     {
@@ -71,7 +74,7 @@ internal class GetUserInformationQueryHandler
             var final = new GetUserInformationResponse
             {
                 FriendRequests = userFriendRequestsResponse,
-                UserInformation = userProfile,
+                UserInfo = userProfile,
                 Notifications = notifications
             };
 

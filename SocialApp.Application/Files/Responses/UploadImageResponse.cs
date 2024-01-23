@@ -1,6 +1,6 @@
 namespace SocialApp.Application.Files.Responses;
 
-public class UploadPostImageResponse
+public class UploadImageResponse
 {
     public required string ImageName { get; set; }    
 }

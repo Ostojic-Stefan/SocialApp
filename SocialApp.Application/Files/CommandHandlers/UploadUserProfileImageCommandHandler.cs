@@ -7,7 +7,7 @@ using SocialApp.Application.Services.FileUpload;
 namespace SocialApp.Application.Files.CommandHandlers;
 
 internal class UploadUserProfileImageCommandHandler
-    : DataContextRequestHandler<UploadUserProfileImageCommand, Result<UploadUserProfileImageResponse>>
+    : DataContextRequestHandler<UploadUserProfileImageCommand, Result<UploadImageResponse>>
 {
     private readonly ITempFileUploadService _fileUploadService;
 
@@ -18,14 +18,14 @@ internal class UploadUserProfileImageCommandHandler
         _fileUploadService = fileUploadService;
     }
 
-    public override async Task<Result<UploadUserProfileImageResponse>> Handle(UploadUserProfileImageCommand request,
+    public override async Task<Result<UploadImageResponse>> Handle(UploadUserProfileImageCommand request,
         CancellationToken cancellationToken)
     {
-        var result = new Result<UploadUserProfileImageResponse>();
+        var result = new Result<UploadImageResponse>();
         try
         {
             var path = await _fileUploadService.UploadFileAsync(request.ImageStream, request.ImageName, cancellationToken);
-            result.Data = new UploadUserProfileImageResponse{ AvatarUrl = path };
+            result.Data = new UploadImageResponse { ImageName = path };
         }
         catch (Exception ex)
         {

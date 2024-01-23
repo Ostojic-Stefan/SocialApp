@@ -4,7 +4,7 @@ using SocialApp.Application.Models;
 
 namespace SocialApp.Application.Files.Commands;
 
-public class UploadPostImageCommand: IRequest<Result<UploadPostImageResponse>>
+public class UploadPostImageCommand: IRequest<Result<UploadImageResponse>>
 {
     public required Stream ImageStream { get; set; }
     public required string ImageName { get; set; }

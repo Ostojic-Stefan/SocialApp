@@ -14,7 +14,7 @@ public class PostResponse
     public Guid Id { get; set; }
     //public string? ImageUrl { get; set; }
     public required IEnumerable<ImageResponse> Images { get; set; }
-    public string? Contents { get; set; }
+    public required string Contents { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
     public required UserInfo UserInfo { get; set; }

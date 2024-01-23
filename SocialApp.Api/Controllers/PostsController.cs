@@ -62,7 +62,7 @@ public class PostsController : BaseApiController
         var command = new CreatePostCommand
         {
             Contents = createPost.Contents,
-            ImageUrl = createPost.ImageUrl,
+            ImageUrl = createPost.ImageName,
             UserProfileId = userProfileId,
         };
         var response = await _mediator.Send(command, cancellationToken);

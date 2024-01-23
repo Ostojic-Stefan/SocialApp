@@ -40,6 +40,7 @@ internal class CreateCommentCommandHandler
             var commentRepo = _unitOfWork.CreateReadWriteRepository<Comment>();
             commentRepo.Add(comment);
             await _unitOfWork.SaveAsync(cancellationToken);
+            // TODO: fix when loading profile image for user
             result.Data = _mapper.Map<CommentResponse>(await commentRepo
                 .QueryById(comment.Id)
                 .Include(c => c.UserProfile)

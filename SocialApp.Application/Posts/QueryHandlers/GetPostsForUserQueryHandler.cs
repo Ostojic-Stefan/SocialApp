@@ -6,6 +6,7 @@ using SocialApp.Application.Models;
 using SocialApp.Application.Posts.Extensions;
 using SocialApp.Application.Posts.Queries;
 using SocialApp.Application.Posts.Responses;
+using SocialApp.Application.UserProfiles.Extensions;
 using SocialApp.Application.UserProfiles.Responses;
 using SocialApp.Domain;
 
@@ -33,8 +34,10 @@ internal class GetPostsForUserQueryHandler :
 
             var posts = await postRepo
                 .Query()
-                .Where(p => p.UserProfile.Id == request.UserProfileId)
+                .Include(p => p.Images)
                 .Include(p => p.Likes)
+                .Include(p => p.UserProfile.ProfileImage)
+                .Where(p => p.UserProfile.Id == request.UserProfileId)
                 .OrderByDescending(p => p.CreatedAt)
                 .Select(p => p.MapToPostReponse(request.UserProfileId))
                 .ToListAsync(cancellationToken);
@@ -47,8 +50,9 @@ internal class GetPostsForUserQueryHandler :
 
             var userInfo = await userRepo
                 .Query()
+                .Include(user => user.ProfileImage)
                 .Where(user => user.Id == request.UserProfileId)
-                .ProjectTo<UserInfo>(_mapper.ConfigurationProvider)
+                .Select(user => user.MapToUserInfo())
                 .SingleAsync(cancellationToken);
 
             result.Data = new PostsForUserResponse

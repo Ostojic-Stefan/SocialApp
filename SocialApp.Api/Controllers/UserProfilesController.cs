@@ -51,7 +51,7 @@ public class UserProfilesController : BaseApiController
     }
 
     [HttpPost]
-    [Route("/users/images/set")]
+    [Route("users/images/set")]
     [Authorize]
 
     public async Task<IActionResult> SetProfileImage(SetUserProfileImage request)
@@ -68,7 +68,7 @@ public class UserProfilesController : BaseApiController
     }
 
     [HttpGet]
-    [Route("/users/{userId}/images")]
+    [Route("users/{userId}/images")]
     [Authorize]
     public async Task<IActionResult> GetImagesForUser(Guid userId)
     {

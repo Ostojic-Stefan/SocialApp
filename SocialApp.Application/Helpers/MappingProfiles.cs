@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using SocialApp.Application.Comments.Responses;
+using SocialApp.Application.Files.Responses;
 using SocialApp.Application.Identity.Responses;
 using SocialApp.Application.Posts.Responses;
 using SocialApp.Application.UserProfiles.QueryHandlers;
@@ -23,6 +24,9 @@ internal class MappingProfiles : Profile
             .ForMember(dest => dest.NumLikes, opt => opt.MapFrom(src => src.Likes.Count()))
             .ForMember(dest => dest.NumComments, opt => opt.MapFrom(src => src.Comments.Count()));
 
+        CreateMap<Image, ImageResponse>()
+            .ForMember(i => i.ImageId, opt => opt.MapFrom(src => src.Id));
+
         CreateMap<Post, PostDetailsResponse>()
             .ForMember(dest => dest.UserInfo, opt => opt.MapFrom(src => src.UserProfile))
             .ForMember(dest => dest.NumLikes, opt => opt.MapFrom(src => src.Likes.Count()))
@@ -33,7 +37,7 @@ internal class MappingProfiles : Profile
         CreateMap<PostLike, PostLikeDeleteResponse>();
 
         CreateMap<Post, GetLikesForAPostResponse>()
-            .ForMember(x => x.LikeInfo, opt => opt.MapFrom(src => src.Likes))
+            .ForMember(x => x.Likes, opt => opt.MapFrom(src => src.Likes))
             .ForMember(x => x.PostId, opt => opt.MapFrom(src => src.Id));
 
         CreateMap<FriendRequest, FriendRequestResponse>()

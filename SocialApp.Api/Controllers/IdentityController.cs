@@ -38,7 +38,7 @@ public class IdentityController : BaseApiController
         //    HttpOnly = true,
         //    SameSite = SameSiteMode.None
         //});
-        return Ok(token);
+        return Ok(result.Data);
     }
 
     [HttpPost]
@@ -57,7 +57,7 @@ public class IdentityController : BaseApiController
         //    SameSite = SameSiteMode.None,
         //    Secure = false
         //});
-        return Ok(token);
+        return Ok(result.Data);
     }
 
     [HttpGet]
