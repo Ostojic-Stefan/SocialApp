@@ -1,13 +1,14 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { CurrentUserInfo, UserRegisterRequest, identityService } from '../api/identityService';
+import { identityService } from '../api/identityService';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useNavigate } from 'react-router-dom';
+import { CurrentUserResponse, RegisterRequest } from '../api/dtos/identity';
 
 interface AuthState {
-  user: CurrentUserInfo | null;
+  user: CurrentUserResponse | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
-  register: (registerRequest: UserRegisterRequest) => Promise<void>;
+  register: (registerRequest: RegisterRequest) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthState | null>(null);
@@ -17,7 +18,7 @@ interface Props {
 }
 
 export const AuthProvider = ({ children }: Props) => {
-  const [user, setUser] = useState<CurrentUserInfo | null>(null);
+  const [user, setUser] = useState<CurrentUserResponse | null>(null);
   const { value, setValue } = useLocalStorage<string | null>(null, 'auth');
   const navigate = useNavigate();
 
@@ -43,28 +44,30 @@ export const AuthProvider = ({ children }: Props) => {
   async function login(email: string, password: string) {
     const response = await identityService.login({ email, password });
     if (response.hasError) {
-      console.log('Failed to Login');
+      console.log(response.error);
       return;
     }
-    setValue(response.value.data);
-    // const userDataResponse = await identityService.getCurrentUserInfo();
-    // if (userDataResponse.hasError) {
-    //   console.log('Failed to get user data');
-    //   return;
-    // }
-    // setUser(userDataResponse.value);
-    // console.log('Successfully logged in');
+    console.log(response.value);
+
+    setValue(response.value.accessToken);
+    const userDataResponse = await identityService.getCurrentUserInfo();
+    if (userDataResponse.hasError) {
+      console.log('Failed to get user data');
+      return;
+    }
+    setUser(userDataResponse.value);
+    console.log('Successfully logged in');
     navigate('/');
     window.location.reload();
   }
 
-  async function register(registerRequest: UserRegisterRequest) {
+  async function register(registerRequest: RegisterRequest) {
     const response = await identityService.register(registerRequest);
     if (response.hasError) {
       console.log('Failed to register');
       return;
     }
-    setValue(response.value.data);
+    setValue(response.value.accessToken);
     navigate('/');
     window.location.reload();
   }

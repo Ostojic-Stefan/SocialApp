@@ -1,14 +1,10 @@
-import { ChangeEvent, FormEvent, useState } from 'react';
-import { useAppDispatch } from '../store';
-import { Link, useNavigate } from 'react-router-dom';
+import { FormEvent, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Input, Button } from '@nextui-org/react';
 import { FaBook, FaEnvelope, FaLock, FaUser } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 
 function Register() {
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
-
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -18,7 +14,7 @@ function Register() {
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>): Promise<void> {
     e.preventDefault();
-    await register({ email, password, username, biography });
+    await register({ email, password, username });
   }
 
   return (

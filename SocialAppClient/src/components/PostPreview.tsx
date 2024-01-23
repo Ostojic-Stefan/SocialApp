@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom';
-import { PostDataResponse } from '../api/postService';
 import { Button, Image } from '@nextui-org/react';
+import { PostResponse } from '../api/dtos/post';
 
 interface PostPreviewProps {
-  postData: PostDataResponse;
+  postData: PostResponse;
 }
 
 export default function PostPreview({ postData }: PostPreviewProps) {
@@ -11,7 +11,7 @@ export default function PostPreview({ postData }: PostPreviewProps) {
     <div className='flex flex-col shadow bg-default-50 px-4 pb-4 w-3/5 overflow-hidden hover:cursor-pointer hover:bg-default-100'>
       <div className='flex w-full items-center gap-4 h-36'>
         <Image
-          src={postData.imageUrl}
+          src={postData.images[0].thumbnailImagePath}
           alt='Placeholder'
           width='100'
           height='100'

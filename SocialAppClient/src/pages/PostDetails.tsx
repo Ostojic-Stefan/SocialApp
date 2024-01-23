@@ -1,11 +1,12 @@
 import { FormEvent, useEffect, useState } from 'react';
-import { PostDetailsResponse, postService } from '../api/postService';
-import { Link, useParams } from 'react-router-dom';
+import { postService } from '../api/postService';
+import { useParams } from 'react-router-dom';
 import { Textarea, Image, Spinner, Divider } from '@nextui-org/react';
-import ProfileImage from '../components/ProfileImage';
 import TimeAgo from 'timeago-react';
 import { commentService } from '../api/commentService';
 import CommentList from '../components/CommentList';
+import { PostDetailsResponse } from '../api/dtos/post';
+import UserInfo from '../components/UserInfo';
 
 export default function PostDetails() {
   const { postId } = useParams();
@@ -28,7 +29,7 @@ export default function PostDetails() {
       setPostDetails(response.value);
     }
     getPostDetails();
-  }, [handleSubmitComment]);
+  }, []);
 
   if (!postDetails) {
     return <Spinner />;
@@ -54,7 +55,7 @@ export default function PostDetails() {
         <Image
           alt='Post Image'
           className='w-full object-cover rounded-lg'
-          src={postDetails?.imageUrl}
+          src={postDetails.images[0].fullscreenImagePath}
           style={{
             objectFit: 'cover',
           }}
@@ -65,14 +66,10 @@ export default function PostDetails() {
       <div className='flex-grow bg-default-50 p-5 flex flex-col justify-between gap-6'>
         <div className='flex flex-col h-full'>
           <section>
-            <div className='flex gap-4'>
-              <ProfileImage src={postDetails?.userInfo.avatarUrl!} dimension={50} />
-              <div className='flex flex-col'>
-                <Link to={`/profile/${postDetails?.userInfo.username}`}>
-                  <p className='hover:text-secondary-400 hover:font-bold text-md'>{postDetails?.userInfo.username}</p>
-                </Link>
-                <TimeAgo datetime={postDetails?.createdAt!} locale='en_us' />
-              </div>
+            <div>
+              <UserInfo userInfo={postDetails.userInfo}>
+                <TimeAgo datetime={postDetails.createdAt} locale='en_us' />
+              </UserInfo>
             </div>
             <p>{postDetails.contents}</p>
           </section>

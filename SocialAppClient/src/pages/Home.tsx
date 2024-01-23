@@ -1,7 +1,7 @@
 import HomeNav from '../components/HomeNav';
 import { Outlet } from 'react-router-dom';
 import TopicList from '../components/TopicList';
-import FriendList from '../components/FriendList';
+// import FriendList from '../components/FriendList';
 
 function Home() {
   return (
@@ -11,7 +11,7 @@ function Home() {
         <div className='grid grid-cols-[1fr_2fr_1fr] gap-16'>
           <TopicList />
           <Outlet />
-          <FriendList />
+          {/* <FriendList /> */}
         </div>
       </div>
     </>

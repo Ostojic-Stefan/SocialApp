@@ -22,10 +22,10 @@ export default function PostListAll() {
 
   return (
     <div
-      style={{
-        height: '80vh',
-      }}
-      className='w-full overflow-y-scroll'
+    // style={{
+    //   height: '80vh',
+    // }}
+    // className='w-full overflow-y-scroll'
     >
       <PostList posts={allPosts} />;
     </div>

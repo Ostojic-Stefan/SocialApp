@@ -6,22 +6,21 @@ import {
   CardHeader,
   Divider,
   Image,
-  Input,
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@nextui-org/react';
 
-import { PostResponse } from '../api/postService';
 import TimeAgo from 'timeago-react';
 import { Link } from 'react-router-dom';
 import ProfileImage from './ProfileImage';
-import { AllLikesForPostResponse, LikeReaction, likeService } from '../api/likeService';
+import { likeService } from '../api/likeService';
 import { useAppDispatch } from '../store';
-import { addLikeToPost, removeLikeFromPost } from '../store/post-slice';
 import { FaCommentAlt, FaThumbsUp } from 'react-icons/fa';
 import { useState } from 'react';
 import UserInfo from './UserInfo';
+import { PostResponse } from '../api/dtos/post';
+import { LikeReaction, LikesForPostResponse } from '../api/dtos/like';
 
 interface PostItemProps {
   post: PostResponse;
@@ -29,7 +28,7 @@ interface PostItemProps {
 
 function PostItem({ post }: PostItemProps) {
   const dispatch = useAppDispatch();
-  const [likesForAPost, setLikesForAPost] = useState<AllLikesForPostResponse | null>(null);
+  const [likesForAPost, setLikesForAPost] = useState<LikesForPostResponse | null>(null);
 
   const likeButtonStyles = !post.likeInfo?.likedByCurrentUser
     ? {
@@ -45,14 +44,14 @@ function PostItem({ post }: PostItemProps) {
         console.log(response.error);
         return;
       }
-      dispatch(removeLikeFromPost({ postId: post.id }));
+      // dispatch(removeLikeFromPost({ postId: post.id }));
     } else {
-      const response = await likeService.addLikeToPost({ postId: post.id, reaction: LikeReaction.Like });
+      const response = await likeService.addLikeToPost({ postId: post.id, likeReaction: LikeReaction.Like });
       if (response.hasError) {
         console.log(response.error);
         return;
       }
-      dispatch(addLikeToPost({ likeId: response.value.likeId, postId: response.value.postId }));
+      // dispatch(addLikeToPost({ likeId: response.value.likeId, postId: response.value.postId }));
     }
   }
 
@@ -68,7 +67,7 @@ function PostItem({ post }: PostItemProps) {
     <Card className='rounded-sm w-full'>
       <CardHeader className='flex justify-between'>
         <div className='flex gap-3'>
-          <ProfileImage dimension={50} src={post.userInfo.avatarUrl} />
+          <ProfileImage dimension={50} src={post.userInfo.profileImage.thumbnailImagePath} />
           <div className='flex flex-col'>
             <Link to={`/profile/${post.userInfo.username}`}>
               <p className='hover:text-secondary-400 hover:font-bold text-md'>{post.userInfo.username}</p>
@@ -86,7 +85,7 @@ function PostItem({ post }: PostItemProps) {
           <p>{post.contents}</p>
         </div>
         <div className='border-1 border-default-400'>
-          <Image className='rounded-none' src={post.imageUrl} />
+          <Image className='rounded-none' src={post.images[0].fullscreenImagePath} />
         </div>
       </CardBody>
       <CardFooter className='flex justify-between'>
@@ -104,8 +103,8 @@ function PostItem({ post }: PostItemProps) {
             <PopoverContent>
               <div>
                 <div className='flex flex-col gap-3 p-2'>
-                  {likesForAPost?.likeInfo.map((like) => (
-                    <UserInfo key={like.id} dimension={25} userInfo={like.userInformation} />
+                  {likesForAPost?.likes.map((like) => (
+                    <UserInfo key={like.id} dimension={25} userInfo={like.userInfo} />
                   ))}
                 </div>
               </div>

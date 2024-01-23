@@ -1,4 +1,4 @@
-import { LikeReaction } from '../api/likeService';
+import { LikeReaction } from '../api/dtos/like';
 
 interface LikeReactionsProps {
   handleLikeClick: (reaction: LikeReaction) => void;

@@ -18,7 +18,7 @@ export default function CreatePostForm({ isOpen, onOpenChange }: CreatePostModal
   async function handleSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
     if (!file) {
-      console.log('must select file');
+      console.log('must select a file');
       return;
     }
 

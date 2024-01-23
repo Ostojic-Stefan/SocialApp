@@ -1,5 +1,5 @@
+import { PostResponse } from '../api/dtos/post';
 import PostItem from './PostItem';
-import { PostResponse } from '../api/postService';
 
 interface PostListProps {
   posts: PostResponse[];

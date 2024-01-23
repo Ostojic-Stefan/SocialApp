@@ -1,87 +1,28 @@
 import { axiosInstance, executeApiCall } from "./apiConfig";
+import { CurrentUserResponse, IdentityResponse, LoginRequest, RegisterRequest } from "./dtos/identity";
 import { ApiError, Result } from "./models";
-import { PostResponse, UserInfoResponse } from "./postService";
 
-export type UserLoginRequest = {
-    email: string;
-    password: string;
-}
-
-export type UserRegisterRequest = {
-    username: string;
-    email: string;
-    password: string;
-    biography?: string;
-    imageData?: FormData;
-}
-
-export type UserInformation = {
-    userId: string;
-    createdAt: Date;
-    updatedAt: Date;
-    username: string;
-    biography: string;
-    avatarUrl: string;
-}
-
-export type CommentsOnPost = {
-    commentId: string;
-    postId: string;
-    userInformation: UserInfoResponse
-    postResponse: PostResponse;
-    // commenterAvatarUrl: string;
-    // commenterUsername: string;
-    contentsReduced: string;
-}
-
-export type LikesOnPost = {
-    likeId: string;
-    postId: string;
-    userInformation: UserInfoResponse;
-    postResponse: PostResponse;
-    // likerAvatarUrl: string;
-    // likerUsername: string;
-    likerReaction: number; // make enum
-}
-
-export type Notifications = {
-    commentsOnPost: CommentsOnPost[];
-    likesOnPost: LikesOnPost[];
-}
-
-export type FriendRequests = {
-    requesterId: string;
-    requeserAvatarUrl: string;
-    requesterUsername: string;
-    requestTimeSent: Date;
-}
-
-export type CurrentUserInfo = {
-    userInformation: UserInformation;
-    notifications: Notifications;
-    friendRequests: FriendRequests[];
-}
 
 export interface IIdentityService {
-    login: (request: UserLoginRequest) => Promise<Result<{ data: string }, ApiError>>;
-    register: (request: UserRegisterRequest) => Promise<Result<{ data: string }, ApiError>>;
-    getCurrentUserInfo: () => Promise<Result<CurrentUserInfo, ApiError>>;
+    login: (request: LoginRequest) => Promise<Result<IdentityResponse, ApiError>>;
+    register: (request: RegisterRequest) => Promise<Result<IdentityResponse, ApiError>>;
+    getCurrentUserInfo: () => Promise<Result<CurrentUserResponse, ApiError>>;
 }
 
 export const identityService: IIdentityService = {
-    login: async function (request: UserLoginRequest): Promise<Result<{ data: string }, ApiError>> {
+    login: async function (request: LoginRequest): Promise<Result<IdentityResponse, ApiError>> {
         return await executeApiCall(async function () {
-            return await axiosInstance.post('identity/login', request);
+            return (await axiosInstance.post('identity/login', request)).data;
         });
     },
-    register: async function (request: UserRegisterRequest): Promise<Result<{ data: string }, ApiError>> {
+    register: async function (request: RegisterRequest): Promise<Result<IdentityResponse, ApiError>> {
         return await executeApiCall(async function () {
-            return await axiosInstance.post('identity/register', request);
+            return (await axiosInstance.post('identity/register', request)).data;
         });
     },
-    getCurrentUserInfo: async function (): Promise<Result<CurrentUserInfo, ApiError>> {
+    getCurrentUserInfo: async function (): Promise<Result<CurrentUserResponse, ApiError>> {
         return await executeApiCall(async function () {
-            const response = await axiosInstance.get<CurrentUserInfo>('identity/me');
+            const response = await axiosInstance.get<CurrentUserResponse>('identity/me');
             return response.data;
         })
     }

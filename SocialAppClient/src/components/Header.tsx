@@ -24,31 +24,31 @@ export default function Header() {
     return <Spinner />;
   }
 
-  const numOfNotifications = user.notifications.commentsOnPost.length + user.notifications.likesOnPost.length;
-
-  // TODO: fix bug where User's own like/comment apprears as a notification
-  // TODO: all posts should have a title too
-  const renderedCommentNotifications = user.notifications.commentsOnPost.map((comment) => {
-    return (
-      <div key={comment.commentId}>
-        <UserInfo userInfo={comment.userInformation}>
-          commented on post: <Link to={`/post/${comment.postResponse.id}`}>{comment.postResponse.contents}</Link>
-        </UserInfo>
-      </div>
-    );
+  const renderedNotifications = user.notifications.map((notification) => {
+    if (notification.notificationType === 'Like') {
+      const { like } = notification;
+      return (
+        <div key={notification.like.id}>
+          <UserInfo userInfo={like.userInfo}>
+            <p>
+              liked the post: <Link to={`/post/${notification.postId}`}>Post</Link>
+            </p>
+          </UserInfo>
+        </div>
+      );
+    } else if (notification.notificationType === 'Comment') {
+      const { comment } = notification;
+      return (
+        <div key={notification.comment.id}>
+          <UserInfo userInfo={comment.userInfo}>
+            <p>
+              Commented on post: <Link to={`/post/${notification.postId}`}>Post</Link>
+            </p>
+          </UserInfo>
+        </div>
+      );
+    }
   });
-
-  const renderedLikeNotifications = user.notifications.likesOnPost.map((like) => {
-    return (
-      <div key={like.likeId}>
-        <UserInfo userInfo={like.userInformation}>
-          liked the post: <Link to={`/post/${like.postResponse.id}`}>{like.postResponse.contents}</Link>
-        </UserInfo>
-      </div>
-    );
-  });
-
-  const renderedNotifications = renderedCommentNotifications.concat(renderedLikeNotifications);
 
   return (
     <Navbar className='shadow'>
@@ -71,7 +71,7 @@ export default function Header() {
           </Badge>
         </NavbarItem>
         <NavbarItem>
-          <Badge content={numOfNotifications} color='secondary' isInvisible={numOfNotifications <= 0}>
+          <Badge content={user.notifications.length} color='secondary' isInvisible={user.notifications.length <= 0}>
             <Popover showArrow>
               <PopoverTrigger>
                 <Button>
@@ -91,7 +91,7 @@ export default function Header() {
             </PopoverTrigger>
             <PopoverContent>
               <div className='flex flex-col gap-2 w-full m-4'>
-                <Link to={`/profile/${user?.userInformation.username}`}>
+                <Link to={`/profile/${user.userInfo.username}`}>
                   <Button>Check Profile</Button>
                 </Link>
                 <Button onClick={() => logout()}>Sign Out</Button>
