@@ -18,7 +18,7 @@ export default function PostPreview({ postData }: PostPreviewProps) {
           className='aspect-square object-cover w-24 h-24 rounded-md'
         />
         <div className='space-y-2'>
-          <h3 className='tracking-tight text-lg font-semibold'>Card Title</h3>
+          <h3 className='tracking-tight text-lg font-semibold'>{postData.title}</h3>
           <p className='text-sm text-gray-500 dark:text-gray-400'>{postData.contents}</p>
         </div>
       </div>

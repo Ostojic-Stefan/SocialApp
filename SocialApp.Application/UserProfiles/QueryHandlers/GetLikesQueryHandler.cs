@@ -39,7 +39,7 @@ internal class GetLikesQueryHandler
                 {
                     Id = l.Id,
                     LikeReaction = l.LikeReaction,
-                    UserInformation = l.UserProfile.MapToUserInfo()
+                    UserInfo = l.UserProfile.MapToUserInfo()
                 })
                 .ToListAsync(cancellationToken);
 

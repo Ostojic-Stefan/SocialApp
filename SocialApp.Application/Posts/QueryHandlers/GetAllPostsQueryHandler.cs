@@ -30,8 +30,10 @@ internal class GetAllPostsQueryHandler
             var likeRepo = _unitOfWork.CreateReadOnlyRepository<PostLike>();
             var posts = await repo
              .Query()
+             .Where(p => p.DoneProcessing)
              .Include(p => p.Images)
              .Include(p => p.Likes)
+             .Include(p => p.Comments)
              .Include(p => p.UserProfile.ProfileImage)
              .OrderByDescending(p => p.CreatedAt)
              .Select(p => p.MapToPostReponse(request.CurrentUserId))

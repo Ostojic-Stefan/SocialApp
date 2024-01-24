@@ -8,6 +8,8 @@ export default function PostListAll() {
   const { allPosts, postsLoading, allPostsError } = useAppSelector((store) => store.post);
   const dispatch = useAppDispatch();
 
+  console.log('RELOAD');
+
   useEffect(() => {
     dispatch(getAllPosts());
   }, []);
@@ -27,7 +29,7 @@ export default function PostListAll() {
     // }}
     // className='w-full overflow-y-scroll'
     >
-      <PostList posts={allPosts} />;
+      <PostList posts={allPosts} />
     </div>
   );
 }

@@ -10,6 +10,7 @@ type PostLikeInfo = {
 export type PostResponse = {
     id: string;
     images: ImageResponse[];
+    title: string;
     contents: string;
     userInfo: UserInfoResponse;
     likeInfo: PostLikeInfo;
@@ -42,6 +43,7 @@ export type PostsForUserResponse = {
 export type CreatePostRequest = {
     imageName: string;
     contents: string;
+    title: string;
 }
 
 export type PostsForUserRequest = {

@@ -50,7 +50,7 @@ internal class MappingProfiles : Profile
             .ForMember(x => x.UserProfileId, opt => opt.MapFrom(src => src.Id));
 
         CreateMap<PostLike, PostLikeResponse>()
-            .ForMember(x => x.UserInformation, opt => opt.MapFrom(src => src.UserProfile));
+            .ForMember(x => x.UserInfo, opt => opt.MapFrom(src => src.UserProfile));
 
         CreateMap<PostLike, LikesForUserResponse>()
             .ForMember(x => x.UserInfo, opt => opt.MapFrom(src => src.UserProfile));

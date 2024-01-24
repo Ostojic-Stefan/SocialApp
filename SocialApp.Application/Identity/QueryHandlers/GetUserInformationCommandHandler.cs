@@ -60,7 +60,7 @@ internal class GetUserInformationQueryHandler
                     {
                         Id = n.Like.Id,
                         LikeReaction = n.Like.LikeReaction,
-                        UserInformation = n.Like.UserProfile.MapToUserInfo(),
+                        UserInfo = n.Like.UserProfile.MapToUserInfo(),
                     } : null
                 }).ToListAsync(cancellationToken);
 

@@ -21,6 +21,7 @@ import { useState } from 'react';
 import UserInfo from './UserInfo';
 import { PostResponse } from '../api/dtos/post';
 import { LikeReaction, LikesForPostResponse } from '../api/dtos/like';
+import { addLikeToPost, removeLikeFromPost } from '../store/post-slice';
 
 interface PostItemProps {
   post: PostResponse;
@@ -44,14 +45,14 @@ function PostItem({ post }: PostItemProps) {
         console.log(response.error);
         return;
       }
-      // dispatch(removeLikeFromPost({ postId: post.id }));
+      dispatch(removeLikeFromPost({ postId: post.id }));
     } else {
       const response = await likeService.addLikeToPost({ postId: post.id, likeReaction: LikeReaction.Like });
       if (response.hasError) {
         console.log(response.error);
         return;
       }
-      // dispatch(addLikeToPost({ likeId: response.value.likeId, postId: response.value.postId }));
+      dispatch(addLikeToPost({ likeId: response.value.likeId, postId: response.value.postId }));
     }
   }
 
@@ -82,10 +83,11 @@ function PostItem({ post }: PostItemProps) {
       <Divider />
       <CardBody className='flex flex-col gap-4'>
         <div>
+          <h2 className='text-2xl font-semibold'>{post.title}</h2>
           <p>{post.contents}</p>
         </div>
         <div className='border-1 border-default-400'>
-          <Image className='rounded-none' src={post.images[0].fullscreenImagePath} />
+          <img className='w-full rounded-none' src={post.images[0].fullscreenImagePath} />
         </div>
       </CardBody>
       <CardFooter className='flex justify-between'>

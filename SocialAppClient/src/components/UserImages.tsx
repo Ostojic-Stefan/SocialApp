@@ -47,40 +47,44 @@ function UserImages({ userProfileId }: UserImagesProps) {
   }
 
   return (
-    <div className='grid grid-cols-3 gap-4'>
-      {images.map((img) => (
-        <Dropdown key={img.imageId} placement='top-start'>
-          <div
-            onMouseEnter={() => setHoverImageId(img.imageId)}
-            onMouseLeave={() => setHoverImageId('')}
-            className='relative hover:cursor-pointer hover:border-secondary-300 w-full rounded-md border-2 border-default-500 flex items-center justify-center'
-          >
-            <DropdownTrigger>
-              {hoverImageId === img.imageId ? (
-                <div className='h-fit p-3 rounded-full bg-default-50 absolute bottom-10 right-5 top-5'>
-                  <FaEllipsisV />
-                </div>
-              ) : (
-                <></>
-              )}
-            </DropdownTrigger>
-            <img
-              style={hoverImageId === img.imageId ? darkenImage : {}}
-              src={img.fullscreenImagePath}
-              alt='Image 1'
-              className='w-full h-auto'
-            />
-          </div>
-          <DropdownMenu>
-            <DropdownItem onClick={() => handleSetProfileImage(img.imageId)} color='secondary'>
-              Set As Profile Image
-            </DropdownItem>
-            <DropdownItem onClick={() => handleDeleteImage(img.imageId)} className='text-danger' color='danger'>
-              Delete An Image
-            </DropdownItem>
-          </DropdownMenu>
-        </Dropdown>
-      ))}
+    <div className='w-full flex justify-center bg-default-100 p-6'>
+      <div className='w-4/5 flex flex-wrap gap-2'>
+        {images.map((img) => (
+          <Dropdown key={img.imageId} placement='top-start'>
+            <div
+              onMouseEnter={() => setHoverImageId(img.imageId)}
+              onMouseLeave={() => setHoverImageId('')}
+              className='relative w-64 h-64 rounded-md flex items-center justify-center'
+            >
+              <DropdownTrigger>
+                {hoverImageId === img.imageId ? (
+                  <div className='h-fit p-3 rounded-full bg-default-50 absolute bottom-10 right-5 top-5'>
+                    <FaEllipsisV />
+                  </div>
+                ) : (
+                  <></>
+                )}
+              </DropdownTrigger>
+              <div className='overflow-hidden max-w-64 max-h-64 hover:cursor-pointer'>
+                <img
+                  style={hoverImageId === img.imageId ? darkenImage : {}}
+                  src={img.fullscreenImagePath}
+                  alt='Image 1'
+                  className='w-full object-cover aspect-square transform scale-100 transition-transform duration-600 hover:scale-150'
+                />
+              </div>
+            </div>
+            <DropdownMenu>
+              <DropdownItem onClick={() => handleSetProfileImage(img.imageId)} color='secondary'>
+                Set As Profile Image
+              </DropdownItem>
+              <DropdownItem onClick={() => handleDeleteImage(img.imageId)} className='text-danger' color='danger'>
+                Delete An Image
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+        ))}
+      </div>
     </div>
   );
 }

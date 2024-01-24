@@ -27,19 +27,18 @@ export const getAllPosts = createAsyncThunk<PostResponse[], void, { rejectValue:
     });
 
 
-export const uploadPost = createAsyncThunk<boolean, { formData: FormData, contents: string }, { rejectValue: ApiError }>(
-    'post/upload', async function ({ formData, contents }, { rejectWithValue }) {
+export const uploadPost = createAsyncThunk<boolean, { formData: FormData, contents: string, title: string }, { rejectValue: ApiError }>(
+    'post/upload', async function ({ formData, contents, title }, { rejectWithValue }) {
         const imgResult = await postService.uploadPostImage(formData);
         if (imgResult.hasError) {
             return rejectWithValue(imgResult.error);
         }
-        console.log(imgResult);
 
         const postResult = await postService.uploadPost({
             contents,
+            title,
             imageName: imgResult.value.imageName,
         });
-        console.log(postResult);
 
         if (postResult.hasError) {
             return rejectWithValue(postResult.error);
@@ -62,32 +61,33 @@ const postSlice = createSlice({
     name: 'post',
     initialState,
     reducers: {
-        // addLikeToPost(state, action) {
-        //     console.log(action.payload);
+        addLikeToPost(state, action) {
+            console.log(action.payload);
 
-        //     const thePost = state.allPosts.find(post => post.id === action.payload.postId);
-        //     if (!thePost) {
-        //         console.log("could not find the post");
-        //         return;
-        //     }
-        //     thePost.numLikes += 1;
-        //     thePost.likeInfo = {
-        //         likedByCurrentUser: true,
-        //         likeId: action.payload.likeId
-        //     };
-        // },
-        // removeLikeFromPost(state, action) {
-        //     console.log(action.payload);
+            const thePost = state.allPosts.find(post => post.id === action.payload.postId);
+            if (!thePost) {
+                console.log("could not find the post");
+                return;
+            }
+            thePost.numLikes += 1;
+            thePost.likeInfo = {
+                likedByCurrentUser: true,
+                likeId: action.payload.likeId
+            };
+        },
+        removeLikeFromPost(state, action) {
+            console.log(action.payload);
 
-        //     const thePost = state.allPosts.find(post => post.id === action.payload.postId);
-        //     if (!thePost) {
-        //         console.log("could not find the post");
-        //         return;
-        //     }
-        //     thePost.numLikes -= 1;
-        //     // TODO: figure out why is like info nullable and if there is a better way to handle this situation
-        //     thePost.likeInfo = undefined;
-        // },
+            const thePost = state.allPosts.find(post => post.id === action.payload.postId);
+            if (!thePost) {
+                console.log("could not find the post");
+                return;
+            }
+            thePost.numLikes -= 1;
+            // TODO: figure out why is like info nullable and if there is a better way to handle this situation
+            thePost.likeInfo.likedByCurrentUser = false;
+            // thePost.likeInfo = undefined;
+        },
         // addPostForUser(state, action) {
         //     const postsForUser = state.postsForUser.find(user => user.userInfo.userProfileId === action.payload.userId);
         //     postsForUser?.posts.unshift(action.payload.postData);
@@ -130,6 +130,6 @@ const postSlice = createSlice({
     }
 })
 
-// export const { addLikeToPost, removeLikeFromPost, addPostForUser } = postSlice.actions;
+export const { addLikeToPost, removeLikeFromPost } = postSlice.actions;
 
 export default postSlice.reducer;

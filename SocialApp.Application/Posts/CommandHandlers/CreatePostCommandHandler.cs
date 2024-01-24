@@ -28,7 +28,7 @@ internal class CreatePostCommandHandler
         var result = new Result<bool>();
         try
         {
-            var post = Post.CreatePost(request.Contents, request.UserProfileId);
+            var post = Post.CreatePost(request.Title, request.Contents, request.UserProfileId);
             var postRepo = _unitOfWork.CreateReadWriteRepository<Post>();
             postRepo.Add(post);
             await _unitOfWork.SaveAsync(cancellationToken);

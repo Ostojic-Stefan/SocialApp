@@ -13,6 +13,7 @@ internal static class PostExtensions
         return new PostResponse
         {
             Id = post.Id,
+            Title = post.Title,
             Contents = post.Contents,
             UserInfo = post.UserProfile.MapToUserInfo(),
             Images = post.Images.Select(img => new ImageResponse

@@ -1,7 +1,7 @@
 import { Modal, ModalContent, ModalHeader, ModalBody, Textarea, Button, ModalFooter } from '@nextui-org/react';
 import { useState, FormEvent } from 'react';
 import { useAppDispatch } from '../store';
-import { uploadPost } from '../store/post-slice';
+import { getAllPosts, uploadPost } from '../store/post-slice';
 
 interface CreatePostModalProps {
   isOpen: boolean;
@@ -12,6 +12,7 @@ export default function CreatePostForm({ isOpen, onOpenChange }: CreatePostModal
   const [file, setFile] = useState<File | undefined>(undefined);
   const [preview, setPreview] = useState<string | undefined>(undefined);
   const [contents, setContents] = useState<string>('');
+  const [title, setTitle] = useState<string>('');
 
   const dispatch = useAppDispatch();
 
@@ -24,7 +25,8 @@ export default function CreatePostForm({ isOpen, onOpenChange }: CreatePostModal
 
     const formData = new FormData();
     formData.append('img', file);
-    dispatch(uploadPost({ formData, contents }));
+    await dispatch(uploadPost({ formData, contents, title }));
+    await dispatch(getAllPosts());
   }
 
   function handleOnChange(event: React.FormEvent<HTMLInputElement>): void {
@@ -51,6 +53,16 @@ export default function CreatePostForm({ isOpen, onOpenChange }: CreatePostModal
                   <label htmlFor='image'>Image</label>
                   <input accept='image/jpg, image/png' type='file' name='image' onChange={handleOnChange} />
                   <img src={preview} alt='' />
+                </div>
+                <div>
+                  <label htmlFor='title'>Title</label>
+                  <input
+                    type='text'
+                    id='title'
+                    placeholder='enter title'
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                  />
                 </div>
                 <div>
                   <Textarea

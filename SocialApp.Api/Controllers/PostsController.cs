@@ -54,6 +54,7 @@ public class PostsController : BaseApiController
     [HttpPost]
     [Route("posts")]
     [Authorize]
+    // TODO:
     // [ValidateModel]
     public async Task<IActionResult> CreatePost(CreatePostRequest createPost,
         CancellationToken cancellationToken)
@@ -61,6 +62,7 @@ public class PostsController : BaseApiController
         var userProfileId = HttpContext.GetUserProfileId();
         var command = new CreatePostCommand
         {
+            Title = createPost.Title,
             Contents = createPost.Contents,
             ImageUrl = createPost.ImageName,
             UserProfileId = userProfileId,

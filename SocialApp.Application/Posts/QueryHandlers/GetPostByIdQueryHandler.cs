@@ -32,6 +32,8 @@ internal class GetPostByIdQueryHandler
             var post = await postRepo
                 .QueryById(request.PostId)
                 .TagWith($"[{nameof(GetPostByIdQueryHandler)}] - Get Single Post")
+                .Where(p => p.DoneProcessing)
+                .Include(p => p.Comments)
                 .Select((post) => post.MapToPostReponse(request.CurrentUserId))
                 .SingleOrDefaultAsync(cancellationToken);
             if (post is null)

@@ -29,6 +29,7 @@ internal class GetPostLikesQueryHandler
             var postRepo = _unitOfWork.CreateReadWriteRepository<Post>();
             var post = await postRepo
                 .QueryById(request.PostId)
+                .Where(p => p.DoneProcessing)
                 .Include(p => p.Likes)
                 .ThenInclude(p => p.UserProfile.ProfileImage)
                 .FirstAsync(cancellationToken);
@@ -47,7 +48,7 @@ internal class GetPostLikesQueryHandler
                 { 
                     Id = l.Id,
                     LikeReaction = l.LikeReaction,
-                    UserInformation = l.UserProfile.MapToUserInfo()
+                    UserInfo = l.UserProfile.MapToUserInfo()
                 }).ToList()
             };
 

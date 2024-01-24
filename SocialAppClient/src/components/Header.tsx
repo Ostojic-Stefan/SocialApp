@@ -79,7 +79,7 @@ export default function Header() {
                 </Button>
               </PopoverTrigger>
               <PopoverContent>
-                <div className='flex flex-col gap-5 h-96 overflow-y-scroll'>{renderedNotifications}</div>
+                <div className='flex flex-col gap-5 max-h-96 overflow-y-scroll'>{renderedNotifications}</div>
               </PopoverContent>
             </Popover>
           </Badge>

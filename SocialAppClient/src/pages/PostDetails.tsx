@@ -11,7 +11,6 @@ import UserInfo from '../components/UserInfo';
 export default function PostDetails() {
   const { postId } = useParams();
   const [postDetails, setPostDetails] = useState<PostDetailsResponse | null>(null);
-  const [error, setError] = useState<string>('');
   const [commentContents, setCommentContents] = useState<string>('');
 
   useEffect(() => {
@@ -22,7 +21,6 @@ export default function PostDetails() {
       }
       const response = await postService.getPostDetails(postId);
       if (response.hasError) {
-        setError(response.error.errorMessages.join(', '));
         console.log(response.error);
         return;
       }
@@ -33,8 +31,6 @@ export default function PostDetails() {
 
   if (!postDetails) {
     return <Spinner />;
-  } else if (error) {
-    return <p className='text-danger'>{error}</p>;
   }
 
   async function handleSubmitComment(event: FormEvent<HTMLFormElement>): Promise<void> {
@@ -42,10 +38,15 @@ export default function PostDetails() {
     if (!postDetails) return;
     const response = await commentService.addCommentToAPost({ contents: commentContents, postId: postDetails.id });
     if (response.hasError) {
-      setError(response.error.errorMessages.join(', '));
       return;
     }
-
+    // TODO: not sure if it's the best approach
+    const postDetailsResponse = await postService.getPostDetails(postId!);
+    if (postDetailsResponse.hasError) {
+      console.log(postDetailsResponse.error);
+      return;
+    }
+    setPostDetails(postDetailsResponse.value);
     setCommentContents('');
   }
 

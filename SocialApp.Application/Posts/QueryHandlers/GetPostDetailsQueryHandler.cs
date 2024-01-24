@@ -29,6 +29,7 @@ internal class GetPostDetailsQueryHandler
             var postRepo = _unitOfWork.CreateReadOnlyRepository<Post>();
             var post = await postRepo
                 .QueryById(request.PostId)
+                .Where(p => p.DoneProcessing)
                 .ProjectTo<PostDetailsResponse>(_mapper.ConfigurationProvider)
                 .SingleOrDefaultAsync(cancellationToken);
 

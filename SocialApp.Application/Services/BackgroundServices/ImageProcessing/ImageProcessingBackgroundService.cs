@@ -10,6 +10,7 @@ using SixLabors.ImageSharp.Processing;
 using SocialApp.Application.Services.BackgroundServices.Notification;
 using SocialApp.Application.Services.FileUpload;
 using SocialApp.Application.Settings;
+using System.Runtime.InteropServices;
 using System.Threading.Channels;
 
 namespace SocialApp.Application.Services.BackgroundServices.ImageProcessing;
@@ -58,6 +59,7 @@ public sealed class ImageProcessingBackgroundService : IHostedService
                 {
                     var unitOfWork = scopeService.ServiceProvider.GetRequiredService<IUnitOfWork>();
                     var imgRepo = unitOfWork.CreateReadWriteRepository<Domain.Image>();
+                    var postRepo = unitOfWork.CreateReadWriteRepository<Domain.Post>();
 
                     var imgCount = await imgRepo.Query().CountAsync(cancellationToken);
                     var subDir = $"{imgCount % 100}";
@@ -93,9 +95,15 @@ public sealed class ImageProcessingBackgroundService : IHostedService
                     };
 
                     if (message.ImageFor == ImageFor.Post)
+                    {
                         domainImage.PostId = message.ResourceId;
+                        var post = await postRepo.QueryById(message.ResourceId).SingleAsync(cancellationToken);
+                        post.DoneProcessing = true;
+                    }
                     else if (message.ImageFor == ImageFor.User)
+                    {
                         domainImage.UserProfileId = message.ResourceId;
+                    }
 
                     imgRepo.Add(domainImage);
 
