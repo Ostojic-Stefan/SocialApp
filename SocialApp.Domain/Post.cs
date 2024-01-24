@@ -16,7 +16,9 @@ public class Post : BaseEntity
         _likes = new List<PostLike>();
     }
 
+    public required string Title { get; set; }
     public string Contents { get; private set; }
+    public required bool DoneProcessing { get; set; } = false;
     public DateTime CreatedAt { get; private set; }
     public DateTime UpdatedAt { get; private set; }
 
@@ -29,12 +31,14 @@ public class Post : BaseEntity
     public IEnumerable<Comment> Comments => _comments;
     public IEnumerable<PostLike> Likes => _likes;
 
-    public static Post CreatePost(string contents, Guid userId)
+    public static Post CreatePost(string title, string contents, Guid userId)
     {
         var newPost = new Post
         {
+            Title = title,
             Contents = contents,
-            UserProfileId = userId
+            UserProfileId = userId,
+            DoneProcessing = false
         };
         Validate(newPost);
         return newPost;
