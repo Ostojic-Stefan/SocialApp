@@ -1,6 +1,6 @@
 import { axiosInstance, executeApiCall } from './apiConfig';
 import { ImageResponse, UploadImageResponse } from './dtos/image';
-import { AddUserImageRequest, GetUserImagesRequest, SetProfileImageRequest, UserDetailsResponse, UserProfileInformationRequest } from './dtos/user';
+import { AddUserImageRequest, GetUserImagesRequest, SetProfileImageRequest, UpdateUserProfileRequest, UserDetailsResponse, UserProfileInformationRequest } from './dtos/user';
 import { ApiError, Result } from './models';
 
 interface IUserService {
@@ -9,7 +9,7 @@ interface IUserService {
   setProfileImage: (request: SetProfileImageRequest) => Promise<Result<string, ApiError>>;
   getUserProfileInformation: (request: UserProfileInformationRequest) => Promise<Result<UserDetailsResponse, ApiError>>;
   getUserImages: (request: GetUserImagesRequest) => Promise<Result<ImageResponse[], ApiError>>;
-
+  updateUserProfile: (request: UpdateUserProfileRequest) => Promise<Result<boolean, ApiError>>;
 
   // gets all the friends for a given user id
   // getFriends: (userId: string) => Promise<Result<FriendResponse[], ApiError>>;
@@ -52,5 +52,11 @@ export const userService: IUserService = {
       const response = await axiosInstance.post<boolean>(`users/images/add`, request);
       return response.data;
     });
+  },
+  updateUserProfile: async function (request: UpdateUserProfileRequest): Promise<Result<boolean, ApiError>> {
+    return await executeApiCall(async function () {
+      const response = await axiosInstance.put<boolean>('users', request);
+      return response.data;
+    })
   }
 };

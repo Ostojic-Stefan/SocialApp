@@ -38,3 +38,8 @@ export type GetUserImagesRequest = {
 export type AddUserImageRequest = {
     avatarUrl: string;
 }
+
+export type UpdateUserProfileRequest = {
+    username: string;
+    biography: string;
+}

@@ -28,6 +28,8 @@ public class UserProfile : BaseEntity
 
     // Relationships
     // TODO: make private set
+    public IEnumerable<Post> Posts { get; set; }
+
     public IEnumerable<Image> Images { get; set; } = new List<Image>();
     public string IdentityId { get; private set; }
     public IdentityUser IdentityUser { get; private set; }
@@ -90,9 +92,9 @@ public class UserProfile : BaseEntity
         foundRequest.Status = FriendRequestStatus.Denied;
     }
 
-    public void UpdateUserProfile(string newAvatarUrl)
+    public void UpdateUserProfile(string username, string biography)
     {
-        //AvatarUrl = newAvatarUrl;
-        throw new NotImplementedException();
+        Username = username;
+        Biography = biography;
     }
 }

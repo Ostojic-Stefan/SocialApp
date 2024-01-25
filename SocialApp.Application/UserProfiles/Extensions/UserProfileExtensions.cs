@@ -1,6 +1,7 @@
 ﻿using SocialApp.Application.Files.Responses;
 using SocialApp.Application.UserProfiles.Responses;
 using SocialApp.Domain;
+using System.Linq.Expressions;
 
 namespace SocialApp.Application.UserProfiles.Extensions;
 
@@ -23,14 +24,17 @@ internal static class UserProfileExtensions
         };
     }
 
-    public static UserDetailsResponse MapToUserDetailsResponse(this UserProfile userProfile, Guid currentUserId)
+    public static IQueryable<UserDetailsResponse> ToDetailsResponse(this IQueryable<UserProfile> userProfileQuery, Guid currentUserId)
     {
-        return new UserDetailsResponse
+        return userProfileQuery.Select(userProfile => new UserDetailsResponse
         {
             UserInfo = userProfile.MapToUserInfo(),
             CreatedAt = userProfile.CreatedAt,
             UpdatedAt = userProfile.UpdatedAt,
-            IsFriend = userProfile.Friends != null && userProfile.Friends.Any(f => f.Id == currentUserId),
-        };
+            IsFriend = userProfile.Friends != null && userProfile.Friends.AsQueryable().Any(f => f.Id == currentUserId),
+            NumFriends = userProfile.Friends.AsQueryable().Count(),
+            NumLikes = userProfile.Posts.AsQueryable().SelectMany(p => p.Likes).Count(),
+            NumPosts = userProfile.Posts.AsQueryable().Count()
+        });
     }
 }

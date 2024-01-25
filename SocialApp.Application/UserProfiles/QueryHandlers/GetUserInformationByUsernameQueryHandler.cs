@@ -30,10 +30,12 @@ internal class GetUserInformationByUsernameQueryHandler
             var userRepo = _unitOfWork.CreateReadOnlyRepository<UserProfile>();
             var user = await userRepo
                     .Query()
-                    .Include(u => u.Friends)
+                    .Include(u => u.Posts)
                     .Include(u => u.ProfileImage)
+                    .Include(u => u.Friends)
                     .Where(u => u.Username == request.Username)
-                    .Select(user => user.MapToUserDetailsResponse(request.CurrentUserId))
+                    .AsSplitQuery()
+                    .ToDetailsResponse(request.CurrentUserId)
                     .SingleOrDefaultAsync(cancellationToken);
             if (user is null)
             {

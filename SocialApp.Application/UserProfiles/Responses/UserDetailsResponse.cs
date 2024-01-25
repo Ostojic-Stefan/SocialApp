@@ -7,4 +7,7 @@ public class UserDetailsResponse
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
     public bool IsFriend { get; set; }
+    public required int NumPosts { get; set; }
+    public required int NumFriends { get; set; }
+    public required int NumLikes { get; set; }
 }

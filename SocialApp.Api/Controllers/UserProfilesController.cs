@@ -82,4 +82,21 @@ public class UserProfilesController : BaseApiController
             return HandleError(response.Errors);
         return Ok(response.Data);
     }
+
+    [HttpPut]
+    [Route("users")]
+    [Authorize]
+    public async Task<IActionResult> UpdateUserProfile(UpdateUserProfileRequest request)
+    {
+        var command = new UpdateUserProfileCommand
+        {
+            CurrentUserId = HttpContext.GetUserProfileId(),
+            Biography = request.Biography,
+            Username = request.Username
+        };
+        var response = await _mediator.Send(command);
+        if (response.HasError)
+            return HandleError(response.Errors);
+        return Ok(response.Data);
+    }
 }

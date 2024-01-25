@@ -20,15 +20,16 @@ export default function UserProfile() {
   const [newUserName, setNewUsername] = useState<string>(user.userInfo.username ?? '');
   const [newBiography, setNewBiography] = useState<string>(user.userInfo.biography ?? '');
 
-  useEffect(() => {
-    async function getUserProfileInformation() {
-      if (!username) return;
-      const response = await userService.getUserProfileInformation({ username });
-      if (response.hasError) {
-        return;
-      }
-      setUserInformation(response.value);
+  async function getUserProfileInformation() {
+    if (!username) return;
+    const response = await userService.getUserProfileInformation({ username });
+    if (response.hasError) {
+      return;
     }
+    setUserInformation(response.value);
+  }
+
+  useEffect(() => {
     getUserProfileInformation();
   }, []);
 
@@ -57,12 +58,13 @@ export default function UserProfile() {
 
   async function handleUpdateProfile(): Promise<void> {
     setEditMode(false);
-    console.log(
-      JSON.stringify({
-        newUserName,
-        newBiography,
-      })
-    );
+    const result = await userService.updateUserProfile({ username: newUserName, biography: newBiography });
+    if (result.hasError) {
+      console.log(result.error);
+      return;
+    }
+    console.log('Updated Successfully');
+    getUserProfileInformation();
   }
 
   return (
