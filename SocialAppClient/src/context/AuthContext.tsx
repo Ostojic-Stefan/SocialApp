@@ -4,8 +4,15 @@ import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useNavigate } from 'react-router-dom';
 import { CurrentUserResponse, RegisterRequest } from '../api/dtos/identity';
 
+export enum AuthStatus {
+  Unauthenticated,
+  Authenticated,
+  Loading,
+}
+
 interface AuthState {
-  user: CurrentUserResponse | null;
+  user: CurrentUserResponse;
+  authStatus: AuthStatus;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   register: (registerRequest: RegisterRequest) => Promise<void>;
@@ -19,6 +26,8 @@ interface Props {
 
 export const AuthProvider = ({ children }: Props) => {
   const [user, setUser] = useState<CurrentUserResponse | null>(null);
+  const [authStatus, setAuthStatus] = useState<AuthStatus>(AuthStatus.Loading);
+
   const { value, setValue } = useLocalStorage<string | null>(null, 'auth');
   const navigate = useNavigate();
 
@@ -27,36 +36,31 @@ export const AuthProvider = ({ children }: Props) => {
       if (value) {
         const response = await identityService.getCurrentUserInfo();
         if (response.hasError) {
+          setAuthStatus(AuthStatus.Unauthenticated);
           console.log('Failed to authenticate');
-          navigate('/login');
           return;
         }
+        setAuthStatus(AuthStatus.Authenticated);
         setUser(response.value);
-        // navigate('/');
       } else {
         console.log('No token present in local storage');
-        // navigate('/login');
+        setAuthStatus(AuthStatus.Unauthenticated);
       }
     }
     getUserData();
   }, []);
 
   async function login(email: string, password: string) {
+    setAuthStatus(AuthStatus.Loading);
     const response = await identityService.login({ email, password });
     if (response.hasError) {
       console.log(response.error);
+      setAuthStatus(AuthStatus.Unauthenticated);
       return;
     }
     console.log(response.value);
 
     setValue(response.value.accessToken);
-    const userDataResponse = await identityService.getCurrentUserInfo();
-    if (userDataResponse.hasError) {
-      console.log('Failed to get user data');
-      return;
-    }
-    setUser(userDataResponse.value);
-    console.log('Successfully logged in');
     navigate('/');
     window.location.reload();
   }
@@ -76,9 +80,12 @@ export const AuthProvider = ({ children }: Props) => {
     setValue(null);
     setUser(null);
     navigate('/login', { replace: true });
+    setAuthStatus(AuthStatus.Unauthenticated);
   }
 
-  return <AuthContext.Provider value={{ login, logout, user, register }}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ login, logout, user: user!, register, authStatus }}>{children}</AuthContext.Provider>
+  );
 };
 
 export function useAuth() {

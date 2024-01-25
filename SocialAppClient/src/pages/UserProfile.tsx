@@ -1,17 +1,24 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { userService } from '../api/userService';
-import { Button, Spinner, Tab, Tabs, useDisclosure } from '@nextui-org/react';
+import { Button, Input, Spinner, Tab, Tabs, Textarea, useDisclosure } from '@nextui-org/react';
 import ProfileImage from '../components/ProfileImage';
 import { UserDetailsResponse } from '../api/dtos/user';
 import PostPreviewList from '../components/PostPreviewList';
 import UserImages from '../components/UserImages';
 import UploadUserImageModalForm from '../components/UploadUserImageModalForm';
+import { useAuth } from '../context/AuthContext';
 
 export default function UserProfile() {
   const { username } = useParams();
   const [userInformation, setUserInformation] = useState<UserDetailsResponse | null>(null);
   const { onOpen, isOpen, onOpenChange } = useDisclosure();
+  const { user } = useAuth();
+
+  const [editMode, setEditMode] = useState<boolean>(false);
+
+  const [newUserName, setNewUsername] = useState<string>(user.userInfo.username ?? '');
+  const [newBiography, setNewBiography] = useState<string>(user.userInfo.biography ?? '');
 
   useEffect(() => {
     async function getUserProfileInformation() {
@@ -46,18 +53,48 @@ export default function UserProfile() {
 
   if (!userInformation) return <Spinner />;
 
+  const isCurrentUserProfile = user?.userInfo.userProfileId === userInformation.userInfo.userProfileId;
+
+  async function handleUpdateProfile(): Promise<void> {
+    setEditMode(false);
+    console.log(
+      JSON.stringify({
+        newUserName,
+        newBiography,
+      })
+    );
+  }
+
   return (
     <div className='flex flex-col gap-12'>
       <div className='flex gap-36 bg-default-50 p-10 '>
         <ProfileImage dimension={240} src={userInformation.userInfo.profileImage.thumbnailImagePath} />
         <div className='flex flex-col'>
-          <h1 className='text-3xl'>{userInformation.userInfo.username}</h1>
+          {!editMode ? (
+            <h1 className='text-3xl'>{userInformation.userInfo.username}</h1>
+          ) : (
+            <Input type='text' value={newUserName} onChange={(e) => setNewUsername(e.target.value)} />
+          )}
           <div className='flex gap-7 my-4'>
-            <p className='font-semibold'>1038 posts</p>
-            <p className='font-semibold'>13.5k friends</p>
-            <p className='font-semibold'>133769 likes</p>
+            <p className='font-semibold'>{userInformation.numPosts} posts</p>
+            <p className='font-semibold'>{userInformation.numFriends} friends</p>
+            <p className='font-semibold'>{userInformation.numLikes} likes</p>
           </div>
-          <div className='bg-default-200 rounded p-2'>{userInformation.userInfo.biography}</div>
+          {editMode ? (
+            <Textarea value={newBiography} onChange={(e) => setNewBiography(e.target.value)} />
+          ) : (
+            userInformation.userInfo.biography && (
+              <div className='bg-default-200 rounded p-2'>{userInformation.userInfo.biography}</div>
+            )
+          )}
+          {isCurrentUserProfile &&
+            (!editMode ? (
+              <div>
+                <Button onClick={() => setEditMode(true)}>Edit Profile</Button>
+              </div>
+            ) : (
+              <Button onClick={handleUpdateProfile}>Save Changes</Button>
+            ))}
         </div>
 
         {/* {shouldRenderSendRequestButton() && (

@@ -9,12 +9,19 @@ import PostListAll from './components/PostListAll';
 import PostListFriends from './components/PostListFriends';
 import UserProfile from './pages/UserProfile';
 import PostDetails from './pages/PostDetails';
+import Auth from './components/Auth';
 
 export default function App() {
   return (
     <div>
       <Routes>
-        <Route element={<AppLayout />}>
+        <Route
+          element={
+            <Auth>
+              <AppLayout />
+            </Auth>
+          }
+        >
           <Route path='/' element={<Home />}>
             <Route path='' element={<Navigate to='all-posts' />} />
             <Route index path='all-posts' element={<PostListAll />} />

@@ -16,6 +16,9 @@ export type UserDetailsResponse = {
     isFriend: boolean;
     createdAt: Date;
     updatedAt: Date;
+    numPosts: number;
+    numFriends: number;
+    numLikes: number;
 }
 
 // requests
