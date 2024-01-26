@@ -107,9 +107,9 @@ export default function Header() {
             </PopoverTrigger>
             <PopoverContent>
               <div className='flex flex-col gap-2 w-full m-4'>
-                <Link to={`/profile/${user.userInfo.username}`}>
-                  <Button>Check Profile</Button>
-                </Link>
+                <Button as={Link} to={`/profile/${user.userInfo.username}`}>
+                  Check Profile
+                </Button>
                 <Button onClick={() => logout()}>Sign Out</Button>
               </div>
             </PopoverContent>

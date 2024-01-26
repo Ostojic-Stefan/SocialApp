@@ -5,16 +5,18 @@ import { PostResponse, PostsForUserRequest, PostsForUserResponse } from "../api/
 
 interface StateType {
     allPosts: PostResponse[];
-    postsForUser: PostsForUserResponse[]
+    postsForUser: PostsForUserResponse[];
+    postsFromFriends: PostResponse[];
     postsLoading: boolean;
     allPostsError: string | undefined;
 }
 
 const initialState: StateType = {
     allPosts: [],
+    postsFromFriends: [],
     postsForUser: [],
     postsLoading: false,
-    allPostsError: undefined
+    allPostsError: undefined,
 };
 
 export const getAllPosts = createAsyncThunk<PostResponse[], void, { rejectValue: ApiError }>
@@ -25,7 +27,6 @@ export const getAllPosts = createAsyncThunk<PostResponse[], void, { rejectValue:
         }
         return response.value;
     });
-
 
 export const uploadPost = createAsyncThunk<boolean, { formData: FormData, contents: string, title: string }, { rejectValue: ApiError }>(
     'post/upload', async function ({ formData, contents, title }, { rejectWithValue }) {
@@ -56,6 +57,16 @@ export const getPostsForUser = createAsyncThunk<PostsForUserResponse, PostsForUs
         return res.value;
     }
 );
+
+export const getPostsFromFriends = createAsyncThunk<PostResponse[], void, { rejectValue: ApiError }>(
+    "post/postsFromFriends", async function (_, { rejectWithValue }) {
+        const response = await postService.getUserFriendsPost();
+        if (response.hasError) {
+            return rejectWithValue(response.error);
+        }
+        return response.value;
+    }
+)
 
 const postSlice = createSlice({
     name: 'post',
@@ -126,6 +137,14 @@ const postSlice = createSlice({
         }).addCase(getPostsForUser.rejected, (_state, action) => {
             console.log('Failed to get posts for user');
             console.log(action.payload);
+        });
+
+        builder.addCase(getPostsFromFriends.fulfilled, (state, action) => {
+            state.postsFromFriends = action.payload;
+        }).addCase(getPostsFromFriends.rejected, (state, action) => {
+            console.log('Failed to get friend`s posts');
+            console.log(action.payload);
+
         });
     }
 })

@@ -10,6 +10,7 @@ export interface IPostService {
   uploadPost: (request: CreatePostRequest) => Promise<Result<boolean, ApiError>>;
   getPostsForUser: (request: PostsForUserRequest) => Promise<Result<PostsForUserResponse, ApiError>>;
   getPostDetails: (postId: string) => Promise<Result<PostDetailsResponse, ApiError>>;
+  getUserFriendsPost: () => Promise<Result<PostResponse[], ApiError>>;
 }
 
 export const postService: IPostService = {
@@ -54,4 +55,10 @@ export const postService: IPostService = {
       return response.data;
     });
   },
+  getUserFriendsPost: async function (): Promise<Result<PostResponse[], ApiError>> {
+    return await executeApiCall(async function () {
+      const response = await axiosInstance.get<PostResponse[]>(`posts/friends`);
+      return response.data;
+    });
+  }
 };

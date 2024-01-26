@@ -2,11 +2,13 @@ import { configureStore } from '@reduxjs/toolkit'
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import postReducer from "./post-slice";
 import userProfileReducer from './user-profile-slice'
+import friendsReducer from './friends-slice'
 
 const store = configureStore({
   reducer: {
     post: postReducer,
-    userProfile: userProfileReducer
+    userProfile: userProfileReducer,
+    friends: friendsReducer
   }
 });
 

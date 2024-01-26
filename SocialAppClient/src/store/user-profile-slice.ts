@@ -75,7 +75,7 @@ const userProfileSlice = createSlice({
         })
 
         builder.addCase(addUserImage.fulfilled, (state, action) => {
-
+            // TODO:
         }).addCase(addUserImage.rejected, (state, action) => {
             console.log('Failed to add user image');
             console.log(action.payload);

@@ -7,18 +7,14 @@ export default function HomeNav() {
 
   return (
     <div>
-      <div className='flex justify-between shadow-md px-6 py-4'>
+      <div className='flex justify-between px-6 py-4'>
         <div className='flex gap-4'>
-          <Link to={'friend-posts'}>
-            <Button className='text-md font-semibold' variant='flat' color='secondary'>
-              Friends Only
-            </Button>
-          </Link>
-          <Link to={'all-posts'}>
-            <Button className='text-md font-semibold' variant='flat' color='secondary'>
-              All Posts
-            </Button>
-          </Link>
+          <Button as={Link} to={'friend-posts'} className='text-md font-semibold' variant='flat' color='secondary'>
+            Friends Only
+          </Button>
+          <Button as={Link} to={'all-posts'} className='text-md font-semibold' variant='flat' color='secondary'>
+            All Posts
+          </Button>
         </div>
         <div>
           <CreatePostModal isOpen={isOpen} onOpenChange={onOpenChange} />

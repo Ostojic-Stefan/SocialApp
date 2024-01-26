@@ -142,4 +142,16 @@ public class PostsController : BaseApiController
             return HandleError(response.Errors);
         return Ok(response.Data);
     }
+
+    [HttpGet]
+    [Route("posts/friends")]
+    public async Task<IActionResult> GetUserFriendsPosts()
+    {
+        var query = new GetUserFriendsPostsQuery
+        { CurrentUserId = HttpContext.GetUserProfileId() };
+        var response = await _mediator.Send(query);
+        if (response.HasError)
+            return HandleError(response.Errors);
+        return Ok(response.Data);
+    }
 }

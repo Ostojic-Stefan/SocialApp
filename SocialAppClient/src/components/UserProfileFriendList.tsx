@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
-import { userService } from '../api/userService';
+import { useEffect } from 'react';
 import { UserInfoResponse } from '../api/dtos/user';
 import ProfileImage from './ProfileImage';
+import { useAppDispatch, useAppSelector } from '../store';
+import { getFriendsForUser } from '../store/friends-slice';
 
 interface UserProfileFriendListProps {
   userProfileId: string;
@@ -26,18 +27,10 @@ function UserProfileFriendItem({ userInfo }: UserProfileFriendItemProps) {
 }
 
 export default function UserProfileFriendList({ userProfileId }: UserProfileFriendListProps) {
-  const [friends, setFriends] = useState<UserInfoResponse[]>([]);
+  const friends = useAppSelector((store) => store.friends.userProfileFriends);
+  const dispatch = useAppDispatch();
   useEffect(() => {
-    async function getFriends() {
-      const response = await userService.getFriends(userProfileId);
-      if (response.hasError) {
-        console.log(response.error);
-        return;
-      }
-      setFriends(response.value);
-    }
-
-    getFriends();
+    dispatch(getFriendsForUser({ userId: userProfileId, isCurrentUser: false }));
   }, []);
 
   return (
