@@ -11,9 +11,13 @@ export type UserImagesResponse = {
     images: ImageResponse[];
 }
 
+export enum FriendStatus {
+    Friend, NotFriend, WaitingAcceptance, WaitingApproval
+}
+
 export type UserDetailsResponse = {
     userInfo: UserInfoResponse;
-    isFriend: boolean;
+    friendStatus: FriendStatus;
     createdAt: Date;
     updatedAt: Date;
     numPosts: number;
@@ -42,4 +46,8 @@ export type AddUserImageRequest = {
 export type UpdateUserProfileRequest = {
     username: string;
     biography: string;
+}
+
+export type SendFriendRequest = {
+    userId: string;
 }

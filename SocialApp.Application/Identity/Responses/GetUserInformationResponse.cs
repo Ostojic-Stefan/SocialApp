@@ -1,16 +1,12 @@
 ﻿using SocialApp.Application.Comments.Responses;
 using SocialApp.Application.Posts.Responses;
 using SocialApp.Application.UserProfiles.Responses;
-using SocialApp.Domain;
 
 namespace SocialApp.Application.Identity.Responses;
 
-// TODO: fix for new user profile image
 public class FriendRequestResponse
 {
-    public required Guid RequesterId { get; set; }
-    public string? RequesterAvatarUrl { get; set; }
-    public required string RequesterUsername { get; set; }
+    public required UserInfo RequesterUser { get; set; }
     public DateTime RequestTimeSent { get; set; }
 }
 

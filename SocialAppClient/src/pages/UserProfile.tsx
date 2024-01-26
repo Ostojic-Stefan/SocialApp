@@ -3,15 +3,20 @@ import { useParams } from 'react-router-dom';
 import { userService } from '../api/userService';
 import { Button, Input, Spinner, Tab, Tabs, Textarea, useDisclosure } from '@nextui-org/react';
 import ProfileImage from '../components/ProfileImage';
-import { UserDetailsResponse } from '../api/dtos/user';
+import { FriendStatus } from '../api/dtos/user';
 import PostPreviewList from '../components/PostPreviewList';
 import UserImages from '../components/UserImages';
 import UploadUserImageModalForm from '../components/UploadUserImageModalForm';
 import { useAuth } from '../context/AuthContext';
+import { FriendRequestUpdateStatus } from '../api/dtos/friend';
+import UserProfileFriendList from '../components/UserProfileFriendList';
+import { useAppDispatch, useAppSelector } from '../store';
+import { getUserProfileInformation } from '../store/user-profile-slice';
 
 export default function UserProfile() {
   const { username } = useParams();
-  const [userInformation, setUserInformation] = useState<UserDetailsResponse | null>(null);
+  const dispatch = useAppDispatch();
+  const userInformation = useAppSelector((store) => store.userProfile.userProfile);
   const { onOpen, isOpen, onOpenChange } = useDisclosure();
   const { user } = useAuth();
 
@@ -20,43 +25,79 @@ export default function UserProfile() {
   const [newUserName, setNewUsername] = useState<string>(user.userInfo.username ?? '');
   const [newBiography, setNewBiography] = useState<string>(user.userInfo.biography ?? '');
 
-  async function getUserProfileInformation() {
-    if (!username) return;
-    const response = await userService.getUserProfileInformation({ username });
-    if (response.hasError) {
-      return;
-    }
-    setUserInformation(response.value);
-  }
-
   useEffect(() => {
-    getUserProfileInformation();
+    if (!username) return;
+    dispatch(getUserProfileInformation({ username }));
   }, []);
 
-  // async function sendFriendRequestHandler(): Promise<void> {
-  //   if (userInformation) {
-  //     const result = await userService.sendFriendRequest({ userId: userInformation.userInfo.userProfileId });
-  //     if (result.hasError) {
-  //       console.log('Failed to add friend request');
-  //       console.log(result.error);
-  //       return;
-  //     }
-  //     console.log(result.value);
-  //   }
-  // }
+  async function sendFriendRequestHandler(): Promise<void> {
+    if (userInformation) {
+      const result = await userService.sendFriendRequest({ userId: userInformation.userInfo.userProfileId });
+      if (result.hasError) {
+        console.log('Failed to add friend request');
+        console.log(result.error);
+        return;
+      }
+      console.log(result.value);
+    }
+  }
 
-  // function shouldRenderSendRequestButton() {
-  //   const isCurrentUsersProfile = user?.userInformation.userId === userInformation?.userInfo.userProfileId;
-  //   if (isCurrentUsersProfile) return false;
+  async function acceptFriendRequestHandler(): Promise<void> {
+    if (!userInformation) return;
+    const response = await userService.updateFriendRequestStatus({
+      userId: userInformation?.userInfo.userProfileId,
+      status: FriendRequestUpdateStatus.Accept,
+    });
+    if (response.hasError) {
+      console.log(response.error);
+      return;
+    }
+    console.log(response.value);
+  }
 
-  //   return !userInformation?.isFriend;
-  // }
+  async function rejectFriendRequestHandler(): Promise<void> {
+    if (!userInformation) return;
+    const response = await userService.updateFriendRequestStatus({
+      userId: userInformation.userInfo.userProfileId,
+      status: FriendRequestUpdateStatus.Reject,
+    });
+    if (response.hasError) {
+      console.log(response.error);
+      return;
+    }
+    console.log(response.value);
+  }
+
+  function renderFriendButton() {
+    if (!userInformation) return null;
+    const isCurrentUsersProfile = user.userInfo.userProfileId === userInformation.userInfo.userProfileId;
+    if (isCurrentUsersProfile) {
+      return false;
+    }
+    switch (userInformation.friendStatus) {
+      case FriendStatus.Friend:
+        return <div>Already Friends</div>;
+      case FriendStatus.WaitingAcceptance:
+        return (
+          <div>
+            <Button onClick={acceptFriendRequestHandler}>Accept Friend Request</Button>
+            <Button onClick={rejectFriendRequestHandler}>Reject Friend Request</Button>
+          </div>
+        );
+      case FriendStatus.WaitingApproval:
+        return <div>Waiting For {userInformation.userInfo.username} to accept</div>;
+      case FriendStatus.NotFriend:
+      default:
+        return <Button onClick={sendFriendRequestHandler}>Send Friend Requqest</Button>;
+    }
+  }
 
   if (!userInformation) return <Spinner />;
 
   const isCurrentUserProfile = user?.userInfo.userProfileId === userInformation.userInfo.userProfileId;
 
   async function handleUpdateProfile(): Promise<void> {
+    if (!username) return;
     setEditMode(false);
     const result = await userService.updateUserProfile({ username: newUserName, biography: newBiography });
     if (result.hasError) {
@@ -64,7 +105,7 @@ export default function UserProfile() {
       return;
     }
     console.log('Updated Successfully');
-    getUserProfileInformation();
+    dispatch(getUserProfileInformation({ username }));
   }
 
   return (
@@ -85,9 +126,7 @@ export default function UserProfile() {
           {editMode ? (
             <Textarea value={newBiography} onChange={(e) => setNewBiography(e.target.value)} />
           ) : (
-            userInformation.userInfo.biography && (
-              <div className='bg-default-200 rounded p-2'>{userInformation.userInfo.biography}</div>
-            )
+            userInformation.userInfo.biography && <p>{userInformation.userInfo.biography}</p>
           )}
           {isCurrentUserProfile &&
             (!editMode ? (
@@ -99,13 +138,7 @@ export default function UserProfile() {
             ))}
         </div>
 
-        {/* {shouldRenderSendRequestButton() && (
-          <div>
-            <Button onClick={sendFriendRequestHandler} color='primary' variant='flat' className='font-semibold'>
-              Send Friend Request
-            </Button>
-          </div>
-        )} */}
+        {renderFriendButton()}
       </div>
 
       <div className='flex gap-4 bg-default-100 p-4 rounded'>
@@ -124,7 +157,9 @@ export default function UserProfile() {
             <UserImages userProfileId={userInformation.userInfo.userProfileId} />
           </Tab>
           <Tab title='Friends' key='friends'>
-            <h1>TODO: User Friends Here</h1>
+            <h1>
+              <UserProfileFriendList userProfileId={userInformation.userInfo.userProfileId} />
+            </h1>
           </Tab>
         </Tabs>
       </div>

@@ -5,7 +5,6 @@ import {
   CardFooter,
   CardHeader,
   Divider,
-  Image,
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -13,7 +12,6 @@ import {
 
 import TimeAgo from 'timeago-react';
 import { Link } from 'react-router-dom';
-import ProfileImage from './ProfileImage';
 import { likeService } from '../api/likeService';
 import { useAppDispatch } from '../store';
 import { FaCommentAlt, FaThumbsUp } from 'react-icons/fa';
@@ -67,15 +65,9 @@ function PostItem({ post }: PostItemProps) {
   return (
     <Card className='rounded-sm w-full'>
       <CardHeader className='flex justify-between'>
-        <div className='flex gap-3'>
-          <ProfileImage dimension={50} src={post.userInfo.profileImage.thumbnailImagePath} />
-          <div className='flex flex-col'>
-            <Link to={`/profile/${post.userInfo.username}`}>
-              <p className='hover:text-secondary-400 hover:font-bold text-md'>{post.userInfo.username}</p>
-            </Link>
-            <TimeAgo datetime={post.createdAt} locale='en_us' />
-          </div>
-        </div>
+        <UserInfo userInfo={post.userInfo}>
+          <TimeAgo datetime={post.createdAt} locale='en_us' />
+        </UserInfo>
         <Button color='primary' variant='light' as={Link} to={`/post/${post.id}`}>
           Visit Post &rarr;
         </Button>

@@ -253,7 +253,7 @@ namespace SocialApp.DataAccess.Migrations
 
                     b.HasIndex("UserProfileId");
 
-                    b.ToTable("Comments");
+                    b.ToTable("Comments", (string)null);
                 });
 
             modelBuilder.Entity("SocialApp.Domain.FriendRequest", b =>
@@ -277,7 +277,7 @@ namespace SocialApp.DataAccess.Migrations
 
                     b.HasIndex("ReceiverUserId");
 
-                    b.ToTable("FriendRequests");
+                    b.ToTable("FriendRequests", (string)null);
                 });
 
             modelBuilder.Entity("SocialApp.Domain.Image", b =>
@@ -310,7 +310,7 @@ namespace SocialApp.DataAccess.Migrations
 
                     b.HasIndex("UserProfileId");
 
-                    b.ToTable("Images");
+                    b.ToTable("Images", (string)null);
                 });
 
             modelBuilder.Entity("SocialApp.Domain.Notification", b =>
@@ -352,7 +352,7 @@ namespace SocialApp.DataAccess.Migrations
 
                     b.HasIndex("SenderUserId");
 
-                    b.ToTable("Notifications");
+                    b.ToTable("Notifications", (string)null);
                 });
 
             modelBuilder.Entity("SocialApp.Domain.Post", b =>
@@ -389,7 +389,7 @@ namespace SocialApp.DataAccess.Migrations
 
                     b.HasIndex("UserProfileId");
 
-                    b.ToTable("Posts");
+                    b.ToTable("Posts", (string)null);
                 });
 
             modelBuilder.Entity("SocialApp.Domain.PostLike", b =>
@@ -416,7 +416,7 @@ namespace SocialApp.DataAccess.Migrations
 
                     b.HasIndex("UserProfileId");
 
-                    b.ToTable("PostLikes");
+                    b.ToTable("PostLikes", (string)null);
                 });
 
             modelBuilder.Entity("SocialApp.Domain.UserProfile", b =>
@@ -458,7 +458,7 @@ namespace SocialApp.DataAccess.Migrations
 
                     b.HasIndex("ProfileImageId");
 
-                    b.ToTable("UserProfiles");
+                    b.ToTable("UserProfiles", (string)null);
                 });
 
             modelBuilder.Entity("UserProfileUserProfile", b =>

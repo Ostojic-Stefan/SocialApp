@@ -3,6 +3,7 @@ using AutoMapper.QueryableExtensions;
 using EfCoreHelpers;
 using Microsoft.EntityFrameworkCore;
 using SocialApp.Application.Models;
+using SocialApp.Application.UserProfiles.Extensions;
 using SocialApp.Application.UserProfiles.Queries;
 using SocialApp.Application.UserProfiles.Responses;
 using SocialApp.Domain;
@@ -10,7 +11,7 @@ using SocialApp.Domain;
 namespace SocialApp.Application.UserProfiles.QueryHandlers;
 
 internal class GetAllFriendsQueryHandler
-    : DataContextRequestHandler<GetAllFriendsQuery, Result<IReadOnlyList<FriendResponse>>>
+    : DataContextRequestHandler<GetAllFriendsQuery, Result<IReadOnlyList<UserInfo>>>
 {
     private readonly IMapper _mapper;
 
@@ -20,10 +21,10 @@ internal class GetAllFriendsQueryHandler
         _mapper = mapper;
     }
 
-    public override async Task<Result<IReadOnlyList<FriendResponse>>> Handle(GetAllFriendsQuery request,
+    public override async Task<Result<IReadOnlyList<UserInfo>>> Handle(GetAllFriendsQuery request,
         CancellationToken cancellationToken)
     {
-        var result = new Result<IReadOnlyList<FriendResponse>>();
+        var result = new Result<IReadOnlyList<UserInfo>>();
         try
         {
             var repo = _unitOfWork.CreateReadOnlyRepository<UserProfile>();
@@ -31,7 +32,8 @@ internal class GetAllFriendsQueryHandler
                 .Query()
                 .Where(u => u.Id == request.UserId)
                 .SelectMany(u => u.Friends)
-                .ProjectTo<FriendResponse>(_mapper.ConfigurationProvider)
+                .Include(u => u.ProfileImage)
+                .Select(u => u.MapToUserInfo())
                 .ToListAsync(cancellationToken);
 
             result.Data = friends;

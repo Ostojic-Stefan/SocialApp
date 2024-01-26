@@ -36,8 +36,14 @@ internal class GetUserInformationQueryHandler
             var userFriendRequestsResponse = await userProfileRepo
                 .QueryById(request.UserProfileId)
                 .SelectMany(u => u.ReceivedFriendRequests)
+                .Include(u => u.SenderUser.ProfileImage)
                 .Where(fr => fr.Status == FriendRequestStatus.Pending)
-                .ProjectTo<FriendRequestResponse>(_mapper.ConfigurationProvider)
+                .Select(fr => new FriendRequestResponse
+                {
+                    RequesterUser = fr.SenderUser.MapToUserInfo(),
+                    RequestTimeSent = fr.CreatedAt
+                })
+                //.ProjectTo<FriendRequestResponse>(_mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
 
             var notifications = await notificationRepo.Query()

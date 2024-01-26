@@ -50,6 +50,15 @@ export default function Header() {
     }
   });
 
+  // TODO: make friend request return the id of the friend request
+  const renderFriendRequests = user.friendRequests.map((fr, idx) => {
+    return (
+      <div key={idx}>
+        <UserInfo userInfo={fr.requesterUser} />
+      </div>
+    );
+  });
+
   return (
     <Navbar className='shadow'>
       <NavbarBrand>
@@ -65,9 +74,16 @@ export default function Header() {
       <NavbarContent justify='end'>
         <NavbarItem>
           <Badge content={user.friendRequests.length} color='secondary' isInvisible={user.friendRequests.length <= 0}>
-            <Button>
-              <FaUsers /> Friend Requests
-            </Button>
+            <Popover>
+              <PopoverTrigger>
+                <Button>
+                  <FaUsers /> Friend Requests
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent>
+                <div className='flex flex-col gap-5 max-h-96 overflow-y-scroll'>{renderFriendRequests}</div>
+              </PopoverContent>
+            </Popover>
           </Badge>
         </NavbarItem>
         <NavbarItem>

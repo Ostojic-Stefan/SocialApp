@@ -1,28 +1,21 @@
 import { useEffect, useState } from 'react';
-import { userService } from '../api/userService';
-import { ImageResponse } from '../api/dtos/image';
 import { DropdownItem, DropdownMenu, DropdownTrigger, Spinner } from '@nextui-org/react';
 import { Dropdown } from '@nextui-org/react';
 import { FaEllipsisV } from 'react-icons/fa';
+import { useAppDispatch, useAppSelector } from '../store';
+import { getUserProfileImages, setUserProfileImage } from '../store/user-profile-slice';
 
 interface UserImagesProps {
   userProfileId: string;
 }
 
 function UserImages({ userProfileId }: UserImagesProps) {
-  const [images, setImages] = useState<ImageResponse[]>();
+  const dispatch = useAppDispatch();
+  const images = useAppSelector((store) => store.userProfile.imagesForUser);
   const [hoverImageId, setHoverImageId] = useState<string>();
 
   useEffect(() => {
-    async function getUserImages() {
-      const response = await userService.getUserImages({ userProfileId });
-      if (response.hasError) {
-        console.log(response.error);
-        return;
-      }
-      setImages(response.value);
-    }
-    getUserImages();
+    dispatch(getUserProfileImages({ userProfileId }));
   }, []);
 
   if (!images) {
@@ -30,12 +23,7 @@ function UserImages({ userProfileId }: UserImagesProps) {
   }
 
   async function handleSetProfileImage(imageId: string): Promise<void> {
-    const response = await userService.setProfileImage({ imageId });
-    if (response.hasError) {
-      console.log(response.error);
-      return;
-    }
-    console.log(response);
+    dispatch(setUserProfileImage({ imageId }));
   }
 
   const darkenImage = {

@@ -33,6 +33,8 @@ internal class GetUserInformationByUsernameQueryHandler
                     .Include(u => u.Posts)
                     .Include(u => u.ProfileImage)
                     .Include(u => u.Friends)
+                    .Include(u => u.SentFriendRequests)
+                    .Include(u => u.ReceivedFriendRequests)
                     .Where(u => u.Username == request.Username)
                     .AsSplitQuery()
                     .ToDetailsResponse(request.CurrentUserId)
