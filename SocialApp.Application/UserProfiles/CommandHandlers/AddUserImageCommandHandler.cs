@@ -1,7 +1,7 @@
 ﻿using EfCoreHelpers;
 using Microsoft.EntityFrameworkCore;
+using SocialApp.Application.Interfaces;
 using SocialApp.Application.Models;
-using SocialApp.Application.Services.BackgroundServices.ImageProcessing;
 using SocialApp.Application.UserProfiles.Commands;
 using SocialApp.Domain;
 using System.Threading.Channels;

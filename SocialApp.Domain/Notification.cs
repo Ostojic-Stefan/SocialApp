@@ -1,4 +1,5 @@
 ﻿using EfCoreHelpers;
+using System.ComponentModel.Design;
 
 namespace SocialApp.Domain;
 
@@ -47,5 +48,29 @@ public class Notification : BaseEntity
 
         // TODO: validation
         return notification;
+    }
+
+    public static Notification CreateForComment(Guid senderUserId, Guid postId, Guid recipientUserId, Guid commentId)
+    {
+        return new Notification
+        {
+            SenderUserId = senderUserId,
+            RecipientUserId = recipientUserId,
+            CreatedAt = DateTime.UtcNow,
+            PostId = postId,
+            CommentId = commentId
+        };
+    }
+
+    public static Notification CreateForLike(Guid senderUserId, Guid postId, Guid recipientUserId, Guid likeId)
+    {
+        return new Notification
+        {
+            SenderUserId = senderUserId,
+            RecipientUserId = recipientUserId,
+            CreatedAt = DateTime.UtcNow,
+            PostId = postId,
+            LikeId = likeId
+        };
     }
 }

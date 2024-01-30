@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using EfCoreHelpers;
+using SocialApp.Application.Interfaces;
 using SocialApp.Application.Models;
 using SocialApp.Application.Posts.Commands;
-using SocialApp.Application.Services.BackgroundServices.ImageProcessing;
 using SocialApp.Domain;
 using SocialApp.Domain.Exceptions;
 using System.Threading.Channels;

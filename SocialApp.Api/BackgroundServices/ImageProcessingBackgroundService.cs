@@ -1,30 +1,19 @@
 ﻿using EfCoreHelpers;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Processing;
-using SocialApp.Application.Services.BackgroundServices.Notification;
+using SocialApp.Application.Interfaces;
 using SocialApp.Application.Services.FileUpload;
 using SocialApp.Application.Settings;
-using System.Runtime.InteropServices;
 using System.Threading.Channels;
 
-namespace SocialApp.Application.Services.BackgroundServices.ImageProcessing;
-
-public enum ImageFor
-{
-    User, Post
-}
-
-public record ImageProcessingMessage(string FilePath, Guid ResourceId, ImageFor ImageFor);
+namespace SocialApp.Api.BackgroundServices;
 
 public sealed class ImageProcessingBackgroundService : IHostedService
 {
-    private readonly ILogger<NotificationService> _logger;
+    private readonly ILogger<ImageProcessingBackgroundService> _logger;
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly ITempFileUploadService _tempFileUploadService;
     private readonly ChannelReader<ImageProcessingMessage> _channelReader;
@@ -32,7 +21,7 @@ public sealed class ImageProcessingBackgroundService : IHostedService
     private readonly ImageProcessingSettings _imageProcessingSettings;
 
     public ImageProcessingBackgroundService(
-        ILogger<NotificationService> logger,
+        ILogger<ImageProcessingBackgroundService> logger,
         IServiceScopeFactory serviceScopeFactory,
         Channel<ImageProcessingMessage> channel,
         IOptions<ImageFileStorageSettings> imageFileStorageSettings,

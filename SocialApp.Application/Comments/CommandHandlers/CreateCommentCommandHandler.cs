@@ -3,8 +3,8 @@ using EfCoreHelpers;
 using Microsoft.EntityFrameworkCore;
 using SocialApp.Application.Comments.Commands;
 using SocialApp.Application.Comments.Responses;
+using SocialApp.Application.Interfaces;
 using SocialApp.Application.Models;
-using SocialApp.Application.Services.BackgroundServices.Notification;
 using SocialApp.Domain;
 using SocialApp.Domain.Exceptions;
 
@@ -14,13 +14,13 @@ internal class CreateCommentCommandHandler
     : DataContextRequestHandler<CreateCommentCommand, Result<CommentResponse>>
 {
     private readonly IMapper _mapper;
-    private readonly INotificationQueue _notificationQueue;
+    private readonly INotificationMessenger _notificationMessenger;
 
-    public CreateCommentCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, INotificationQueue notificationQueue) 
+    public CreateCommentCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, INotificationMessenger notificationMessenger) 
         : base(unitOfWork)
     {
-       _mapper = mapper;
-        _notificationQueue = notificationQueue;
+        _mapper = mapper;
+        _notificationMessenger = notificationMessenger;
     }
 
     public override async Task<Result<CommentResponse>> Handle(CreateCommentCommand request,
@@ -47,7 +47,7 @@ internal class CreateCommentCommandHandler
                 .FirstAsync(cancellationToken)
             );
 
-            _notificationQueue.AddNotification(new QueueData(request.UserProfileId, post, comment, null));
+            await _notificationMessenger.AddAsync(new NotificationMessage(request.UserProfileId, post, comment, null), cancellationToken);
         }
         catch (ModelInvalidException ex)
         {

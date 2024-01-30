@@ -15,16 +15,13 @@ internal class LoginCommandHadler
     : DataContextRequestHandler<LoginCommand, Result<IdentityResponse>>
 {
     private readonly UserManager<IdentityUser> _userManager;
-    private readonly ITokenService _tokenService;
 
     public LoginCommandHadler(IUnitOfWork unitOfWork,
-        UserManager<IdentityUser> userManager,
-        ITokenService tokenService
+        UserManager<IdentityUser> userManager
     ) 
         : base(unitOfWork)
     {
         _userManager = userManager;
-        _tokenService = tokenService;
     }
 
     public override async Task<Result<IdentityResponse>> Handle(LoginCommand request,
@@ -49,14 +46,16 @@ internal class LoginCommandHadler
                 .TagWith("Get user profile - Login")
                 .Select(u => new { u.Id, u.IdentityId })
                 .SingleOrDefaultAsync(u => u.IdentityId == identity.Id, cancellationToken);
-            var token = _tokenService.GetToken(new Claim[]
+
+            var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.Sub, identity.Email),
-                new Claim(JwtRegisteredClaimNames.Email, identity.Email),
                 new Claim("IdentityId", identity.Id),
                 new Claim("UserProfileId", userProfile.Id.ToString()),
-            });
-            result.Data = new IdentityResponse { AccessToken = token };
+                new Claim(ClaimTypes.Email, identity.Email)
+            };
+
+            var claimsIdentity = new ClaimsIdentity(claims, "Cookie");
+            result.Data = new IdentityResponse { ClaimsIdentity = claimsIdentity };
         }
         catch (ModelInvalidException ex)
         {

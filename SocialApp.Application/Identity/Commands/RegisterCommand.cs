@@ -4,7 +4,7 @@ using SocialApp.Application.Models;
 
 namespace SocialApp.Application.Identity.Commands;
 
-public class RegisterCommand : IRequest<Result<IdentityResponse>>
+public class RegisterCommand : IRequest<Result<bool>>
 {
     public required string Username { get; set; }
     public required string Email { get; set; }

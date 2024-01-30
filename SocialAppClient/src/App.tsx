@@ -10,8 +10,15 @@ import PostListFriends from './components/PostListFriends';
 import UserProfile from './pages/UserProfile';
 import PostDetails from './pages/PostDetails';
 import Auth from './components/Auth';
+import { useEffect } from 'react';
+// import { notificationConnection } from './signalr/notification-connection';
 
 export default function App() {
+  // useEffect(() => {
+  //   notificationConnection.events.onNotificationReceived((msg: string) => {
+  //     console.log(msg);
+  //   });
+  // }, []);
   return (
     <div>
       <Routes>

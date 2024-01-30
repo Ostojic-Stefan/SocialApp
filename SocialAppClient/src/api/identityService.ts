@@ -1,21 +1,22 @@
 import { axiosInstance, executeApiCall } from "./apiConfig";
-import { CurrentUserResponse, IdentityResponse, LoginRequest, RegisterRequest } from "./dtos/identity";
+import { CurrentUserResponse, LoginRequest, RegisterRequest } from "./dtos/identity";
 import { ApiError, Result } from "./models";
 
 
 export interface IIdentityService {
-    login: (request: LoginRequest) => Promise<Result<IdentityResponse, ApiError>>;
-    register: (request: RegisterRequest) => Promise<Result<IdentityResponse, ApiError>>;
+    login: (request: LoginRequest) => Promise<Result<void, ApiError>>;
+    register: (request: RegisterRequest) => Promise<Result<boolean, ApiError>>;
+    logout: () => Promise<Result<void, ApiError>>;
     getCurrentUserInfo: () => Promise<Result<CurrentUserResponse, ApiError>>;
 }
 
 export const identityService: IIdentityService = {
-    login: async function (request: LoginRequest): Promise<Result<IdentityResponse, ApiError>> {
+    login: async function (request: LoginRequest): Promise<Result<void, ApiError>> {
         return await executeApiCall(async function () {
             return (await axiosInstance.post('identity/login', request)).data;
         });
     },
-    register: async function (request: RegisterRequest): Promise<Result<IdentityResponse, ApiError>> {
+    register: async function (request: RegisterRequest): Promise<Result<boolean, ApiError>> {
         return await executeApiCall(async function () {
             return (await axiosInstance.post('identity/register', request)).data;
         });
@@ -24,6 +25,11 @@ export const identityService: IIdentityService = {
         return await executeApiCall(async function () {
             const response = await axiosInstance.get<CurrentUserResponse>('identity/me');
             return response.data;
-        })
+        });
+    },
+    logout: async function (): Promise<Result<void, ApiError>> {
+        return await executeApiCall(async function () {
+            await axiosInstance.post<void>('identity/logout');
+        });
     }
 }

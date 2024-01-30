@@ -1,14 +1,14 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using SocialApp.Api.Extensions;
 using SocialApp.Api.Filters;
 using SocialApp.Api.Requests.Identity;
 using SocialApp.Application.Identity.Commands;
 using SocialApp.Application.Identity.Queries;
-using SocialApp.Application.Settings;
+using System.Security.Claims;
 
 namespace SocialApp.Api.Controllers;
 
@@ -32,12 +32,6 @@ public class IdentityController : BaseApiController
         var result = await _mediator.Send(command);
         if (result.HasError)
             return HandleError(result.Errors);
-        var token = result.Data.AccessToken;
-        //Response.Cookies.Append(_jwtSettings.CookieName, token, new CookieOptions
-        //{
-        //    HttpOnly = true,
-        //    SameSite = SameSiteMode.None
-        //});
         return Ok(result.Data);
     }
 
@@ -50,19 +44,32 @@ public class IdentityController : BaseApiController
         var result = await _mediator.Send(command);
         if (result.HasError)
             return HandleError(result.Errors);
-        var token = result.Data.AccessToken;
-        //Response.Cookies.Append(_jwtSettings.CookieName, token, new CookieOptions
-        //{ 
-        //    HttpOnly = false,
-        //    SameSite = SameSiteMode.None,
-        //    Secure = false
-        //});
-        return Ok(result.Data);
+
+        var authOptions = new AuthenticationProperties
+        {
+            IsPersistent = true
+        };
+
+        await HttpContext.SignInAsync(
+            "Cookie",
+            new ClaimsPrincipal(result.Data.ClaimsIdentity), authOptions);
+
+        return Ok();
+    }
+
+
+    [HttpPost]
+    [Route("identity/logout")]
+    [Authorize]
+    public async Task<IActionResult> Logout()
+    {
+        await HttpContext.SignOutAsync("Cookie");
+        return Ok();
     }
 
     [HttpGet]
     [Route("identity/me")]
-    //[Authorize]
+    [Authorize]
     public async Task<IActionResult> Me()
     {
         var userProfileId = HttpContext.GetUserProfileId();

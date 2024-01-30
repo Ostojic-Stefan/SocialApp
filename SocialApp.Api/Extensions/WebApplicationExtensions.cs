@@ -1,4 +1,6 @@
-﻿using SocialApp.Api.Middleware;
+﻿using Microsoft.AspNetCore.Http.Connections;
+using SocialApp.Api.Middleware;
+using SocialApp.Api.SignalR;
 
 namespace SocialApp.Api.Extensions;
 
@@ -24,11 +26,8 @@ public static class WebApplicationExtensions
 
         app.MapControllers();
 
-        //app.MapWhen(x => !x.Request.Path.Value.StartsWith("/api"), builder =>
-        //{
-        //    //builder.UseSpa(builder => builder.UseProxyToSpaDevelopmentServer("http://localhost:5173"));
-        //    builder.UseSpa(builder => builder.UseProxyToSpaDevelopmentServer("http://localhost:3000"));
-        //});
+        app.MapHub<TestHub>("/hub");
+        app.MapHub<NotificationHub>("/notificationHub");
 
         app.Run();
     }

@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using EfCoreHelpers;
 using Microsoft.EntityFrameworkCore;
+using SocialApp.Application.Interfaces;
 using SocialApp.Application.Models;
 using SocialApp.Application.Posts.Commands;
 using SocialApp.Application.Posts.Responses;
-using SocialApp.Application.Services.BackgroundServices.Notification;
 using SocialApp.Domain;
 using SocialApp.Domain.Exceptions;
 
@@ -13,13 +13,13 @@ namespace SocialApp.Application.Posts.CommandHandlers;
 internal class LikePostCommandHandler : DataContextRequestHandler<LikePostCommand, Result<PostLikeAddResponse>>
 {
     private readonly IMapper _mapper;
-    private readonly INotificationQueue _notificationQueue;
+    private readonly INotificationMessenger _notificationMessenger;
 
-    public LikePostCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, INotificationQueue notificationQueue) 
+    public LikePostCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, INotificationMessenger notificationMessenger) 
         : base(unitOfWork)
     {
         _mapper = mapper;
-        _notificationQueue = notificationQueue;
+        _notificationMessenger = notificationMessenger;
     }
 
     public override async Task<Result<PostLikeAddResponse>> Handle(LikePostCommand request,
@@ -57,7 +57,7 @@ internal class LikePostCommandHandler : DataContextRequestHandler<LikePostComman
                 PostId = post.Id
             };
 
-            _notificationQueue.AddNotification(new QueueData(request.UserProfileId, post, null, postLike));
+            await _notificationMessenger.AddAsync(new NotificationMessage(request.UserProfileId, post, null, postLike), cancellationToken);
         }
         catch (ModelInvalidException ex)
         {

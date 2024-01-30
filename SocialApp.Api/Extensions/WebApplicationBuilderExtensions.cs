@@ -1,20 +1,21 @@
 ﻿using DataAccess;
+using DotNetEnv;
 using EfCoreHelpers;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
+using SocialApp.Api.BackgroundServices;
 using SocialApp.Api.Filters;
 using SocialApp.Api.Middleware;
+using SocialApp.Api.Requests;
+using SocialApp.Api.SignalR;
+using SocialApp.Application.Interfaces;
 using SocialApp.Application.Posts.Queries;
-using SocialApp.Application.Services;
-using SocialApp.Application.Services.BackgroundServices.ImageProcessing;
-using SocialApp.Application.Services.BackgroundServices.Notification;
 using SocialApp.Application.Services.FileUpload;
 using SocialApp.Application.Settings;
-using System.Text;
+using System.Net;
+using System.Text.Json;
 using System.Threading.Channels;
 
 namespace SocialApp.Api.Extensions;
@@ -24,48 +25,67 @@ public static class WebApplicationBuilderExtensions
     public static void AddServices(this WebApplicationBuilder builder)
     {
         builder.WebHost.UseWebRoot("wwwroot");
-
-        builder.Services.AddTransient<GlobalExceptionMiddleware>();
-
-        builder.AddSettings();
-        builder.AddJwtService();
-        builder.AddDbServices();
-        builder.AddSwaggerConfiguration();
-
+        builder.Services.AddSwaggerGen();
+        builder.Services.AddControllers();
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSignalR();
         builder.Services.AddCors(options =>
-        {
-            options.AddPolicy(name: "AllowAll",
-                policy =>
-                {
-                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:5173");
-                });
-        });
-        builder.Services.AddSingleton<INotificationQueue, NotificationQueue>();
-        builder.Services.AddHostedService<NotificationService>();
-
-        builder.Services.AddHostedService<ImageProcessingBackgroundService>();
-        builder.Services.AddSingleton(_ => Channel.CreateUnbounded<ImageProcessingMessage>());
+            options.AddPolicy(name: "AllowAll", policy =>
+            {
+                policy
+                .WithOrigins("https://localhost:5173")
+                .AllowCredentials()
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+            })
+        );
 
         builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetAllPostsQuery).Assembly));
         builder.Services.AddAutoMapper(typeof(Program), typeof(GetAllPostsQuery));
+        
+        builder.AddAuthServices();
+        builder.AddSettings();
+        builder.AddDbServices();
+        builder.AddHostedServices();
 
-        builder.Services.AddTransient<ITokenService, TokenService>();
-
-        builder.Services.AddTransient<ServerUrlService>();
-        builder.Services.AddTransient<FileHttpConverter>(provider => 
-        {
-            var webHostEnv = provider.GetRequiredService<IWebHostEnvironment>();
-            var serverUrlService = provider.GetRequiredService<ServerUrlService>();
-            return new FileHttpConverter(webHostEnv.WebRootPath, serverUrlService, webHostEnv);
-        });
+        builder.Services.AddSingleton<IUserIdProvider, UserIdProvider>();
+        builder.Services.AddTransient<GlobalExceptionMiddleware>();
         builder.Services.AddTransient<ITempFileUploadService, TempFileUploadService>();
-
-        builder.Services.Configure<ApiBehaviorOptions>(options
-            => options.SuppressModelStateInvalidFilter = true);
         builder.Services.AddScoped<ValidateModelAttribute>();
 
-        builder.Services.AddControllers();
-        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
+    }
+
+    private static void AddHostedServices(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddHostedService<NotificationBackgroundService>();
+        builder.Services.AddHostedService<ImageProcessingBackgroundService>();
+        builder.Services.AddSingleton(_ => Channel.CreateUnbounded<ImageProcessingMessage>());
+        builder.Services.AddSingleton<INotificationMessenger, NotificationMessenger>();
+    }
+
+    private static void AddAuthServices(this WebApplicationBuilder builder)
+    {
+        builder.Services
+            .AddAuthentication("Cookie")
+            .AddCookie("Cookie", opt =>
+            {
+                opt.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                opt.Cookie.Name = "session";
+                opt.Events.OnRedirectToLogin = async context =>
+                {
+                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    var error = new ErrorResponse
+                    {
+                        Title = "Unauthorized",
+                        ErrorMessages = new string[] { "Unauthorized" },
+                        StatusCode = HttpStatusCode.Unauthorized
+                    };
+                    await context.Response.WriteAsJsonAsync(error);
+                };
+            });
+
+        builder.Services.AddAuthorization();
     }
 
     private static void AddDbServices(this WebApplicationBuilder builder)
@@ -91,93 +111,10 @@ public static class WebApplicationBuilderExtensions
 
     private static void AddSettings(this WebApplicationBuilder builder)
     {
-        builder.Configuration.AddJsonFile("./Settings/jwt_settings.json");
-        builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
-
         builder.Configuration.AddJsonFile("./Settings/image_file_storage_settings.json");
         builder.Services.Configure<ImageFileStorageSettings>(builder.Configuration.GetSection("ImageFileStorageSettings"));
 
         builder.Configuration.AddJsonFile("./Settings/image_processing_settings.json");
         builder.Services.Configure<ImageProcessingSettings>(builder.Configuration.GetSection("ImageProcessingSettings"));
-    }
-
-    private static void AddJwtService(this WebApplicationBuilder builder)
-    {
-        builder.Services.AddAuthentication(auth =>
-        {
-            auth.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            auth.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            auth.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        })
-        .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, cfg =>
-        {
-            var jwtSection = builder.Configuration.GetSection("JwtSettings");
-            var jwtSettings = jwtSection.Get<JwtSettings>();
-
-            cfg.Events = new JwtBearerEvents
-            {
-                OnMessageReceived = (ctx) =>
-                {
-                    if (ctx.Request.Cookies.ContainsKey(jwtSettings.CookieName))
-                        ctx.Token = ctx.Request.Cookies[jwtSettings.CookieName];
-                    return Task.CompletedTask;
-                }
-            };
-
-            cfg.SaveToken = true;
-            cfg.Audience = jwtSettings.Audiences[0];
-            cfg.ClaimsIssuer = jwtSettings.Issuer;
-            cfg.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSettings.SigningKey)),
-                ValidateIssuer = true,
-                ValidIssuer = jwtSettings.Issuer,
-                ValidateAudience = true,
-                ValidAudiences = jwtSettings.Audiences,
-                RequireExpirationTime = false,
-                ValidateLifetime = true
-            };
-        });
-    }
-
-    private static void AddSwaggerConfiguration(this WebApplicationBuilder builder)
-    {
-        builder.Services.AddSwaggerGen(opt =>
-        {
-            opt.SwaggerDoc("v1", new OpenApiInfo
-            {
-                Title = "SocialApp",
-                Version = "v1",
-            });
-            opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-            {
-                Name = "JWT Authentication",
-                Description = "Provide a JWT Bearer",
-                In = ParameterLocation.Header,
-                Type = SecuritySchemeType.Http,
-                Scheme = "Bearer",
-                BearerFormat = "JWT",
-                Reference = new OpenApiReference
-                {
-                    Id = JwtBearerDefaults.AuthenticationScheme,
-                    Type = ReferenceType.SecurityScheme
-                }
-            });
-            opt.AddSecurityRequirement(new OpenApiSecurityRequirement
-            {
-                {
-                    new OpenApiSecurityScheme
-                    {
-                        Reference = new OpenApiReference
-                        {
-                            Type=ReferenceType.SecurityScheme,
-                            Id="Bearer"
-                        }
-                    },
-                    Array.Empty<string>()
-                }
-            });
-        });
     }
 }

@@ -1,8 +1,8 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { identityService } from '../api/identityService';
-import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useNavigate } from 'react-router-dom';
 import { CurrentUserResponse, RegisterRequest } from '../api/dtos/identity';
+import { failureToast } from '../utils/toastDefinitions';
 
 export enum AuthStatus {
   Unauthenticated,
@@ -27,28 +27,25 @@ interface Props {
 export const AuthProvider = ({ children }: Props) => {
   const [user, setUser] = useState<CurrentUserResponse | null>(null);
   const [authStatus, setAuthStatus] = useState<AuthStatus>(AuthStatus.Loading);
-
-  const { value, setValue } = useLocalStorage<string | null>(null, 'auth');
   const navigate = useNavigate();
 
   useEffect(() => {
-    async function getUserData() {
-      if (value) {
-        const response = await identityService.getCurrentUserInfo();
-        if (response.hasError) {
-          setAuthStatus(AuthStatus.Unauthenticated);
-          console.log('Failed to authenticate');
-          return;
-        }
-        setAuthStatus(AuthStatus.Authenticated);
-        setUser(response.value);
-      } else {
-        console.log('No token present in local storage');
-        setAuthStatus(AuthStatus.Unauthenticated);
-      }
-    }
     getUserData();
   }, []);
+
+  async function getUserData() {
+    const response = await identityService.getCurrentUserInfo();
+
+    if (response.hasError) {
+      setAuthStatus(AuthStatus.Unauthenticated);
+      failureToast(response.error.title);
+      console.log(response.error);
+      return;
+    }
+
+    setAuthStatus(AuthStatus.Authenticated);
+    setUser(response.value);
+  }
 
   async function login(email: string, password: string) {
     setAuthStatus(AuthStatus.Loading);
@@ -58,11 +55,9 @@ export const AuthProvider = ({ children }: Props) => {
       setAuthStatus(AuthStatus.Unauthenticated);
       return;
     }
-    console.log(response.value);
-
-    setValue(response.value.accessToken);
+    setAuthStatus(AuthStatus.Authenticated);
+    await getUserData();
     navigate('/');
-    window.location.reload();
   }
 
   async function register(registerRequest: RegisterRequest) {
@@ -71,13 +66,11 @@ export const AuthProvider = ({ children }: Props) => {
       console.log('Failed to register');
       return;
     }
-    setValue(response.value.accessToken);
-    navigate('/');
-    window.location.reload();
+    navigate('/login');
   }
 
-  function logout() {
-    setValue(null);
+  async function logout() {
+    await identityService.logout();
     setUser(null);
     navigate('/login', { replace: true });
     setAuthStatus(AuthStatus.Unauthenticated);

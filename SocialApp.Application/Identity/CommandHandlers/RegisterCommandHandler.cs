@@ -1,36 +1,27 @@
 ﻿using EfCoreHelpers;
 using Microsoft.AspNetCore.Identity;
 using SocialApp.Application.Identity.Commands;
-using SocialApp.Application.Identity.Responses;
 using SocialApp.Application.Models;
-using SocialApp.Application.Services;
 using SocialApp.Domain;
 using SocialApp.Domain.Exceptions;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 
 namespace SocialApp.Application.Identity.CommandHandlers;
 
 internal class RegisterCommandHandler
-    : DataContextRequestHandler<RegisterCommand, Result<IdentityResponse>>
+    : DataContextRequestHandler<RegisterCommand, Result<bool>>
 {
     private readonly UserManager<IdentityUser> _userManager;
-    private readonly ITokenService _tokenService;
 
-    public RegisterCommandHandler(IUnitOfWork unitOfWork,
-        UserManager<IdentityUser> userManager,
-        ITokenService tokenService
-        )
+    public RegisterCommandHandler(IUnitOfWork unitOfWork, UserManager<IdentityUser> userManager)
         : base(unitOfWork)
     {
         _userManager = userManager;
-        _tokenService = tokenService;
     }
 
-    public override async Task<Result<IdentityResponse>> Handle(RegisterCommand request,
+    public override async Task<Result<bool>> Handle(RegisterCommand request,
         CancellationToken cancellationToken)
     {
-        var result = new Result<IdentityResponse>();
+        var result = new Result<bool>();
         try
         {
             var identity = new IdentityUser
@@ -71,17 +62,7 @@ internal class RegisterCommandHandler
             var userProfileRepo = _unitOfWork.CreateReadWriteRepository<UserProfile>();
             userProfileRepo.Add(userProfile);
             await _unitOfWork.SaveAsync(cancellationToken);
-
-            // generate jwt
-            string token = _tokenService.GetToken(new Claim[]
-            {
-                new(JwtRegisteredClaimNames.Sub, identity.Email),
-                new(JwtRegisteredClaimNames.Email, identity.Email),
-                new("IdentityId", identity.Id),
-                new("UserProfileId", userProfile.Id.ToString()),
-            });
-
-            result.Data = new IdentityResponse { AccessToken = token };
+            result.Data = true;
         }
         catch (ModelInvalidException ex)
         {
