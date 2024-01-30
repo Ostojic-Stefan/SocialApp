@@ -36,9 +36,7 @@ internal class LikePostCommandHandler : DataContextRequestHandler<LikePostComman
                 .FirstOrDefaultAsync(p => p.Id == request.PostId, cancellationToken);
             if (post is null)
             {
-                result.AddError(
-                    AppErrorCode.NotFound,
-                    $"Post with id of {request.PostId} does not exist");
+                result.AddError(AppErrorCode.NotFound, $"Post with id of {request.PostId} does not exist");
                 return result;
             }
             if (post.Likes.Any(l => l.UserProfile.Id == request.UserProfileId))
@@ -46,18 +44,25 @@ internal class LikePostCommandHandler : DataContextRequestHandler<LikePostComman
                 result.AddError(AppErrorCode.DuplicateEntry, $"You Have already liked this post");
                 return result;
             }
-            var postLike = PostLike.Create(request.PostId,
-                request.UserProfileId, request.LikeReaction);
+            var postLike = PostLike.Create(request.PostId, request.UserProfileId, request.LikeReaction);
             post.AddLike(postLike);
             await _unitOfWork.SaveAsync(cancellationToken);
+
+            // TODO: temporary workaround
+            var likeRepo = _unitOfWork.CreateReadOnlyRepository<PostLike>();
+            var tmpLike = await likeRepo.QueryById(postLike.Id).Include(like => like.UserProfile).SingleAsync(cancellationToken);
 
             result.Data = new PostLikeAddResponse
             {
                 LikeId = postLike.Id,
                 PostId = post.Id
             };
-
-            await _notificationMessenger.AddAsync(new NotificationMessage(request.UserProfileId, post, null, postLike), cancellationToken);
+            await _notificationMessenger.AddAsync(new LikeNotificationMessage
+            {
+                 Like = tmpLike,
+                 Post = post,
+                 SenderUserId = request.UserProfileId,
+            }, cancellationToken);
         }
         catch (ModelInvalidException ex)
         {

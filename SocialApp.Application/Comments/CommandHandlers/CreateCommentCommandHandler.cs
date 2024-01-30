@@ -30,7 +30,7 @@ internal class CreateCommentCommandHandler
         try
         {
             var postRepo = _unitOfWork.CreateReadOnlyRepository<Post>();
-            var post = await postRepo.GetByIdAsync(request.PostId, cancellationToken);
+            var post = await postRepo.QueryById(request.PostId).Include(p => p.UserProfile).SingleAsync(cancellationToken);
             if (post is null)
             {
                 result.AddError(AppErrorCode.NotFound, $"post with id of {request.PostId} does not exist");
@@ -47,7 +47,12 @@ internal class CreateCommentCommandHandler
                 .FirstAsync(cancellationToken)
             );
 
-            await _notificationMessenger.AddAsync(new NotificationMessage(request.UserProfileId, post, comment, null), cancellationToken);
+            await _notificationMessenger.AddAsync(new CommentNotificationMessage
+            {
+                Comment = comment,
+                Post = post,
+                SenderUserId = request.UserProfileId
+            }, cancellationToken);
         }
         catch (ModelInvalidException ex)
         {

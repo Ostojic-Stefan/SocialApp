@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Http.Connections;
-using SocialApp.Api.Middleware;
+﻿using SocialApp.Api.Middleware;
 using SocialApp.Api.SignalR;
+using SocialApp.Api.SignalR.Notification;
 
 namespace SocialApp.Api.Extensions;
 
@@ -27,7 +27,7 @@ public static class WebApplicationExtensions
         app.MapControllers();
 
         app.MapHub<TestHub>("/hub");
-        app.MapHub<NotificationHub>("/notificationHub");
+        app.MapHub<NotificationHub>("/notification-hub");
 
         app.Run();
     }

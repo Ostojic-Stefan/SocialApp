@@ -2,7 +2,7 @@ import axios, { AxiosError } from "axios";
 import { ApiError, Result } from "./models";
 
 export const axiosInstance = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: 'https://localhost:5001/api',
   withCredentials: true
 });
 

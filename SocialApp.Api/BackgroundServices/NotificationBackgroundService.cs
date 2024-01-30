@@ -1,6 +1,5 @@
 ﻿using EfCoreHelpers;
-using Microsoft.AspNetCore.SignalR;
-using SocialApp.Api.SignalR;
+using SocialApp.Api.SignalR.Notification;
 using SocialApp.Application.Interfaces;
 using SocialApp.Domain;
 
@@ -27,31 +26,68 @@ public class NotificationBackgroundService : BackgroundService
 
             if (message.SenderUserId != message.Post.UserProfileId)
             {
-                using (IServiceScope scope = _serviceScopeFactory.CreateScope())
+                using IServiceScope scope = _serviceScopeFactory.CreateScope();
+
+                var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+                var notificationHubService = scope.ServiceProvider.GetRequiredService<NotificationHubService>();
+
+                switch (message.Type)
                 {
-                    var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-                    var notificationRepo = unitOfWork.CreateReadWriteRepository<Notification>();
-
-                    Notification notification = message.Comment != null
-                        ? Notification.CreateForComment(
-                            message.SenderUserId,
-                            message.Post.Id,
-                            message.Post.UserProfileId,
-                            message.Comment.Id)
-                        : Notification.CreateForLike(
-                            message.SenderUserId,
-                            message.Post.Id,
-                            message.Post.UserProfileId,
-                            message.Like.Id);
-                        
-                    notificationRepo.Add(notification);
-                    await unitOfWork.SaveAsync(stoppingToken);
-
-                    var notificationHub = scope.ServiceProvider.GetRequiredService<IHubContext<NotificationHub>>();
-                    //await notificationHub.Clients.User(message.Post.UserProfile.Id.ToString()).ReceiveNotification("yee boi");
-                        //.SendAsync("ReceiveNotification", "yee boi", stoppingToken);
+                    case NotificationType.Comment:
+                        await SaveCommentNotification((CommentNotificationMessage)message, unitOfWork, stoppingToken);
+                        await SendCommentNotification((CommentNotificationMessage)message, notificationHubService);
+                        break;
+                    case NotificationType.Like:
+                        await SaveLikeNotification((LikeNotificationMessage)message, unitOfWork, stoppingToken);
+                        await SendLikeNotification((LikeNotificationMessage)message, notificationHubService);
+                        break;
                 }
             }
         }
+    }
+
+    private static async Task SendCommentNotification(CommentNotificationMessage message,
+        NotificationHubService notificationHubService)
+    {
+        await notificationHubService.NotifyForComment(
+            message.Post.UserProfile.Id.ToString(),
+            message.Comment,
+            message.Post);
+    }
+
+    private static async Task SendLikeNotification(LikeNotificationMessage message,
+        NotificationHubService notificationHubService)
+    {
+        await notificationHubService.NotifyForLike(
+                message.Post.UserProfile.Id.ToString(),
+                message.Like,
+                message.Post);
+    }
+
+    private static async Task SaveCommentNotification(
+        CommentNotificationMessage message,
+        IUnitOfWork unitOfWork, CancellationToken cancellationToken)
+    {
+        var repo = unitOfWork.CreateReadWriteRepository<Notification>();
+        var notification = Notification.CreateForComment(
+            message.SenderUserId,
+            message.Post.Id,
+            message.Post.UserProfileId,
+            message.Comment.Id);
+        repo.Add(notification);
+        await unitOfWork.SaveAsync(cancellationToken);
+    }
+
+    private static async Task SaveLikeNotification(LikeNotificationMessage message,
+        IUnitOfWork unitOfWork, CancellationToken cancellationToken)
+    {
+        var repo = unitOfWork.CreateReadWriteRepository<Notification>();
+        var notification = Notification.CreateForLike(
+            message.SenderUserId,
+            message.Post.Id,
+            message.Post.UserProfileId,
+            message.Like.Id);
+        repo.Add(notification);
+        await unitOfWork.SaveAsync(cancellationToken);
     }
 }

@@ -3,7 +3,33 @@ using System.Threading.Channels;
 
 namespace SocialApp.Application.Interfaces;
 
-public record NotificationMessage(Guid SenderUserId, Post Post, Comment? Comment, PostLike? Like);
+public enum NotificationType
+{
+    Comment, Like
+}
+
+public abstract class NotificationMessage
+{
+    public required Guid SenderUserId { get; set; }
+    public required Post Post { get; set; }
+    public abstract NotificationType Type { get; }
+}
+
+public class CommentNotificationMessage : NotificationMessage
+{
+    public required Comment Comment { get; set; }
+
+    public override NotificationType Type => NotificationType.Comment;
+}
+
+
+public class LikeNotificationMessage : NotificationMessage
+{
+    public required PostLike Like { get; set; }
+
+    public override NotificationType Type => NotificationType.Like;
+}
+
 
 public interface INotificationMessenger
 {

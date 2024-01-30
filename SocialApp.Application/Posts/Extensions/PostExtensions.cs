@@ -6,7 +6,7 @@ using SocialApp.Domain;
 
 namespace SocialApp.Application.Posts.Extensions;
 
-internal static class PostExtensions
+public static class PostExtensions
 {
     public static PostResponse MapToPostReponse(this Post post, Guid currentUserId)
     {

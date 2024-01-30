@@ -4,7 +4,7 @@ using SocialApp.Domain;
 
 namespace SocialApp.Application.UserProfiles.Extensions;
 
-internal static class UserProfileExtensions
+public static class UserProfileExtensions
 {
     public static UserInfo MapToUserInfo(this UserProfile userProfile)
     {
