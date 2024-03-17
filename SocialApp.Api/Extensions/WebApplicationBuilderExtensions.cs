@@ -11,6 +11,7 @@ using SocialApp.Api.Middleware;
 using SocialApp.Api.Requests;
 using SocialApp.Api.SignalR;
 using SocialApp.Api.SignalR.Notification;
+using SocialApp.Api.SignalR.Posts;
 using SocialApp.Application.Interfaces;
 using SocialApp.Application.Posts.Queries;
 using SocialApp.Application.Services.FileUpload;
@@ -54,6 +55,7 @@ public static class WebApplicationBuilderExtensions
         builder.Services.AddTransient<ITempFileUploadService, TempFileUploadService>();
         builder.Services.AddScoped<ValidateModelAttribute>();
         builder.Services.AddScoped<NotificationHubService>();
+        builder.Services.AddScoped<PostHubCache>();
 
         builder.Services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
     }

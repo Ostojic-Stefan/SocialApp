@@ -1,6 +1,7 @@
 ﻿using SocialApp.Api.Middleware;
 using SocialApp.Api.SignalR;
 using SocialApp.Api.SignalR.Notification;
+using SocialApp.Api.SignalR.Posts;
 
 namespace SocialApp.Api.Extensions;
 
@@ -28,6 +29,7 @@ public static class WebApplicationExtensions
 
         app.MapHub<TestHub>("/hub");
         app.MapHub<NotificationHub>("/notification-hub");
+        app.MapHub<PostHub>("/post-hub");
 
         app.Run();
     }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
 
 namespace SocialApp.Api.SignalR.Notification;
 
@@ -8,6 +9,7 @@ public interface INotificationClient
     Task ReceiveLikeNotification(LikeNotificationResponse data);
 }
 
+[Authorize]
 public class NotificationHub : Hub<INotificationClient>
 {
     private static readonly Dictionary<string, List<string>> _connections = new();

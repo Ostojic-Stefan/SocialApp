@@ -15,11 +15,11 @@ import { notificationConnection } from './signalr/notification-connection';
 import { successToast } from './utils/toastDefinitions';
 import { toast } from 'react-toastify';
 
-const CustomToastWithLink = (msg: string, link: string) => (
-  <div>
-    <Link to={link}>{msg}</Link>
-  </div>
-);
+// const CustomToastWithLink = (msg: string, link: string) => (
+//   <div>
+//     <Link to={link}>{msg}</Link>
+//   </div>
+// );
 
 export default function App() {
   useEffect(() => {

@@ -7,13 +7,32 @@ import { commentService } from '../api/commentService';
 import CommentList from '../components/CommentList';
 import { PostDetailsResponse } from '../api/dtos/post';
 import UserInfo from '../components/UserInfo';
+import { postConnection } from '../signalr/post-connection';
 
 export default function PostDetails() {
   const { postId } = useParams();
   const [postDetails, setPostDetails] = useState<PostDetailsResponse | null>(null);
   const [commentContents, setCommentContents] = useState<string>('');
+  const [someoneTyping, setSomeoneTyping] = useState<boolean>(false);
+  const [typingUser, setTypingUser] = useState<string>('');
 
   useEffect(() => {
+    // tell the server to join the room
+    if (postId) {
+      postConnection.actions.joinPost(postId);
+    }
+    postConnection.events.receiveComment((msg) => {
+      console.log('Received Comment', msg);
+    });
+    postConnection.events.receiveTyping((msg) => {
+      setSomeoneTyping(true);
+      setTypingUser(msg);
+      setTimeout(() => {
+        setSomeoneTyping(false);
+        setTypingUser('');
+      }, 3000);
+    });
+
     async function getPostDetails() {
       if (!postId) {
         console.log('postId must be present');
@@ -27,6 +46,13 @@ export default function PostDetails() {
       setPostDetails(response.value);
     }
     getPostDetails();
+
+    return () => {
+      if (postId) {
+        // leave the room when unmounting
+        postConnection.actions.leavePost(postId);
+      }
+    };
   }, []);
 
   if (!postDetails) {
@@ -90,7 +116,10 @@ export default function PostDetails() {
             <form onSubmit={handleSubmitComment} className='mt-8 space-y-6'>
               <div className='rounded-md shadow-sm'>
                 <Textarea
-                  onChange={(e) => setCommentContents(e.target.value)}
+                  onChange={(e) => {
+                    postConnection.actions.startTyping(postId!);
+                    setCommentContents(e.target.value);
+                  }}
                   value={commentContents}
                   placeholder='Add a comment...'
                   id='comment'
@@ -100,6 +129,7 @@ export default function PostDetails() {
                     focus:border-indigo-500 focus:z-10 sm:text-sm'
                 />
               </div>
+              {someoneTyping && <p>{typingUser} is typing...</p>}
               <button
                 className='group relative w-full flex justify-center py-2 px-4
                   border border-transparent text-sm font-medium rounded-md text-white bg-secondary

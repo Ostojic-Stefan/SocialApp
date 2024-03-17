@@ -1,15 +1,15 @@
 import * as signalR from "@microsoft/signalr";
 
-const testConnectionUrl = "https://localhost:5001/notification-hub";
+const connectionUrl = "https://localhost:5001/notification-hub";
 
 const connection = new signalR.HubConnectionBuilder()
     .configureLogging(signalR.LogLevel.Information)
-    .withUrl(testConnectionUrl)
+    .withUrl(connectionUrl)
     .withAutomaticReconnect()
     .build();
 
 connection.start()
-    .then(() => console.log("Connected"))
+    .then(() => console.log("Notification Hub Connected"))
     .catch(err => console.error(err));
 
 export const notificationConnection = {
